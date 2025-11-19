@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Example Atom</title>
+  <entry>
+    <title type="html">Central bank lifts rates half a point as inflation fight continues</title>
+    <link rel="replies" href="https://atom.example.org/rates#comments"/>
+    <link rel="alternate" href="https://atom.example.org/rates"/>
+    <published>2026-09-24T09:15:00+01:00</published>
+    <summary type="html">&lt;p&gt;The central bank raised its benchmark interest rate by half a percentage point on Tuesday, the largest increase in two decades, as policymakers moved to fight high inflation.&lt;/p&gt;</summary>
+  </entry>
+  <entry>
+    <title>New open-source compiler targets tiny chips</title>
+    <link href="https://atom.example.org/compiler"/>
+    <updated>2026-09-23T12:00:00Z</updated>
+    <content type="html">A new compiler project aims to make embedded development easier.</content>
+  </entry>
+</feed>

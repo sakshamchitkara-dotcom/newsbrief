@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>Example Wire</title>
+  <link>https://wire.example.com/</link>
+  <item>
+    <title>Central bank raises interest rates by half a point to fight inflation</title>
+    <link>https://wire.example.com/rates</link>
+    <description><![CDATA[<p>The central bank raised its benchmark interest rate by half a percentage point on Tuesday, the largest increase in two decades, as policymakers moved to fight stubbornly high inflation.</p>]]></description>
+    <pubDate>Thu, 24 Sep 2026 08:00:00 GMT</pubDate>
+  </item>
+  <item>
+    <title>Storm &amp; floods close coastal highways</title>
+    <link>https://wire.example.com/storm</link>
+    <description>Heavy rain flooded roads along the coast overnight. Officials urged drivers to stay home.</description>
+    <dc:date>2026-09-24T06:30:00Z</dc:date>
+  </item>
+  <item>
+    <title>No link item is skipped</title>
+  </item>
+</channel>
+</rss>
