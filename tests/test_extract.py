@@ -19,3 +19,17 @@ def test_falls_back_to_meta_description():
 
 def test_malformed_html_does_not_raise():
     assert isinstance(extract_text("<p><div></span></p></p><a>" * 50), str)
+
+
+def test_robots_disallow_blocks_fetch(monkeypatch):
+    from newsbrief import http
+
+    rp = __import__("urllib.robotparser").robotparser.RobotFileParser()
+    rp.parse(["User-agent: *", "Disallow: /private"])
+    monkeypatch.setattr(http, "_robots", lambda origin: rp)
+    assert http.allowed("https://ex.com/public/a")
+    assert not http.allowed("https://ex.com/private/a")
+    import pytest
+
+    with pytest.raises(http.FetchError, match="robots"):
+        http.polite_get("https://ex.com/private/a")
