@@ -26,3 +26,60 @@ def test_summarize_extractive_fills_brief():
     summarize_extractive(b)
     assert b.stories[0].headline == "Rates up" and b.stories[0].summary
     assert b.intro == "1 story today across world." and b.summarizer == "extractive"
+
+
+class FakeMessages:
+    def __init__(self, parsed, stop_reason="end_turn"):
+        self.parsed, self.stop_reason, self.calls = parsed, stop_reason, []
+
+    def parse(self, **kw):
+        self.calls.append(kw)
+        out_cls = kw["output_format"]
+        parsed = out_cls.model_validate(self.parsed) if self.parsed else None
+        return type("R", (), {"stop_reason": self.stop_reason, "parsed_output": parsed})()
+
+
+class FakeClient:
+    def __init__(self, *a, **k):
+        self.messages = FakeMessages(*a, **k)
+
+
+def two_story_brief():
+    return Brief(
+        "me@x.com",
+        [
+            Story([Article("Rates up", "u1", "wire", text=BODY)], topic="world"),
+            Story([Article("Chip news", "u2", "hn", summary="A chip was released today by a company.")], topic="tech"),
+        ],
+    )
+
+
+def test_claude_summaries_applied_and_request_shape():
+    from newsbrief.summarize import MODEL, summarize_claude
+
+    client = FakeClient(
+        {"intro": "Rates and chips.", "stories": [{"id": 0, "headline": "H0", "summary": "S0", "why_it_matters": "W0"}]}
+    )
+    b = summarize_claude(two_story_brief(), client=client)
+    assert b.intro == "Rates and chips." and b.summarizer == MODEL
+    assert (b.stories[0].headline, b.stories[0].summary, b.stories[0].why_it_matters) == ("H0", "S0", "W0")
+    assert b.stories[1].headline == "Chip news" and b.stories[1].summary  # extractive for uncovered story
+    call = client.messages.calls[0]
+    assert call["model"] == "claude-opus-5-5" and "thinking" not in call
+    assert call["output_config"] == {"effort": "medium"}
+    assert '<cluster id="1" topic="tech">' in call["messages"][0]["content"]
+
+
+def test_claude_refusal_keeps_extractive():
+    from newsbrief.summarize import summarize_claude
+
+    b = summarize_claude(two_story_brief(), client=FakeClient(None, stop_reason="refusal"))
+    assert b.summarizer == "extractive" and b.stories[0].headline == "Rates up"
+
+
+def test_summarize_falls_back_without_key(monkeypatch):
+    from newsbrief.summarize import summarize
+
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("ANTHROPIC_AUTH_TOKEN", raising=False)
+    assert summarize(two_story_brief()).summarizer == "extractive"
