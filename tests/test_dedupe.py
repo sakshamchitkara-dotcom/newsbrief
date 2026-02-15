@@ -35,3 +35,28 @@ def test_unrelated_stories_stay_apart():
     a = Article("Apple unveils new iPhone with faster chip", "https://a.com/1", "a")
     b = Article("Floods hit northern Italy after record rain", "https://b.com/1", "b")
     assert len(cluster([a, b])) == 2
+
+
+def test_rewritten_headlines_of_same_event_cluster():
+    # real pair from a live run: no shared phrasing, but the rare words line up
+    a = Article("Pope Leo visits France for first papal visit in 18 years", "https://g.com/1", "guardian",
+                summary="Pope Leo will visit France this weekend, the first papal state visit to the country in 18 years.")
+    b = Article("Pope Leo heads to France amid assisted dying, abuse debates", "https://aj.com/1", "aljazeera",
+                summary="Pope Leo XIV is heading to France for the first official papal visit to the country in 18 years.")
+    fillers = [Article(f"Unrelated story number {i} about {w}", f"https://f.com/{i}", "f", summary=f"Details on {w}.")
+               for i, w in enumerate(["markets", "football", "weather", "chips", "elections", "music"])]
+    stories = cluster([a, b, *fillers])
+    assert any({x.url for x in s.articles} == {a.url, b.url} for s in stories)
+
+
+def test_outlet_boilerplate_does_not_merge_its_stories():
+    tail = " Follow our Australia news live blog for latest updates Get our breaking news email, free app or daily news podcast"
+    arts = [
+        Article(t, f"https://gu.com/{i}", "guardian", summary=t + "." + tail)
+        for i, t in enumerate([
+            "Police officer killed after car crashes into tree in Redfern",
+            "Court hears murder accused asked friend a chilling question",
+            "Senator calls for AI safety act after Medicare breach",
+        ])
+    ]
+    assert len(cluster(arts)) == 3
