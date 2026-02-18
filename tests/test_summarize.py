@@ -83,3 +83,10 @@ def test_summarize_falls_back_without_key(monkeypatch):
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
     monkeypatch.delenv("ANTHROPIC_AUTH_TOKEN", raising=False)
     assert summarize(two_story_brief()).summarizer == "extractive"
+
+
+def test_extractive_prefers_feed_blurb_over_page_text():
+    blurb = "Trump hosted Xi Jinping at a White House state dinner, praising US-China ties while trade disputes remain."
+    s = Story([Article("Trump hosts Xi at state dinner", "u", "bbc", summary=blurb,
+                       text="Defence Secretary Pete Hegseth was at another table, looking serious. " * 3)])
+    assert extractive_summary(s) == blurb
