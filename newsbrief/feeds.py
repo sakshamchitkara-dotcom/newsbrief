@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 
 from .config import Source
+from .dedupe import strip_tracking
 from .http import FetchError, get
 from .models import Article
 from .text import clean, strip_html
@@ -87,7 +88,7 @@ def parse_feed(data: bytes, source: Source) -> list[Article]:
         out.append(
             Article(
                 title=title,
-                url=clean(link),
+                url=strip_tracking(clean(link)),
                 source=source.name,
                 published=parse_date(date),
                 summary=strip_html(blurb),

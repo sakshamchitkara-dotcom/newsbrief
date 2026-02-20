@@ -60,3 +60,11 @@ def test_outlet_boilerplate_does_not_merge_its_stories():
         ])
     ]
     assert len(cluster(arts)) == 3
+
+
+def test_strip_tracking_keeps_real_params():
+    from newsbrief.dedupe import strip_tracking
+
+    assert strip_tracking("https://www.bbc.co.uk/news/a?at_medium=RSS&at_campaign=rss") == "https://www.bbc.co.uk/news/a"
+    assert strip_tracking("https://aj.com/x?traffic_source=rss&page=2") == "https://aj.com/x?page=2"
+    assert strip_tracking("https://news.ycombinator.com/item?id=42") == "https://news.ycombinator.com/item?id=42"
