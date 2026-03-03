@@ -5,6 +5,7 @@ base_url: ""
 state_db: newsbrief.db
 outbox: outbox
 max_stories: 12
+max_per_topic: 5    # keep one busy topic from crowding out the rest
 lookback_hours: 36
 fetch_articles: true   # fetch article pages (robots.txt respected) for better summaries
 

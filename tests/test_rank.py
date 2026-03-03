@@ -33,3 +33,12 @@ def test_topic_assignment_and_window():
     assert s.topic == "world"
     assert within(Story([art(hours=10)]), NOW, 36)
     assert not within(Story([art(hours=50)]), NOW, 36)
+
+
+def test_diversify_caps_topics_but_fills_slots():
+    from newsbrief.rank import diversify
+
+    stories = [Story([art()], rank=10 - i, topic=t) for i, t in enumerate(["w", "w", "w", "t", "w", "b"])]
+    assert [s.topic for s in diversify(stories, 4, per_topic=2)] == ["w", "w", "t", "b"]
+    # not enough other topics: overflow fills remaining slots in rank order
+    assert [s.rank for s in diversify(stories, 6, per_topic=2)] == [10, 9, 8, 7, 6, 5]
