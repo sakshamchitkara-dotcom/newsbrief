@@ -1,4 +1,4 @@
-"""Command line entry point: `newsbrief run|schedule|unsubscribe|check`."""
+"""Command line entry point: `newsbrief run|schedule|unsubscribe|serve|check`."""
 from __future__ import annotations
 
 import argparse
@@ -56,6 +56,15 @@ def cmd_unsubscribe(args) -> int:
     return 0
 
 
+def cmd_serve(args) -> int:
+    from .server import serve
+
+    cfg = load_config(args.config)
+    print(f"unsubscribe endpoint on http://{args.host}:{args.port}/unsubscribe")
+    serve(cfg.state_db, args.host, args.port)
+    return 0
+
+
 def cmd_check(args) -> int:
     cfg = load_config(args.config)
     print(f"{len(cfg.sources)} sources, {len(cfg.subscribers)} subscribers")
@@ -90,6 +99,11 @@ def main(argv: list[str] | None = None) -> int:
     u.add_argument("email")
     u.add_argument("token")
     u.set_defaults(func=cmd_unsubscribe)
+
+    v = sub.add_parser("serve", help="serve the /unsubscribe endpoint")
+    v.add_argument("--host", default="127.0.0.1")
+    v.add_argument("--port", type=int, default=8025)
+    v.set_defaults(func=cmd_serve)
 
     c = sub.add_parser("check", help="validate config and show who gets what")
     c.set_defaults(func=cmd_check)
