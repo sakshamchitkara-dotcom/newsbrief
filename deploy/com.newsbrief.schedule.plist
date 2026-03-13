@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  macOS launchd agent: runs `newsbrief run --only-due` every 15 minutes.
+  Edit the paths, then:
+    cp deploy/com.newsbrief.schedule.plist ~/Library/LaunchAgents/
+    launchctl load ~/Library/LaunchAgents/com.newsbrief.schedule.plist
+  Secrets are read from .env by the wrapper command below (never put them in this file).
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.newsbrief.schedule</string>
+  <key>WorkingDirectory</key><string>/Users/YOU/newsbrief</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/sh</string>
+    <string>-c</string>
+    <string>set -a; [ -f .env ] &amp;&amp; . ./.env; set +a; exec .venv/bin/newsbrief run --only-due</string>
+  </array>
+  <key>StartInterval</key><integer>900</integer>
+  <key>RunAtLoad</key><true/>
+  <key>StandardOutPath</key><string>/tmp/newsbrief.log</string>
+  <key>StandardErrorPath</key><string>/tmp/newsbrief.log</string>
+</dict>
+</plist>

@@ -1,0 +1,79 @@
+# Scheduled delivery. Runs hourly; each subscriber gets their brief on the first run
+# after their local send_at. Opt-in: set repo variable NEWSBRIEF_ENABLED=true.
+#
+# Secrets:
+#   NEWSBRIEF_CONFIG   full YAML config (kept secret so subscriber emails stay private)
+#   NEWSBRIEF_SECRET   unsubscribe token key
+#   ANTHROPIC_API_KEY  optional, for Claude summaries
+#   SMTP_HOST/SMTP_PORT/SMTP_USER/SMTP_PASS or RESEND_API_KEY or SENDGRID_API_KEY
+name: Daily brief
+on:
+  schedule:
+    - cron: "5 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Write to outbox artifact instead of sending"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: newsbrief
+  cancel-in-progress: false
+
+jobs:
+  brief:
+    if: vars.NEWSBRIEF_ENABLED == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install '.[claude]'
+
+      - name: Write config
+        env:
+          NEWSBRIEF_CONFIG: ${{ secrets.NEWSBRIEF_CONFIG }}
+        run: |
+          if [ -n "$NEWSBRIEF_CONFIG" ]; then printf '%s' "$NEWSBRIEF_CONFIG" > newsbrief.yaml
+          else cp newsbrief.example.yaml newsbrief.yaml; fi
+
+      # sent-story history survives between runs via the Actions cache
+      - uses: actions/cache/restore@v4
+        with:
+          path: newsbrief.db
+          key: newsbrief-state-${{ github.run_id }}
+          restore-keys: newsbrief-state-
+
+      - name: Run
+        env:
+          NEWSBRIEF_SECRET: ${{ secrets.NEWSBRIEF_SECRET }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+        run: |
+          if [ "$DRY_RUN" = "true" ]; then newsbrief run --dry-run
+          else newsbrief run --only-due; fi
+
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: newsbrief.db
+          key: newsbrief-state-${{ github.run_id }}
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: outbox
+          path: outbox/
+          if-no-files-found: ignore
