@@ -15,10 +15,10 @@ from .unsubscribe import verify_token
 log = logging.getLogger("newsbrief")
 
 
-def _run_once(args, cfg) -> int:
+def _run_once(args, cfg, dry_run_log=None) -> int:
     try:
         outs = run(cfg, dry_run=args.dry_run, only_due=args.only_due, subscriber=args.subscriber,
-                   fetch_text=False if args.no_fetch_text else None)
+                   fetch_text=False if args.no_fetch_text else None, dry_run_log=dry_run_log)
     except DeliveryError as e:
         log.error("%s", e)
         return 2
@@ -36,9 +36,10 @@ def cmd_schedule(args) -> int:
     """Loop forever, delivering to each subscriber once their local send time passes."""
     args.only_due = True
     log.info("scheduler started; checking every %ss", args.interval)
+    dry_run_log: set[tuple[str, str]] = set()
     while True:
         try:
-            _run_once(args, load_config(args.config))  # reload so config edits apply without restart
+            _run_once(args, load_config(args.config), dry_run_log)  # reload so config edits apply without restart
         except Exception:  # noqa: BLE001 - one bad tick must not kill the daemon
             log.exception("scheduled run failed")
         time.sleep(args.interval)
