@@ -6,7 +6,8 @@ import re
 from html.parser import HTMLParser
 
 _WS = re.compile(r"\s+")
-_SENT = re.compile(r"(?<=[.!?])[\"')\]]?\s+(?=[A-Z0-9\"'(])")
+_INVISIBLE = re.compile("[\u200b-\u200d\u2060\ufeff\u00ad]")  # zero-width chars, soft hyphen
+_SENT = re.compile(r"(?:(?<=[.!?])|(?<=[.!?][\"'\u201d)\]]))\s+(?=[A-Z0-9\"'\u201c(])")
 
 
 class _Stripper(HTMLParser):
@@ -40,7 +41,7 @@ def strip_html(s: str) -> str:
 
 
 def clean(s: str) -> str:
-    return _WS.sub(" ", s).strip()
+    return _WS.sub(" ", _INVISIBLE.sub("", s)).strip()
 
 
 def sentences(s: str) -> list[str]:
