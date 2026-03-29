@@ -10,6 +10,7 @@ def test_story_maps_to_article():
         SRC,
     )
     assert a.url == "https://x.dev" and a.score == 250 and a.weight == 0.9
+    assert a.comments_url == "https://news.ycombinator.com/item?id=1"
     assert a.published.tzinfo is not None
 
 

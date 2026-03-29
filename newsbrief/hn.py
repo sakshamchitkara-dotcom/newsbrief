@@ -18,7 +18,8 @@ API = "https://hacker-news.firebaseio.com/v0"
 def item_to_article(item: dict, source: Source) -> Article | None:
     if not item or item.get("type") != "story" or item.get("dead") or item.get("deleted"):
         return None
-    url = item.get("url") or f"https://news.ycombinator.com/item?id={item['id']}"
+    thread = f"https://news.ycombinator.com/item?id={item['id']}"
+    url = item.get("url") or thread
     return Article(
         title=item.get("title", "").strip(),
         url=url,
@@ -27,6 +28,7 @@ def item_to_article(item: dict, source: Source) -> Article | None:
         summary=strip_html(item.get("text", "")),
         weight=source.weight,
         score=int(item.get("score", 0)),
+        comments_url=thread,
     )
 
 

@@ -30,8 +30,9 @@ def group_by_topic(stories: list[Story]) -> list[tuple[str, list[Story]]]:
 
 
 def _story_html(s: Story) -> str:
+    link = lambda url, label: f'<a href="{escape(url)}" style="color:{MUTED};text-decoration:underline;">{escape(label)}</a>'  # noqa: E731
     links = " &middot; ".join(
-        f'<a href="{escape(a.url)}" style="color:{MUTED};text-decoration:underline;">{escape(a.source)}</a>'
+        link(a.url, a.source) + (f" ({link(a.comments_url, f'{a.score} pts, discuss')})" if a.comments_url else "")
         for a in s.articles[:5]
     )
     more = f" +{len(s.articles) - 5} more" if len(s.articles) > 5 else ""
@@ -115,7 +116,11 @@ def render_text(brief: Brief, *, date: datetime, name: str = "", unsubscribe_url
             lines += [wrap(f"* {s.headline or s.lead.title}"), wrap(s.summary, "  ")]
             if s.why_it_matters:
                 lines.append(wrap(f"Why it matters: {s.why_it_matters}", "  "))
-            lines += [f"  - {a.source}: {a.url}" for a in s.articles[:5]] + [""]
+            for a in s.articles[:5]:
+                lines.append(f"  - {a.source}: {a.url}")
+                if a.comments_url:
+                    lines.append(f"    discussion ({a.score} pts): {a.comments_url}")
+            lines.append("")
     lines.append("--")
     if unsubscribe_url:
         lines.append(f"Unsubscribe: {unsubscribe_url}")
