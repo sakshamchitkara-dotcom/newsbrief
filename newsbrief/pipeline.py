@@ -22,7 +22,7 @@ from .render import render_html, render_text
 from .scrape import fetch_page
 from .state import State
 from .summarize import summarize
-from .unsubscribe import list_unsubscribe_headers, unsubscribe_url
+from .unsubscribe import list_unsubscribe_headers, require_secret, unsubscribe_url
 
 log = logging.getLogger(__name__)
 FETCHERS = {"rss": fetch_feed, "hackernews": fetch_hn, "page": fetch_page}
@@ -114,6 +114,8 @@ def run(
 ) -> list[Outcome]:
     """dry_run_log: (email, local date) pairs already written to the outbox by a
     long-running scheduler, since dry runs deliberately leave the state db untouched."""
+    if not dry_run:
+        require_secret()
     now = now or datetime.now(timezone.utc)
     dry_run_log = set() if dry_run_log is None else dry_run_log
 

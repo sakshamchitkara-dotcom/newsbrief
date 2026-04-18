@@ -79,7 +79,7 @@ subscribers:
 | Variable | Purpose |
 |---|---|
 | `ANTHROPIC_API_KEY` | Claude summaries (optional) |
-| `NEWSBRIEF_SECRET` | Key for unsubscribe tokens. **Set this for real sends.** |
+| `NEWSBRIEF_SECRET` | Key for unsubscribe tokens. **Required** for real sends and `serve`; only `--dry-run` works without it. |
 | `NEWSBRIEF_TRANSPORT` | `smtp`, `resend` or `sendgrid`. Otherwise picked from whichever of the variables below is set. |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` | SMTP. Port 587 uses STARTTLS, 465 uses implicit TLS. |
 | `RESEND_API_KEY` / `SENDGRID_API_KEY` | HTTP email APIs |
