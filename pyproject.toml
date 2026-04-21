@@ -21,5 +21,8 @@ newsbrief = "newsbrief.cli:main"
 [tool.setuptools.packages.find]
 include = ["newsbrief*"]
 
+[tool.setuptools.package-data]
+newsbrief = ["data/*.json"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]

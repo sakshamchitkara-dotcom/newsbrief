@@ -1,0 +1,1806 @@
+{
+ "captured": "2026-09-25",
+ "description": "Real feed items from the example config (BBC World/Business, NPR, Guardian, Al Jazeera, Verge, Ars, HN) captured on 2026-09-25, deduplicated by URL. Items with the same \"story\" label cover the same event; null means the item stands alone.",
+ "items": [
+  {
+   "story": "trump-xi-visit",
+   "source": "bbc-world",
+   "title": "Trump and Xi exchange warm words at state dinner but little progress on key issues",
+   "url": "https://www.bbc.co.uk/news/articles/cxq63dqp93n1o",
+   "summary": "Despite diplomatic niceties and gifts, little was shared on substantial issues separating the leaders.",
+   "published": "2026-09-25T08:09:26+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": "trump-xi-visit",
+   "source": "bbc-world",
+   "title": "Xi got Trump's red carpet welcome - but not everything he wanted",
+   "url": "https://www.bbc.co.uk/news/articles/cr93e4x7kdjjo",
+   "summary": "China wanted progress on trade, technology and Taiwan - but hasn't got as much as it would have hoped for.",
+   "published": "2026-09-25T03:57:09+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": "netanyahu-un-walkout",
+   "source": "bbc-world",
+   "title": "Netanyahu defends Israeli military action as delegates walk out before UN speech",
+   "url": "https://www.bbc.co.uk/news/articles/c3y0z7kxlegdo",
+   "summary": "The Israeli leader labels those who left his speech at the UN General Assembly as \"moral cowards\".",
+   "published": "2026-09-25T00:44:04+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-world",
+   "title": "Media outlets banned by Trump denied access to White House dinner despite judge's order",
+   "url": "https://www.bbc.co.uk/news/articles/cqe8ek7608mlo",
+   "summary": "CNN and MS NOW reporters say they were barred from covering a state dinner after a judge ruled their passes should be restored.",
+   "published": "2026-09-25T01:10:35+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": "pope-france",
+   "source": "bbc-world",
+   "title": "Hundreds of thousands expected in Paris for Pope's visit",
+   "url": "https://www.bbc.co.uk/news/articles/cmq8j904212po",
+   "summary": "The highpoint of his time in Paris will be a giant Mass attended by more than half a million people.",
+   "published": "2026-09-25T08:58:00+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": "openai-australia-medicare-hack",
+   "source": "bbc-world",
+   "title": "Why Australia chose the world's biggest political stage to reveal OpenAI hack",
+   "url": "https://www.bbc.co.uk/news/articles/cr3eqk15ld14o",
+   "summary": "Australia, which has strict social media restrictions and has proposed controls on algorithms and smart glasses, announced the breach at the UN.",
+   "published": "2026-09-24T18:06:40+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": "pakistan-afghanistan-strikes",
+   "source": "bbc-world",
+   "title": "Four civilians killed in Pakistani strikes in Afghanistan, Taliban says",
+   "url": "https://www.bbc.co.uk/news/articles/cm86xn0nnw58o",
+   "summary": "Pakistan says it struck 10 targets, adding the strikes were \"strictly limited to identified military objectives\".",
+   "published": "2026-09-24T19:02:36+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-world",
+   "title": "Priest killed and four injured in knife attack at Polish abbey",
+   "url": "https://www.bbc.co.uk/news/articles/c607lrvm41l3o",
+   "summary": "A male suspect from Ukraine was arrested after the stabbings in the town of Jarosław, police say.",
+   "published": "2026-09-24T19:18:12+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": "italy-burqa-ban",
+   "source": "bbc-world",
+   "title": "Italy ministers agree to ban burqa and niqab in school and cap foreigners in class",
+   "url": "https://www.bbc.co.uk/news/articles/cw99d8g48873o",
+   "summary": "Prime Minister Giorgia Meloni described the measures as \"common-sense tools that do not divide but really help to integrate\".",
+   "published": "2026-09-24T19:32:59+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-world",
+   "title": "Africa's richest man helps fund $660m fuel pipeline between Ethiopia and Djibouti",
+   "url": "https://www.bbc.co.uk/news/articles/c6z9z7lv41wgo",
+   "summary": "The pipeline would strengthen energy security in landlocked Ethiopia, while creating jobs at Djibouti's port.",
+   "published": "2026-09-25T06:48:07+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-world",
+   "title": "Rapper Macklemore announces 'Free Palestine' tour after Ed Sheeran fallout",
+   "url": "https://www.bbc.co.uk/news/articles/cqzjzlve8jg7o",
+   "summary": "Proceeds from the tour, which begins in Dublin next month, will go to organisations supporting Palestinians, he says.",
+   "published": "2026-09-24T17:55:44+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-world",
+   "title": "105-year-old investigated for crimes at Nazi PoW camp in Germany",
+   "url": "https://www.bbc.co.uk/news/articles/cwzrzjy3pynvo",
+   "summary": "The suspect is alleged to have been an accessory to murder at the Stalag 326 camp, where tens of thousands of Soviet PoWs died.",
+   "published": "2026-09-24T14:37:34+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": "ethiopia-tigray-offensive",
+   "source": "bbc-world",
+   "title": "Ethiopia's army says it has repelled attacks in first comment on fresh fighting",
+   "url": "https://www.bbc.co.uk/news/articles/cqevwm09w4xmo",
+   "summary": "The military says its soldiers inflicted casualties as fears grow of a resumption of a full-blown civil war.",
+   "published": "2026-09-24T15:37:45+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-world",
+   "title": "Poland says fire at Starlink station is sabotage as Denmark warns of rising Russian threat",
+   "url": "https://www.bbc.co.uk/news/articles/cmp30r1klk37o",
+   "summary": "The satellite station is used in part to provide internet coverage to neighbouring Ukraine, the government says.",
+   "published": "2026-09-24T16:00:29+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-world",
+   "title": "Greek PM urges UK PM to return Elgin Marbles permanently",
+   "url": "https://www.bbc.co.uk/news/articles/cqm2mgk6mlddo",
+   "summary": "Andy Burnham said in 2023 the sculptures should be returned to Greece with \"no strings attached\".",
+   "published": "2026-09-24T16:36:33+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": "openai-australia-medicare-hack",
+   "source": "bbc-world",
+   "title": "Rogue OpenAI agent 'infiltrated' Australian government website in world first",
+   "url": "https://www.bbc.co.uk/news/articles/c6vgy0333dppo",
+   "summary": "Australia criticised OpenAI for taking \"too long\" to tell them about the breach which happened in June.",
+   "published": "2026-09-24T15:42:07+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-world",
+   "title": "Teen rocker Nene Royal becomes first Thai to win America's Got Talent",
+   "url": "https://www.bbc.co.uk/news/articles/cqzjzl3d1409o",
+   "summary": "Her heavy metal performance trumped nine other finalists, including magicians and even a robot crew.",
+   "published": "2026-09-24T06:47:12+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-world",
+   "title": "From Nagaland to a path to the Oscars: Indian film brings a rarely seen world to global cinema",
+   "url": "https://www.bbc.co.uk/news/articles/cv2dwk3z7x5eo",
+   "summary": "After a major win at Toronto, Angh, a film from northeastern India, is now on a path towards the Oscars.",
+   "published": "2026-09-24T23:41:10+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": "openai-australia-medicare-hack",
+   "source": "bbc-world",
+   "title": "Why did an OpenAI system hack Australia's health system - and can it be stopped in the future?",
+   "url": "https://www.bbc.co.uk/news/articles/cw24jm9rryy3o",
+   "summary": "News that an automated AI agent hacked a government IT system raises big questions about regulating the tech.",
+   "published": "2026-09-24T14:08:38+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": "trump-xi-visit",
+   "source": "bbc-world",
+   "title": "Trump and Xi come face-to-face as US and China battle to win the AI race",
+   "url": "https://www.bbc.co.uk/news/articles/c6gqdgg8w59xo",
+   "summary": "The US and China are vying for AI supremacy while seeking to keep it under human control.",
+   "published": "2026-09-23T22:01:17+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-world",
+   "title": "In Amish country, nurses go door to door to stop deadly spread of measles",
+   "url": "https://www.bbc.co.uk/news/articles/ck3wjyjgj37po",
+   "summary": "With four measles-related deaths in Pennsylvania, health officials are hoping to get people on board with vaccines in private.",
+   "published": "2026-09-24T00:15:46+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-world",
+   "title": "They were labelled 'pervert glasses'. Will a camera-free version transform their image?",
+   "url": "https://www.bbc.co.uk/news/articles/cwp80l0my1x2o",
+   "summary": "Meta has unveiled audio-only smart glasses, with some questioning whether it is a response to the backlash over privacy.",
+   "published": "2026-09-24T00:50:24+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-world",
+   "title": "Eating garden weeds to survive in Russian-occupied city cut off from food and water",
+   "url": "https://www.bbc.co.uk/news/articles/c60qxywdx4vvo",
+   "summary": "The BBC has spoken to residents in the Russian-occupied Ukrainian town of Oleshky who say they are being \"constantly shelled\".",
+   "published": "2026-09-23T23:58:50+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-world",
+   "title": "'Make women feel seen': Why the Dutch have a new word for labia",
+   "url": "https://www.bbc.co.uk/news/articles/cn4klprmr0go",
+   "summary": "Campaigners hope the new words will lead to less body shaming and more sex positivity.",
+   "published": "2026-09-23T23:42:38+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-world",
+   "title": "Indians are discovering the thrill of shopping without paying",
+   "url": "https://www.bbc.co.uk/news/articles/cwn741v5rdpxo",
+   "summary": "Dopamine sites mimic shopping’s thrill without the spending, turning the ritual of consumption into a digital game.",
+   "published": "2026-09-23T23:14:10+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": "trump-xi-visit",
+   "source": "bbc-world",
+   "title": "Pomp and toasts: Day 2 of Trump and Xi in DC",
+   "url": "https://www.bbc.co.uk/news/videos/c9lykxx5zp70o",
+   "summary": "Xi’s first visit to Washington in a decade was a display of pomp and pageantry, with Trump offering his guest a two-month truce on the brewing tariff war.",
+   "published": "2026-09-25T05:54:07+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": "trump-xi-visit",
+   "source": "bbc-world",
+   "title": "The world’s two most powerful men just met. How did it go?",
+   "url": "https://www.bbc.co.uk/news/videos/cm790gjyw1qxo",
+   "summary": "The BBC’s China correspondent Laura Bicker unpacks how the trip panned out for Beijing and Washington.",
+   "published": "2026-09-25T01:27:10+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": "netanyahu-un-walkout",
+   "source": "bbc-world",
+   "title": "Watch: UN delegates walk out of Netanyahu speech",
+   "url": "https://www.bbc.co.uk/news/videos/cqwyzmpm3pgdo",
+   "summary": "The Israeli delegation could be be seen cheering in support during Netanyahu's speech.",
+   "published": "2026-09-24T18:29:29+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": "trump-xi-visit",
+   "source": "bbc-world",
+   "title": "A red carpet and military flyover - How Trump welcomed Xi",
+   "url": "https://www.bbc.co.uk/news/videos/c6804ne8knklo",
+   "summary": "The two B-1 bombers that flew overhead are a key part of the US's combat arsenal, and produce a notoriously loud roar when they pass by.",
+   "published": "2026-09-23T23:03:56+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-world",
+   "title": "Watch: The arms race in space and how the UK is defending itself",
+   "url": "https://www.bbc.co.uk/news/videos/c34gdygn5lqpo",
+   "summary": "The UK has jammed satellites to defend itself from hostile threats, the BBC has been told.",
+   "published": "2026-09-23T21:29:04+00:00",
+   "weight": 1.3,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "'We're all broke': Would you chase a friend for £5?",
+   "url": "https://www.bbc.co.uk/news/articles/cmly439q4y27o",
+   "summary": "What's the smallest amount of money you would ask a friend to pay you back?",
+   "published": "2026-09-24T23:00:45+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "Farmers down 240 million litres of milk after heat",
+   "url": "https://www.bbc.co.uk/news/articles/cjvgy7qd20wgo",
+   "summary": "Milk yield was affected by a series of extreme heatwaves which led to poor grazing conditions, researchers say.",
+   "published": "2026-09-25T05:30:13+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "Scam hotel booking sent family to Wetherspoon pub",
+   "url": "https://www.bbc.co.uk/news/articles/c3zxzqyj24xeo",
+   "summary": "Which? says staff are turning away up to 20 tourists a day after scammers used the pub's address.",
+   "published": "2026-09-25T05:02:48+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "X-planes: Are they needed in the new era of drones?",
+   "url": "https://www.bbc.co.uk/news/articles/c9q92x359xdo",
+   "summary": "Where do America's X-plane projects fit in an era of cheap drones?",
+   "published": "2026-09-24T23:03:53+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "NI's economic output rises, but businesses warn of rising costs",
+   "url": "https://www.bbc.co.uk/news/articles/c6vgywjxv14po",
+   "summary": "Northern Ireland's economic output, which is broadly equivalent to UK GDP, rose by 2.3% in the year to June.",
+   "published": "2026-09-25T05:24:57+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "Reported assaults on Britain's rail services rise by more than a third",
+   "url": "https://www.bbc.co.uk/news/articles/c6z0z5dz884lo",
+   "summary": "Recorded incidents of violence and harassment against passengers and rail workers showed a sharp increase in the year to March.",
+   "published": "2026-09-24T15:38:50+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "£170 a bag? Protein users squeezed as prices soar",
+   "url": "https://www.bbc.co.uk/news/articles/cm93e2gz8y41o",
+   "summary": "Consumers are feeling the pinch from the rising cost of protein.",
+   "published": "2026-09-23T23:12:01+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "Lidl banned from selling copycat Birkenstock sandals, Dutch court rules",
+   "url": "https://www.bbc.co.uk/news/articles/cqrm90m2g1dzo",
+   "summary": "Lidl must also compensate Birkenstock and pay its legal fees, according to the court ruling",
+   "published": "2026-09-23T21:25:01+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "Rolls-Royce signs 'multi-million' engine deal",
+   "url": "https://www.bbc.co.uk/news/articles/cmpwle47zxgyo",
+   "summary": "The order will see 18 engines built and maintained by the company from its Derby aerospace centre.",
+   "published": "2026-09-24T10:14:47+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "US rejects pleas from OpenAI, Anthropic for global AI standards",
+   "url": "https://www.bbc.co.uk/news/articles/ck87v27vdn1po",
+   "summary": "OpenAI's Sam Altman has called for risk evaluation standards, as have Anthropic's Dario Amodei and Hugging Face's Clement Delangue.",
+   "published": "2026-09-23T22:35:14+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "Trump reveals millions of dollars' worth of share deals in big tech and AI",
+   "url": "https://www.bbc.co.uk/news/articles/c6p3kxpp8lezo",
+   "summary": "Stock in major firms such as Microsoft, Nvidia and SpaceX was bought and sold on behalf of the US president.",
+   "published": "2026-09-23T16:42:47+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "Barrecore and Boom Cycle owner suddenly shuts studios",
+   "url": "https://www.bbc.co.uk/news/articles/ckzdzeedmqm4o",
+   "summary": "Common Bond has emailed customers announcing its locations were closed \"until further notice\".",
+   "published": "2026-09-23T19:10:22+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "Off sick? You need to phone your boss, back-to-work adviser says",
+   "url": "https://www.bbc.co.uk/news/articles/cq0lry248y2zo",
+   "summary": "Relying on text and email means sick workers disengaged and were less likely to work again, says Sir Charlie Mayfield.",
+   "published": "2026-09-23T10:49:51+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "UK warned over ballooning debt costs and slower growth ahead of Budget",
+   "url": "https://www.bbc.co.uk/news/articles/c607ly09y7rlo",
+   "summary": "Higher energy prices due to the conflict in the Middle East and climate change could hit growth.",
+   "published": "2026-09-23T13:50:25+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "Tories would prevent long-term jobless spending benefits on alcohol and cigarettes",
+   "url": "https://www.bbc.co.uk/news/articles/c920vy2jxle8o",
+   "summary": "The proposals would also see benefits cut for people who are able to work but have failed to hold down a job.",
+   "published": "2026-09-24T10:25:58+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": "bentley-ev",
+   "source": "bbc-business",
+   "title": "Bentley unveils its first fully electric car",
+   "url": "https://www.bbc.co.uk/news/articles/c65ymznkr291o",
+   "summary": "The SUVs will be built on a new production line in Crewe, which has been Bentley's base since 1946.",
+   "published": "2026-09-23T19:21:10+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "Will a switch to light speed cut power use at data centres?",
+   "url": "https://www.bbc.co.uk/news/articles/c2dwg3zexkpo",
+   "summary": "To save power and add capacity, data centres are switching from copper wires to tech using light.",
+   "published": "2026-09-22T23:03:48+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "Europe's car makers are in crisis. Will the threat of war rescue them?",
+   "url": "https://www.bbc.co.uk/news/articles/c6vgyq598k9po",
+   "summary": "Auto executives across Europe hope rearmament can help them flex their industrial muscles once more.",
+   "published": "2026-09-25T08:31:56+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "Trump wants AI to be rebranded as super intelligence. Will it work?",
+   "url": "https://www.bbc.co.uk/news/articles/cqy4z9pv4w0po",
+   "summary": "Some people close to the president have started to use the term but experts say it is unlikely to catch on.",
+   "published": "2026-09-23T03:20:30+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "UK and US warned to take action on spiralling debt costs by IMF",
+   "url": "https://www.bbc.co.uk/news/articles/cx305ymq4ldqo",
+   "summary": "In an interview with the BBC, Kristalina Georgieva says economic shocks had pushed \"debt levels up like a staircase not to heaven\".",
+   "published": "2026-09-23T08:31:16+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "'I don't have a buoyancy aid': Living without the Bank of Mum and Dad",
+   "url": "https://www.bbc.co.uk/news/articles/c8dx5p7gd4e9o",
+   "summary": "Three 20-somethings tell BBC News how they are navigating life without parental support.",
+   "published": "2026-09-22T23:20:31+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "How the oil capital of the US welcomed a solar power boom",
+   "url": "https://www.bbc.co.uk/news/articles/cmx2zxv6936zo",
+   "summary": "Texas is now the country's biggest producer of solar-farmed electricity.",
+   "published": "2026-09-23T23:12:22+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "Spain battles climate change on several fronts",
+   "url": "https://www.bbc.co.uk/news/articles/cwg59g3vz564o",
+   "summary": "A summer of wildfires and heatwaves underlines the threats to the country's economy.",
+   "published": "2026-09-22T09:11:48+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "The virtual worlds where robots are trained",
+   "url": "https://www.bbc.co.uk/news/articles/c79g0j3d4q9o",
+   "summary": "Training systems that allow robots to negotiate the real world are getting more sophisticated.",
+   "published": "2026-09-17T23:00:47+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "bbc-business",
+   "title": "Would you buy branded clothing from your favourite tech firm?",
+   "url": "https://www.bbc.co.uk/news/articles/cgqd9zkkvlyo",
+   "summary": "Nvidia, OpenAI and Anthropic are all now selling their own limited edition fashion lines.",
+   "published": "2026-09-16T23:18:47+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "npr",
+   "title": "Mom! Mom! MOM! 3 ways to stay calm in stressful parenting moments",
+   "url": "https://www.npr.org/2026/09/25/nx-s1-5978936/how-to-manage-mom-rage",
+   "summary": "Parenthood can be overwhelming. A therapist and mom of three shares techniques to help calibrate your emotions — so you can show up better for yourself and your family.",
+   "published": "2026-09-25T09:01:00+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "npr",
+   "title": "Fill in the blank in the quiz: Trump's says his triumphal arch will include _____",
+   "url": "https://www.npr.org/2026/09/25/g-s1-144665/trump-arch-fat-bear-media-ai-news-quiz",
+   "summary": "Plus: It's a very special week! But which one?",
+   "published": "2026-09-25T09:01:00+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "npr",
+   "title": "Americans are confused and worried about elections. Will that impact turnout?",
+   "url": "https://www.npr.org/2026/09/25/nx-s1-5946736/voting-confusion-turnout",
+   "summary": "New polling shows many voters are concerned about the midterms. But prior elections show no clear link between voter concerns and fewer voters actually casting ballots.",
+   "published": "2026-09-25T09:00:00+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "npr",
+   "title": "Years after storms, clean-up crews meticulously separate the sentimental from the wreckage",
+   "url": "https://www.npr.org/2026/09/25/nx-s1-5844641/hurricane-debris-north-carolina-texas-flood",
+   "summary": "Across the country, lost-and-found networks seek to reunite objects with disaster survivors. The work can take years. In some cases, it's impossible to pick up all the pieces.",
+   "published": "2026-09-25T09:00:00+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "npr",
+   "title": "American farmers are hurting -- and worried about their futures",
+   "url": "https://www.npr.org/2026/09/25/nx-s1-5979886/farmers-crops-economy-diesel-fertilizer",
+   "summary": "Farmers who grow soybeans, corn, cotton and other crops are facing another year of losses as soaring fuel and fertilizer costs offset higher revenues.",
+   "published": "2026-09-25T09:00:00+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "npr",
+   "title": "Is Switzerland's neutrality at a crossroads?",
+   "url": "https://www.npr.org/2026/09/25/nx-s1-5978905/swiss-referendum-neutrality-russia",
+   "summary": "Switzerland is voting on whether to tighten its famous neutrality — a move that could reshape its response to Russia and future conflicts.",
+   "published": "2026-09-25T09:00:00+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "npr",
+   "title": "The U.S. Strategic Petroleum Reserve is low. Here's why you should care",
+   "url": "https://www.npr.org/2026/09/25/nx-s1-5965797/strategic-petroleum-reserve-low-level-venezuela",
+   "summary": "The U.S. has tapped into its strategic oil reserve to help drive down rising gasoline prices in the wake of the war with Iran. Can oil from Venezuela help fill it back up?",
+   "published": "2026-09-25T09:00:00+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "npr",
+   "title": "As election enters its final stretch, some Republicans are distancing from Trump",
+   "url": "https://www.npr.org/2026/09/25/nx-s1-5978096/republicans-trump-midterm-elections",
+   "summary": "With less than six weeks until Election Day, a growing number of Republicans are breaking from Trump on key issues. It comes as the party is scrambling to hold onto a slim majority in Congress.",
+   "published": "2026-09-25T09:00:00+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": "trump-xi-visit",
+   "source": "npr",
+   "title": "Trump's state dinner for Xi features sea bass and a long list of tech titans",
+   "url": "https://www.npr.org/2026/09/25/g-s1-144973/trump-state-dinner-xi",
+   "summary": "A tech-heavy guest list, the fashion choices of those on it, who sat where and what was on the menu marked the softer — often and glitzier — details of diplomacy as Donald Trump threw a Thursday night state dinner honoring China's leader Xi Jinping.",
+   "published": "2026-09-25T06:18:59+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "npr",
+   "title": "Man shot during 2024 Trump campaign rally in Butler, Pennsylvania, has died",
+   "url": "https://www.npr.org/2026/09/25/nx-s1-5980967/man-shot-trump-campaign-rally-dies",
+   "summary": "James Copenhaver, one of three campaign rally attendees shot in 2024 during an assassination attempt on then-candidate Donald Trump, has died in Pittsburgh, his lawyer said Thursday. He was 76.",
+   "published": "2026-09-25T06:16:07+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": "ethiopia-tigray-offensive",
+   "source": "guardian",
+   "title": "Rebel offensive against Ethiopian army stokes fears of return to civil war",
+   "url": "https://www.theguardian.com/world/2026/sep/24/fears-return-to-war-tigray-rebels-launch-offensive-against-ethiopian-army",
+   "summary": "Fighting escalates after Tigrayan rebels form new coalition aimed at overthrowing Abiy Ahmed government There are growing fears of a return to civil war in Ethiopia after an offensive by fighters from Tigray into the neighbouring states of Afar and Amhara and the formation of a new rebel alliance aimed at overthrowing the government of the prime minister, Abiy Ahmed. About 600,000 people died between 2020 and 2022 during a devastating war between the Ethiopian army and the political party and paramilitary group the Tigray People’s Liberation Front (TPLF). Both sides are now accusing the other of triggering a return to open conflict. Continue reading...",
+   "published": "2026-09-24T15:29:42+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "guardian",
+   "title": "Indian billionaire’s payments firm plots biggest London flotation in years",
+   "url": "https://www.theguardian.com/business/2026/sep/23/indian-billionaire-payments-firm-london-flotation-airtel-money",
+   "summary": "Sunil Bharti Mittal’s Airtel Money targets $9bn IPO in boost for ailing UK stock market Nils Pratley: Does this mark the end of London’s listing drought? Not yet A payments business that operates across Africa and is ultimately controlled by an Indian billionaire has announced its intention to float on the struggling London Stock Exchange . Airtel Money, the mobile money arm of Airtel Africa, is planning one of the biggest UK listings in years, in a boost for the shrinking London market that has faced a string of recent departures . Continue reading...",
+   "published": "2026-09-23T11:08:01+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "guardian",
+   "title": "Top South African police officer charged with raping woman, 18, and grooming 16-year-old girl",
+   "url": "https://www.theguardian.com/world/2026/sep/23/south-africa-top-police-officer-shadrack-sibiya-charged-rape-grooming",
+   "summary": "Arrest of Shadrack Sibiya comes as country reels from cases of femicide and alleged police corruption and criminality One of South Africa’s most senior police officers has been charged with raping an 18-year-old woman and grooming a 16-year-old girl, as the country’s police face allegations of corruption and failing to tackle violence against women and girls. Shadrack Sibiya, who was already suspended from his role as deputy national police commissioner over allegations he interfered with political killings investigations, was arrested on Monday. He is facing charges of rape, people trafficking, promoting the sexual grooming of a child and two counts of grooming a child. Continue reading...",
+   "published": "2026-09-23T09:38:06+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "guardian",
+   "title": "Healthcare in Africa ‘under growing strain’ after US withdrawal from aid programs, report warns",
+   "url": "https://www.theguardian.com/us-news/2026/sep/21/africa-healthcare-aid-program-withdrawl",
+   "summary": "Accra Reset’s report states countries in the region and global south should take greater control of their health development after USAID debacle The United States’ withdrawal from key aid programs has put healthcare in Africa and the global south “under growing strain” a new report warns. The report says the Trump administration’s cuts to programs such as US Agency for International Development (USAID), as well as the Covid-19 pandemic and rising costs of living globally have brought “new urgency” for the need to reform healthcare in the region. Continue reading...",
+   "published": "2026-09-21T22:33:40+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "guardian",
+   "title": "Banished to alien lands: Trump’s secret deportation deals",
+   "url": "https://www.theguardian.com/us-news/ng-interactive/2026/sep/21/trump-deportation-deals",
+   "summary": "After a plane journey in shackles, an Iranian woman found herself in the middle of Africa in a country she did not know existed. She is one of thousands deported from the US on the back of shadowy deals made with dozens of countries. An in-depth investigation reveals the ‘show of force’ costing American taxpayers millions No one would tell the shackled detainees onboard the US immigration plane where they were going. The officers in charge would taunt them when they asked, they said. It was only when the seat-back video screens finally showed a map that the 18 migrants worked it out. Continue reading...",
+   "published": "2026-09-21T05:00:38+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": "brazil-election-interference",
+   "source": "guardian",
+   "title": "Lula says Trump wants to ‘colonise’ and capture Brazil’s resources by meddling in election",
+   "url": "https://www.theguardian.com/world/2026/sep/25/lula-says-trump-wants-to-colonise-and-capture-brazils-resources-by-meddling-in-election",
+   "summary": "A TV spot claims the US president is trying to sway October’s presidential vote in favour of Lula’s far-right opponents Luiz Inácio Lula da Silva’s presidential campaign has accused Donald Trump of wanting to “colonise” Brazil in order to capture its natural resources by meddling in next month’s presidential election. The accusation came in a campaign advert that was published on social media on Thursday night by Lula’s team and will air on television on Friday amid growing fears over the impact alleged US interference could have on the vote. Continue reading...",
+   "published": "2026-09-25T03:33:48+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": "brazil-election-interference",
+   "source": "guardian",
+   "title": "Democratic lawmakers accuse Trump administration of interference in Brazilian elections",
+   "url": "https://www.theguardian.com/world/2026/sep/24/trump-brazil-election-interference",
+   "summary": "Legislators sent letter to Marco Rubio saying US interference is weakening Brazil’s democratic institutions US politics live – latest updates A group of 31 Democratic members of the US Congress has sent a letter to the secretary of state, Marco Rubio , criticising the Trump administration over “an apparent effort to interfere with, and potentially undermine” Brazil ’s elections. Latin America’s largest country will hold the first round of its presidential election on 4 October, with polls showing a technical tie between the incumbent leftist president, Luiz Inácio Lula da Silva , and the far-right senator Flávio Bolsonaro . Continue reading...",
+   "published": "2026-09-24T17:56:06+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "guardian",
+   "title": "Milei threatens at UN that Argentina will take ‘matters into our own hands’ on Falklands",
+   "url": "https://www.theguardian.com/uk-news/2026/sep/23/argentina-president-attacks-un-over-inaction-on-falkland-islands-sovereignty",
+   "summary": "Argentinian president accuses United Nations of being filled with ‘parasites’ in bellicose general assembly speech Javier Milei has condemned the UN as he warned that Argentina would take “matters into our own hands” in its dispute with Britain over the sovereignty of the Falkland Islands. In a caustic speech at the general assembly in New York, the Argentinian president criticised the UN for being ineffective when it came to the long-running tensions over the British overseas territory in the south Atlantic known in Argentina as the Malvinas. Continue reading...",
+   "published": "2026-09-23T18:50:43+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "guardian",
+   "title": "Delcy Rodríguez poses with Trump in New York as Maduro languishes in jail nearby",
+   "url": "https://www.theguardian.com/world/2026/sep/23/venezuela-delcy-rodriguez-meeting-donald-trump-new-york",
+   "summary": "Venezuela’s interim president hails ‘historic meeting’ and does not say whether she will visit snatched predecessor Venezuela’s interim president, Delcy Rodríguez, has celebrated a “historic” meeting with Donald Trump in New York, posing for a smiley photo with the US president, less than nine months after he ordered the abduction of her boss, Nicolás Maduro. The former foes met at a five-star hotel a few blocks from Trump Tower in Manhattan late on Tuesday on the sidelines of the UN general assembly. The hotel is about 7 miles from the Brooklyn prison where Maduro has been held since he was snatched during a special forces raid on Caracas in January. Continue reading...",
+   "published": "2026-09-23T12:54:07+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "guardian",
+   "title": "Jamaica hails King’s decision to refer slavery reparations petition to privy council as ‘really big deal’",
+   "url": "https://www.theguardian.com/world/2026/sep/23/jamaica-king-charles-to-refer-slavery-reparations-petition-to-privy-council",
+   "summary": "The move comes after Jamaica’s culture minister Olivia Grange travelled to the UK earlier this month to lodge the historic petition King Charles has referred a landmark slavery reparations petition from Jamaica to a high-level UK appeals court for legal advice, Jamaica’s culture minister announced in parliament on Tuesday. Referring to the move as a “really big deal”, Olivia Grange told Jamaica’s MPs the monarch had confirmed that their legal questions have been passed on to the London-based privy council – the final court of appeal for UK overseas territories and some Commonwealth countries. Continue reading...",
+   "published": "2026-09-23T01:15:26+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": "trump-xi-visit",
+   "source": "guardian",
+   "title": "At Trump meeting, Xi Jinping lays out terms to avoid US-China military conflict",
+   "url": "https://www.theguardian.com/us-news/2026/sep/24/xi-jinping-trump-china-cooperation-thucydides-trap",
+   "summary": "Chinese president’s proposals for lessening tensions come amid period of intense competition between the two countries over AI and trade Xi Jinping has called for extensive cooperation with Washington to avoid the “Thucydides trap” that could put the US and China on a military collision course amid rising tensions over artificial intelligence, trade and Taiwan. At the start of his summit meeting with Donald Trump in the White House, the Chinese president laid out terms for a mutual understanding that he said could steer the two competing superpowers away from future military conflict and on to a road of mutual gain. Continue reading...",
+   "published": "2026-09-24T23:58:11+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": "trump-xi-visit",
+   "source": "guardian",
+   "title": "Trump swoons over strongman soulmate Xi – are you feeling jealous, Vladimir?",
+   "url": "https://www.theguardian.com/us-news/2026/sep/24/trump-xi-jinping-meeting-white-house",
+   "summary": "Deference was deafening as US president rolled out red carpet for world’s biggest jailer of journalists – perhaps he was seeking tips One is an authoritarian who represses the media and has a strong allergy to democratic elections. The other is head of the Chinese Communist party. Donald Trump welcomed the Chinese president, Xi Jinping, to the White House on Thursday, setting the stage for a scene quite unlike anything the august old building has seen over more than two centuries. Continue reading...",
+   "published": "2026-09-24T18:30:54+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "guardian",
+   "title": "Rick Wakeman performs piano concert to 150 rescued moon bears in Vietnam",
+   "url": "https://www.theguardian.com/world/2026/sep/24/rick-wakeman-vietnam-bears-moon-sanctuary",
+   "summary": "Former Yes musician plays at sanctuary to raise awareness of animals that remain stuck in cages at ‘bile farms’ Rick Wakeman has played to all kinds of people around the globe, but he has now performed to an audience he had never encountered before – an enclosure of 150 bears. The former Yes musician, who has gone on to have a prolific solo career, played the piano at a Vietnamese bear sanctuary. Continue reading...",
+   "published": "2026-09-24T15:40:28+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "guardian",
+   "title": "Alarm bells sound in Brussels as EU sales of Chinese hybrid cars rocket",
+   "url": "https://www.theguardian.com/business/2026/sep/24/eu-sales-chinese-hybrid-cars-rocket",
+   "summary": "Explosive growth in imported vehicles omitted from EV tariffs fuels concern for future of European carmakers EU imports three times more from China than bloc exports there Sales of Chinese hybrid cars have rocketed in the EU in the past four and a half years, data shows, underlining growing concerns in Brussels over the future of the European car industry. In 2022, just 659 Chinese-made fully hybrid cars (vehicles in which the petrol or diesel engine charge the motor and battery) were sold in the EU. However, after Brussels imposed anti-subsidy tariffs on fully electric cars from China in 2024, sales of hybrids have shot up to 160,662 in the first seven months of this year. Continue reading...",
+   "published": "2026-09-24T08:34:46+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": "trump-xi-visit",
+   "source": "guardian",
+   "title": "Trump greets Xi Jinping on arrival in rare move as US-China trade truce extended",
+   "url": "https://www.theguardian.com/us-news/2026/sep/23/trump-xi-jinping-china-us-state-visit",
+   "summary": "President lays out red carpet as treasury secretary announces extension of ‘Busan agreement’ pausing trade war hostilities AI, trade, Taiwan and climate: what will and won’t be on agenda at Trump-Xi summit Donald Trump has welcomed Xi Jinping to the US, taking the unusual step of greeting the Chinese leader on the tarmac at Joint Base Andrews to kick off his state visit to Washington. Xi’s plane was met with a lavish arrival ceremony that included a 30-metre-long (100ft) red carpet flanked by US service members, a military flyover by two B-1 bombers and a presentation of the flags and national anthems of both countries. Continue reading...",
+   "published": "2026-09-23T23:30:50+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": "openai-australia-medicare-hack",
+   "source": "guardian",
+   "title": "Pocock calls for AI safety act after Medicare breach – as it happened",
+   "url": "https://www.theguardian.com/australia-news/live/2026/sep/25/anthony-albanese-open-ai-hack-united-nations-angus-taylor-coalition-ntwnfb",
+   "summary": "This blog is now closed Get our breaking news email , free app or daily news podcast AI hack of Medicare exposes Australia’s vulnerabilities Technology experts have warned revelations an artificial intelligence agent hacked Medicare’s internal systems will not be the only dangerous breach of government data and have called for Australia to boost its protections against the growing risk. Frontier AI now has capability to expose those vulnerabilities at a rate quicker than we can keep up, quicker than we can patch them. What if it was a less benign breach? What if it was a less benign actor? Let’s face it, clearly, Services Australia’s cybersecurity is woefully inadequate. I mean the irony here is that you actually need AI to fight AI. This should hasten, if anything, our move over in the US to less finger wagging and Trump one-upmanship, and more about embracing these AI companies and bringing them here so that we can have frontier models providing sovereign capability to Australia. Because AI is going to happen. Continue reading...",
+   "published": "2026-09-25T06:56:14+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": "openai-australia-medicare-hack",
+   "source": "guardian",
+   "title": "PM rejects ‘nonsense’ suggestion he delayed revealing OpenAI Medicare hack as Labor considers changing laws",
+   "url": "https://www.theguardian.com/australia-news/2026/sep/25/wake-up-call-labor-considers-changing-australian-laws-after-openai-medicare-hack",
+   "summary": "Expert says Australia’s criminal laws should be clarified to determine how fault is applied to a corporation when its AI agent commits a crime Follow our Australia news live blog for latest updates Get our new political email , free app or daily news podcast The federal government could change Australian laws if the current legal framework could not respond to the unprecedented OpenAI hack of Medicare , ministers have confirmed. It comes as the prime minister denied accusations from the opposition he had held on to the information before announcing it at the UN general assembly in New York, and said it was released at the first possible opportunity. Continue reading...",
+   "published": "2026-09-25T05:57:17+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "guardian",
+   "title": "NSW cop asked friend ‘what would you do if I told you I killed somebody’ before alleged murders, court told",
+   "url": "https://www.theguardian.com/australia-news/2026/sep/25/beau-lamarre-condon-trial-cop-faked-cancer-sydney-murders-jesse-baird-luke-davies-ntwnfb",
+   "summary": "Beau Lamarre-Condon, 31, has pleaded not guilty to murdering Jesse Baird and Luke Davies in Paddington terrace in early 2024 Follow our Australia news live blog for latest updates Get our breaking news email , free app or daily news podcast Beau Lamarre-Condon asked a friend, “What would you do if I told you I killed somebody?” nine months before allegedly murdering Jesse Baird and Luke Davies, a Sydney court has heard. The New South Wales police officer then assured the friend he hadn’t killed anyone, before admitting he had entered Baird’s house while he was away, before stealing a Polaroid camera and eating an Easter egg. Continue reading...",
+   "published": "2026-09-25T04:23:44+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "guardian",
+   "title": "NSW police officer killed ‘instantly’ after car she was travelling in crashed into tree in Redfern",
+   "url": "https://www.theguardian.com/australia-news/2026/sep/25/nsw-police-officer-killed-car-crash-redfern-sydney-ntwnfb",
+   "summary": "The marked police car was travelling with its sirens on when it hit a tree in inner-city Sydney about 1.30am on Friday Follow our Australia news live blog for latest updates Get our breaking news email , free app or daily news podcast A New South Wales police officer who was killed on duty when the car she was travelling in crashed into a tree in Sydney has been named as 20-year-old Mia Lay. NSW police said the marked police car was travelling under lights and sirens along Gibbons Street in Redfern when it crashed at about 1.30am on Friday. Continue reading...",
+   "published": "2026-09-25T03:41:09+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "guardian",
+   "title": "One Nation admits using party funds to build $56,000 shed on James Ashby’s private property",
+   "url": "https://www.theguardian.com/australia-news/2026/sep/25/one-nation-admits-to-using-party-funds-to-build-56000-shed-on-james-ashbys-private-property-ntwnfb",
+   "summary": "Email to members says money lent to a party-linked company to establish a micro distillery Follow our Australia news live blog for latest updates Get our new political email , free app or daily news podcast One Nation has admitted using party funds to build a $56,000 shed on James Ashby’s private property. Guardian Australia revealed on Monday that a company linked to One Nation – Small Batch Brewing Pty Ltd – was the purchaser of the shed on Ashby’s property despite having no revenue stream and not being licensed to make or sell alcohol. Continue reading...",
+   "published": "2026-09-25T02:19:08+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": "pope-france",
+   "source": "guardian",
+   "title": "Pope Leo visits France for first papal visit in 18 years – Europe live",
+   "url": "https://www.theguardian.com/world/live/2026/sep/25/pope-leo-france-paris-notre-dame-metz-ai-europe-latest-news-updates",
+   "summary": "The pope will deliver a landmark speech on AI development and discuss Europe’s future Later today, Pope Leo will go to the Élysée Palace for (another) formal welcome and a meeting with authorities, civil society and the diplomatic corps, before visiting Unesco and delivering a speech on AI in mid-afternoon. He is then expected to go on a stroll through the streets of Paris, before going to the restored Notre Dame Cathedral. Continue reading...",
+   "published": "2026-09-25T08:49:57+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "guardian",
+   "title": "‘She never accepted no’: Liam Neeson on dogged heroine behind Tuam mass baby grave film",
+   "url": "https://www.theguardian.com/film/2026/sep/25/liam-neeson-tuam-babies-film-ireland-catherine-corless-dogged-heroine-monica-dolan",
+   "summary": "Catherine Corless’s exposure of almost 800 infant deaths at a home led by nuns prompted Neeson to bring the story to screen Liam Neeson still remembers his shock and shame when he read a New York Times article about the mother and baby institution in Tuam, County Galway. It was 2017 and the article chronicled the campaign by Catherine Corless , an amateur local historian, to expose abuse and neglect by Irish nuns that led to hundreds of children being buried in a mass, unmarked grave. Continue reading...",
+   "published": "2026-09-25T06:00:42+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "guardian",
+   "title": "UK food and drink trade deficit largest since 2000 at £21bn",
+   "url": "https://www.theguardian.com/business/2026/sep/25/uk-food-drink-trade-deficit-homegrown-produce-national-security",
+   "summary": "Industry leaders call on government to protect homegrown produce in the interest of national security The gap between Britain’s food and drink exports and imports has neared its highest this century, as a combination of Brexit, war in the Middle East and US tariffs dented deliveries overseas while imports soared. The UK’s food and drink trade deficit has risen to more than £21bn – the largest since 2000 – in what industry leaders said was a “wake-up call” for the government to protect homegrown produce in the interest of national security. Continue reading...",
+   "published": "2026-09-24T23:01:32+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "guardian",
+   "title": "Ukrainians in UK fear homelessness over host scheme funding cuts",
+   "url": "https://www.theguardian.com/world/2026/sep/24/uk-homes-for-ukraine-funding-cut-homeless",
+   "summary": "Monthly ‘thank you’ payments for people hosting refugees to be cut from £350 to £100 from next year Ukrainian refugees in the UK fear they could be left homeless after the government quietly axed 70% of funding for hosts of the Homes for Ukraine scheme, reducing monthly “thank you” payments to them from £350 to £100. The scheme was launched after Russia’s invasion of Ukraine in February 2022 and has provided support for 181,000 of the 234,000 Ukrainians who have since sought sanctuary in the UK. Continue reading...",
+   "published": "2026-09-24T17:45:12+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "guardian",
+   "title": "France says EU’s ‘Made in Europe’ law should not include the UK",
+   "url": "https://www.theguardian.com/world/2026/sep/24/france-says-eus-made-in-europe-law-should-not-include-the-uk",
+   "summary": "‘If you’re not in the internal market, you don’t get the same protection,’ says French minister of policy designed to curb Chinese competition France is leading a push to exclude the UK from the EU’s “Made in Europe” policy that could result in British companies losing out in the race to supply European countries with low-carbon technologies and electric cars. The plans were raised by Andy Burnham when he met the European Commission president, Ursula von der Leyen, on the sidelines of the UN general assembly earlier this week. Continue reading...",
+   "published": "2026-09-24T17:42:23+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": "houthi-saudi-attacks",
+   "source": "guardian",
+   "title": "Saudi Arabia intercepts wave of Houthi missiles as oil climbs to one-week high",
+   "url": "https://www.theguardian.com/world/2026/sep/25/saudi-arabia-intercepts-houthi-missiles-oil-prices-climbs",
+   "summary": "The Saudi-led coalition in Yemen said the missiles were aimed at Taif and the Yanbu area on the Red Sea, the main alternative route for Saudi oil Saudi Arabia says it intercepted six ballistic missiles fired by Yemen’s Iran-backed Houthis, with the latest attacks pushing oil prices to a one-week high over fears of spiralling supply disruptions. The Saudi-led coalition in Yemen said the missiles were aimed at Taif in western Saudi Arabia and the Yanbu area on the Red Sea, with the Houthis claiming their attacks were aimed at “a sensitive target” in the capital Riyadh and on Saudi Aramco facilities in Tanbu. Continue reading...",
+   "published": "2026-09-25T02:54:27+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": "netanyahu-nyc-protest",
+   "source": "guardian",
+   "title": "Susan Sarandon and Hannah Einbinder arrested at anti-Netanyahu protest in New York",
+   "url": "https://www.theguardian.com/us-news/2026/sep/25/susan-sarandon-hannah-einbinder-arrested-anti-netanyahu-protest-new-york",
+   "summary": "Actors detained at Jewish Voice for Peace demonstration against Israeli prime minister’s address to the UN general assembly Oscar-winning actor Susan Sarandon and Hacks star Hannah Einbinder were among people detained by police in New York on Thursday as they moved in to break up a protest against Benjamin Netanyahu. Agence France-Presse footage shows NYPD officers cuffing Thelma & Louise star Sarandon at the demo in the city as the Israeli prime minister was readying to address the United Nations general assembly. Continue reading...",
+   "published": "2026-09-24T23:23:34+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "guardian",
+   "title": "Iran awaiting response from Trump on proposal to open strait of Hormuz in six days",
+   "url": "https://www.theguardian.com/world/2026/sep/24/ed-miliband-meets-iran-foreign-minister-us-ultimatum-strait-hormuz",
+   "summary": "Country says US must lift sanctions on its oil exports and end the war on all fronts, including in Lebanon Iran said it has told Donald Trump it is willing to open the strait of Hormuz in six days, and to start talks on its nuclear program the day after, so long as the US lifts sanctions on Iran’s oil exports in return, ends the war on all fronts – including in Lebanon – and releases some of Iran’s frozen assets. The proposal is designed to accelerate the steps first laid down in the memorandum of understanding signed by the US and Iran in June, particularly by helping the talks on Iran’s nuclear program start much more quickly than previously agreed. Continue reading...",
+   "published": "2026-09-24T21:57:34+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "guardian",
+   "title": "Family of Iranian twins sentenced to death and decades in jail ask UN for help",
+   "url": "https://www.theguardian.com/world/2026/sep/24/twins-sentenced-to-death-and-jail-iran-un-appeal",
+   "summary": "Taraneh and Romina Rahimi were charged with ‘waging war against God’ after joining protests against Tehran regime The family of 21-year-old twins who have been sentenced respectively to death and decades in jail for protesting against the Iranian regime have appealed to the United Nations for help. A formal “submission of information” relating to the case of Taraneh and Romina Rahimi has been submitted by British human right lawyers on their family’s behalf. Continue reading...",
+   "published": "2026-09-24T13:15:48+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "guardian",
+   "title": "Global release announced for acclaimed Gaza documentary NAZA",
+   "url": "https://www.theguardian.com/film/2026/sep/24/global-release-announced-for-acclaimed-gaza-documentary-naza",
+   "summary": "Theatrical rollout across 56 territories planned for documentary about Israel’s mass killing of civilians in Gaza before film will stream on Guardian website NAZA, the award-winning documentary from Israeli film-makers Yuval Abraham and Rachel Szor, is set to be released in cinemas in more than 50 countries before a digital global release on theguardian.com. The film, which the Guardian produced, premiered at the Venice film festival earlier this month, where it was met with a 25-minute standing ovation – a festival record. The documentary went on to win the special jury prize . Continue reading...",
+   "published": "2026-09-24T10:00:05+00:00",
+   "weight": 1.2,
+   "score": 0
+  },
+  {
+   "story": "houthi-saudi-attacks",
+   "source": "aljazeera",
+   "title": "Saudi Arabia allies line up support as Houthi attacks mount",
+   "url": "https://www.aljazeera.com/news/2026/9/25/saudi-arabia-allies-line-up-support-as-houthi-attacks-mount",
+   "summary": "France is sending military to protect key Yanbu oil terminal; Pakistan and Turkiye to hold military talks with Riyadh.",
+   "published": "2026-09-25T08:32:48+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "aljazeera",
+   "title": "Mamdani plants olive tree with Gaza families",
+   "url": "https://www.aljazeera.com/video/newsfeed/2026/9/25/mamdani-plants-olive-tree-with-gaza-families",
+   "summary": "New York Mayor Zohran Mamdani posted a video of himself planting an olive tree alongside Palestinian families from Gaza.",
+   "published": "2026-09-25T07:55:41+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": "pope-france",
+   "source": "aljazeera",
+   "title": "Pope Leo heads to France amid assisted dying, abuse debates",
+   "url": "https://www.aljazeera.com/news/2026/9/25/pope-leo-heads-to-france-amid-assisted-dying-abuse-debates",
+   "summary": "First papal state visit to country in 18 years comes as church confronts contentious issues.",
+   "published": "2026-09-25T07:41:24+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "aljazeera",
+   "title": "Nepal’s leader labels devastating flood a ‘warning to the world’",
+   "url": "https://www.aljazeera.com/news/2026/9/25/nepals-leader-labels-devastating-flood-a-warning-to-the-world",
+   "summary": "Prime Minister Balendra Shah says world leaders must act on climate change.",
+   "published": "2026-09-25T06:56:51+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": "israel-footballer-sent-off",
+   "source": "aljazeera",
+   "title": "Israel’s Abu Farchi sent off for gun celebration in Nations League match",
+   "url": "https://www.aljazeera.com/sports/2026/9/25/israels-abu-farchi-sent-off-for-gun-celebration-in-nations-league-match",
+   "summary": "Israel footballer Sayed Abu Farchi was sent off for goal celebration mimicking shooting a gun in match against Austria.",
+   "published": "2026-09-25T06:44:31+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "aljazeera",
+   "title": "Converging crises, chaos and walkouts dominate UNGA Day Three",
+   "url": "https://www.aljazeera.com/video/newsfeed/2026/9/25/converging-crises-chaos-and-walkouts-dominate-unga-day-three",
+   "summary": "Dozens of delegates walked out on Netanyahu, Yemen’s government pleaded for help, and Kuwait riled against threats.",
+   "published": "2026-09-25T06:28:00+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "aljazeera",
+   "title": "Hurricane Polo lashes Mexico as Nolo strengthens near Hawaii",
+   "url": "https://www.aljazeera.com/news/2026/9/25/hurricane-polo-lashes-mexico-as-nolo-strengthens-near-hawaii",
+   "summary": "Mexico's southwestern communities brace for Hurricane Polo, while Hawaii faces its third hurricane threat of the year.",
+   "published": "2026-09-25T06:00:15+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "aljazeera",
+   "title": "Japan moves to tighten rules for foreigners, throwing futures into doubt",
+   "url": "https://www.aljazeera.com/economy/2026/9/25/japan-moves-to-tighten-rules-for-foreigners-throwing-futures-into-doubt",
+   "summary": "Tokyo is raising the bar for permanent residency amid a broader rightward shift in the Asian nation's politics.",
+   "published": "2026-09-25T05:59:26+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "aljazeera",
+   "title": "Tata v Tata: What’s behind India’s big boardroom brawl?",
+   "url": "https://www.aljazeera.com/news/2026/9/25/tata-v-tata-whats-behind-indias-big-boardroom-brawl",
+   "summary": "India's most famous conglomerate is knee-deep in feuds over who gets to decide the Tata Group's future.",
+   "published": "2026-09-25T05:22:23+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "aljazeera",
+   "title": "Multiple regions in Russia come under Ukrainian drone attacks",
+   "url": "https://www.aljazeera.com/video/newsfeed/2026/9/25/multiple-regions-in-russia-come-under-ukrainian-drone-attacks",
+   "summary": "Ukraine has targeted an industrial plant in Russia's Perm region with a massive drone swarm.",
+   "published": "2026-09-25T05:18:35+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": "israel-footballer-sent-off",
+   "source": "aljazeera",
+   "title": "Israeli football player sent off after gun-firing goal celebration",
+   "url": "https://www.aljazeera.com/video/newsfeed/2026/9/25/israeli-football-player-sent-off-after-gun-firing-goal-celebration",
+   "summary": "Israeli footballer Saied Abu Farchi has been sent off during a Nations League match after using a corner flag.",
+   "published": "2026-09-25T05:09:54+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": "pakistan-afghanistan-strikes",
+   "source": "aljazeera",
+   "title": "Pakistani forces kill Afghan Taliban fighters in border escalation",
+   "url": "https://www.aljazeera.com/news/2026/9/25/pakistani-forces-kill-afghan-taliban-fighters-in-border-escalation",
+   "summary": "Pakistan's security forces report ongoing cross-border fire in latest fighting with Afghanistan.",
+   "published": "2026-09-25T04:22:10+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "aljazeera",
+   "title": "Jewish protestors join Free Palestine march to denounce Netanyahu",
+   "url": "https://www.aljazeera.com/video/newsfeed/2026/9/25/jewish-protestors-join-free-palestine-march-to-denounce-netanyahu",
+   "summary": "Al Jazeera’s Emma Withrow reports from a Free Palestine march, where Jewish demonstrators rejected Netanyahu.",
+   "published": "2026-09-25T03:49:43+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "aljazeera",
+   "title": "Young men flee Tigray amid fears of forced recruitment",
+   "url": "https://www.aljazeera.com/news/2026/9/25/young-men-flee-tigray-amid-fears-of-forced-recruitment",
+   "summary": "Years after the war, unresolved tensions are again leaving young people fearful of being drawn into fighting.",
+   "published": "2026-09-25T03:45:06+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": "houthi-saudi-attacks",
+   "source": "aljazeera",
+   "title": "Oil prices jump after Yemen’s Houthis claim attacks on Saudi facilities",
+   "url": "https://www.aljazeera.com/economy/2026/9/25/oil-prices-jump-after-yemens-houthis-claim-attacks-on-saudi-facilities",
+   "summary": "Brent crude tops $106 a barrel after Iran-aligned rebel group claims to have successfully attacked Aramco facilities.",
+   "published": "2026-09-25T03:41:25+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": "houthi-saudi-attacks",
+   "source": "aljazeera",
+   "title": "Saudi, Turkish, Pakistani chiefs plan urgent talks amid Yemen fighting",
+   "url": "https://www.aljazeera.com/news/2026/9/25/saudi-turkish-pakistani-chiefs-plan-urgent-talks-amid-yemen-fighting",
+   "summary": "Saudi Arabia, Turkiye and Pakistan move to deepen defence coordination as Houthi attacks and Yemen fighting intensify.",
+   "published": "2026-09-25T03:35:22+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "aljazeera",
+   "title": "When AI’s moving this fast, who’s protecting us?",
+   "url": "https://www.aljazeera.com/video/newsfeed/2026/9/25/when-ais-moving-this-fast-whos-protecting-us",
+   "summary": "The people building the world’s most powerful AI systems are now warning governments about losing control.",
+   "published": "2026-09-25T03:34:54+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": "netanyahu-nyc-protest",
+   "source": "aljazeera",
+   "title": "NYC police arrest Susan Sarandon, other celebrities protesting Netanyahu",
+   "url": "https://www.aljazeera.com/news/2026/9/25/nyc-police-arrest-susan-sarandon-other-celebrities-protesting-netanyahu",
+   "summary": "Rights groups accuse UN of hosting a 'war criminal' as delegations walk out during Israeli prime minister's speech.",
+   "published": "2026-09-25T02:35:53+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "aljazeera",
+   "title": "Contrasting treatment of Israel and Palestine on display at the UN",
+   "url": "https://www.aljazeera.com/video/newsfeed/2026/9/25/contrasting-treatment-of-israel-and-palestine-on-display-at-the-un",
+   "summary": "Israel’s Prime Minister addressed the UN General Assembly in person, despite having an ICC arrest warrant.",
+   "published": "2026-09-25T02:26:16+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": "netanyahu-nyc-protest",
+   "source": "aljazeera",
+   "title": "More than 100 arrested as New Yorkers protest Netanyahu’s UN visit",
+   "url": "https://www.aljazeera.com/news/2026/9/25/more-than-100-arrested-as-new-yorkers-protest-netanyahus-un-visit",
+   "summary": "Demonstrators blocked streets and marched towards UN headquarters as the Israeli PM addressed world leaders at UNGA.",
+   "published": "2026-09-25T02:24:16+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": "italy-burqa-ban",
+   "source": "aljazeera",
+   "title": "Meloni government bans burqas, caps foreign students in Italian schools",
+   "url": "https://www.aljazeera.com/news/2026/9/25/meloni-government-bans-burqas-caps-foreign-students-in-italian-schools",
+   "summary": "Italy is a front-line country for migration, with integration a hot campaign issue ahead of its 2027 election.",
+   "published": "2026-09-25T02:07:29+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": "trump-xi-visit",
+   "source": "aljazeera",
+   "title": "Trump praises US-China friendship at state dinner with Xi Jinping",
+   "url": "https://www.aljazeera.com/news/2026/9/25/trump-praises-us-china-friendship-at-state-dinner-with-xi-jinping",
+   "summary": "The two superpowers seek greater dialogue despite differences over issues such as Iran, Taiwan, AI and trade.",
+   "published": "2026-09-25T02:00:16+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "aljazeera",
+   "title": "At least 41 die as boat capsizes in DRC’s Lake Tanganyika",
+   "url": "https://www.aljazeera.com/news/2026/9/25/at-least-41-die-as-boat-capsizes-in-drcs-lake-tanganyika",
+   "summary": "Forty-nine passengers have been rescued and a search is under way for the missing.",
+   "published": "2026-09-25T00:38:13+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "aljazeera",
+   "title": "Brazil’s Lula and Flavio Bolsonaro still essentially tied in new poll",
+   "url": "https://www.aljazeera.com/news/2026/9/25/brazils-lula-and-flavio-bolsonaro-still-essentially-tied-in-new-poll",
+   "summary": "Luiz Inacio Lula da Silva is up two points, but that's still within the poll's margin of error.",
+   "published": "2026-09-25T00:35:51+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "aljazeera",
+   "title": "UAE bars Iranian airlines as US sanctions squeeze Iran’s aviation sector",
+   "url": "https://www.aljazeera.com/economy/2026/9/25/uae-bars-iranian-airlines-as-us-sanctions-squeeze-irans-aviation-sector",
+   "summary": "UAE joins Oman, Iraq, Azerbaijan, Georgia and Turkmenistan in restricting access to Iranian airlines.",
+   "published": "2026-09-25T00:24:47+00:00",
+   "weight": 1.1,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "verge",
+   "title": "Here’s the Tesla Semi… again",
+   "url": "https://www.theverge.com/transportation/1000317/tesla-semi-launch-customer-delivery-freight-battery-engineer",
+   "summary": "Remember the Tesla Semi? The long-gestating, heavy-duty truck first introduced in concept form in 2017 is finally in volume production as of April 2026 - nearly a decade after its initial introduction. On Thursday evening, the company held yet another event for the Semi to demonstrate to customers and investors that the long wait was […]",
+   "published": "2026-09-25T02:12:57+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "verge",
+   "title": "Microsoft is killing off the ‘Copilot Plus PC’ brand",
+   "url": "https://www.theverge.com/tech/1000495/microsoft-is-killing-off-the-copilot-plus-pc-brand",
+   "summary": "Remember when Microsoft wanted everyone to know that \"Copilot Plus PCs\" were the ones to get, because those were the PCs that that'd have enough built-in AI muscle to get things done? Two and a half years later, Microsoft and Qualcomm seem to be admitting the brand is already dead. Windows Central's Zac Bowden reports […]",
+   "published": "2026-09-25T01:25:53+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "verge",
+   "title": "Meta employees ordered ‘attorney/client privilege’ hats while fighting child safety disclosures",
+   "url": "https://www.theverge.com/tech/1000370/meta-instagram-attorney-client-privilege-hats",
+   "summary": "Meta's lawyers have argued that certain evidence should be withheld from public view on the grounds of attorney-client privilege in the ongoing lawsuits over alleged harm to teens' safety and mental health. Lawyers suing the company said this week that the label has been applied far too broadly, while pointing to a recently unsealed document […]",
+   "published": "2026-09-24T23:50:55+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "verge",
+   "title": "Qualcomm’s new ‘Elite’ sound chip might finally deliver the Wi-Fi earbud dream",
+   "url": "https://www.theverge.com/tech/1000443/qualcomms-new-elite-sound-chip-might-finally-deliver-the-wi-fi-earbud-dream",
+   "summary": "What if your wireless earbuds - or audio glasses - could stream high-quality lossless audio that doesn't cut out when you leave your phone on the bedside charger or buried in the couch? Qualcomm's new Snapdragon Sound Elite Gen 2 is its first to integrate \"micro-power Wi-Fi 6E\" right into the chip, so they can […]",
+   "published": "2026-09-24T23:42:39+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "verge",
+   "title": "Microsoft puts Brad Smith in charge of communications",
+   "url": "https://www.theverge.com/news/1000374/microsoft-comms-pr-brad-smith-cela",
+   "summary": "Microsoft is moving its communications group out of marketing and into its Corporate, External, and Legal Affairs (CELA) organization. The surprise change will see Microsoft vice chair and president Brad Smith oversee communications, while the company searches for a replacement for Frank Shaw, chief communications officer, who is departing later this year. Microsoft CEO Satya […]",
+   "published": "2026-09-24T22:08:22+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "verge",
+   "title": "Gemini 3.8 Live with Live Avatar gives Google’s AI a face",
+   "url": "https://www.theverge.com/tech/1000328/google-gemini-ai-live-avatar-face",
+   "summary": "Google's new Gemini 3.8 Live update lets users have conversations with the model while watching an animated AI persona respond in real time. The \"Live Avatar\" will lip-sync and show different facial expressions during conversations, but it's currently only available to Gemini Enterprise customers. As noted by Google, Live Avatar can transition between the 97 […]",
+   "published": "2026-09-24T20:00:34+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "verge",
+   "title": "Sadly, this $1,549 RTX 5070-equipped gaming PC is a very good deal",
+   "url": "https://www.theverge.com/gadgets/1000122/cyberpowerpc-gaming-prebuilt-rtx-5070-core-i7-asrock-oled-monitor-deal-sale",
+   "summary": "While PC component prices remain high, you can save a good bit of money on a system by purchasing a prebuilt desktop. Walmart has a well-equipped CyberPowerPC gaming PC on sale for $1,549, almost $600 off its original price of $2,139. It’s powered by an Intel Core i7-14700KF processor, and paired with 32GB of 6000MHz […]",
+   "published": "2026-09-24T18:19:23+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "verge",
+   "title": "Jensen Huang talks about AI and climate change like a supervillain",
+   "url": "https://www.theverge.com/tech/1000140/jensen-huang-nvidia-ai-energy-climate-change-supervillain",
+   "summary": "As Jensen Huang puts it, AI can help fight climate change - but only if it inflicts \"an enormous amount of pain and suffering\" first. The Nvidia CEO discussed the future of energy and AI's impact on our planet in the latest episode of The Ezra Klein Show. But his comments boil down to the […]",
+   "published": "2026-09-24T18:04:44+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "verge",
+   "title": "Meta is going to let you build games with AI right on your phone",
+   "url": "https://www.theverge.com/games/999972/meta-horizon-create-studio-ai-games",
+   "summary": "Meta has a new plan to get people to make games for its Horizon social platform. The company today announced two new development tools that will let you create games with AI prompts: Horizon Create, a mobile app, and Horizon Studio, a browser app that offers more granular controls. The apps will be available in […]",
+   "published": "2026-09-24T17:52:29+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "verge",
+   "title": "Muse will apparently let you download its entire filesystem",
+   "url": "https://www.theverge.com/ai-artificial-intelligence/1000222/meta-muse-ai-filesystem",
+   "summary": "A pair of developers say that with very little prompting, Meta's Muse will share its entire filesystem with you. Peter James and Jonny L. Saunders have said they both independently coaxed Muse into zipping up and sharing the entire contents of its root filesystem, Ubuntu system files, app templates, and internal documentation. Saunders posted on […]",
+   "published": "2026-09-24T22:06:44+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": "cdc-covid-vaccine-orders",
+   "source": "ars",
+   "title": "CDC opens state ordering for COVID-19 vaccines after unexplained delay",
+   "url": "https://arstechnica.com/health/2026/09/cdc-opens-state-ordering-for-covid-19-vaccines-after-unexplained-delay/",
+   "summary": "Health department previously blamed delay on \"not yet finalized procurement decisions.\"",
+   "published": "2026-09-24T22:29:48+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "ars",
+   "title": "Donald Duck's uncle was partly based on Wernher von Braun",
+   "url": "https://arstechnica.com/space/2026/09/disneys-ludwig-von-drake-was-inspired-by-rocket-scientists-65-years-ago/",
+   "summary": "Introducing the \"world-famous authority on outer space...\"",
+   "published": "2026-09-24T21:40:07+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": "f-droid-2",
+   "source": "ars",
+   "title": "F-Droid gets its biggest update in a decade with new UI and smoother app installs",
+   "url": "https://arstechnica.com/gadgets/2026/09/f-droid-gets-its-biggest-update-in-a-decade-with-new-ui-and-smoother-app-installs/",
+   "summary": "F-Droid's Android app store has been rebuilt from the ground up.",
+   "published": "2026-09-24T19:30:42+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "ars",
+   "title": "New York defies Trump admin, asks court to shut down Polymarket gambling",
+   "url": "https://arstechnica.com/tech-policy/2026/09/new-york-asks-court-to-shut-down-polymarkets-illegal-gambling-operation/",
+   "summary": "New York sues Polymarket as Trump admin tries to override state gambling laws.",
+   "published": "2026-09-24T19:07:19+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "ars",
+   "title": "We have a trailer for Musk documentary Elon called a \"hit piece\"",
+   "url": "https://arstechnica.com/culture/2026/09/we-have-a-trailer-for-musk-documentary-elon-called-a-hit-piece/",
+   "summary": "Oscar-winning documentarian Alex Gibney focuses on the world's wealthiest man.",
+   "published": "2026-09-24T18:52:23+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "ars",
+   "title": "Robots make combat airdrops, clear mines as Ukraine defeats Russian pincer",
+   "url": "https://arstechnica.com/gadgets/2026/09/robots-make-combat-airdrops-clear-mines-as-ukraine-defeats-russian-pincer/",
+   "summary": "Ukraine’s Operation Vivaldi has erased Russian gains with the help of robots.",
+   "published": "2026-09-24T18:39:47+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "ars",
+   "title": "New Jersey fines data center $1.1M after drone pics expose 62 gas generators",
+   "url": "https://arstechnica.com/tech-policy/2026/09/new-jersey-fines-data-center-1-1m-after-satellite-pics-expose-62-gas-generators/",
+   "summary": "Million-dollar fines won’t end billionaires’ data center pollution, neighbors fear.",
+   "published": "2026-09-24T18:20:58+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": "google-suncatcher",
+   "source": "ars",
+   "title": "Google's first Suncatcher orbital data center test launches October 1",
+   "url": "https://arstechnica.com/google/2026/09/googles-first-suncatcher-orbital-data-center-test-launches-october-1/",
+   "summary": "Google's experimental orbital data center will have four TPUs and only run for 15 minutes at a time.",
+   "published": "2026-09-24T16:16:34+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": "openai-australia-medicare-hack",
+   "source": "ars",
+   "title": "OpenAI agent “didn’t accept no for an answer” in Australian government breach",
+   "url": "https://arstechnica.com/ai/2026/09/openai-agent-didnt-accept-no-for-an-answer-in-australian-government-breach/",
+   "summary": "\"There will obviously be legal consequences,\" prime minister promises.",
+   "published": "2026-09-24T16:01:16+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "ars",
+   "title": "Formula 1 looks at 3.0 L V8 turbos and smaller hybrids for 2030",
+   "url": "https://arstechnica.com/cars/2026/09/formula-1-looks-at-3-0-l-v8-turbos-and-smaller-hybrids-for-2030/",
+   "summary": "F1 wants smaller, lighter cars that are not energy-starved like the 2026 hybrids.",
+   "published": "2026-09-24T15:48:29+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "ars",
+   "title": "NASA chief concerned China may deny access to parts of Moon's south pole",
+   "url": "https://arstechnica.com/space/2026/09/nasa-chief-concerned-china-may-deny-access-to-parts-of-south-pole/",
+   "summary": "\"If you come up short with who comes down the ladder first, the impact is felt around the world.\"",
+   "published": "2026-09-24T14:57:50+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "ars",
+   "title": "Meta puts its AI assistant on a keychain",
+   "url": "https://arstechnica.com/ai/2026/09/meta-puts-its-ai-assistant-on-a-keychain/",
+   "summary": "Meta says the keychain-sized Muse Charm will ship in December.",
+   "published": "2026-09-24T14:03:38+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": "rsa-signature-forgery",
+   "source": "ars",
+   "title": "There's a new way to break RSA that's faster than anything we've seen before",
+   "url": "https://arstechnica.com/security/2026/09/theres-a-new-way-to-break-rsa-thats-faster-than-anything-weve-seen-before/",
+   "summary": "Until now, cryptographers thought factoring was the only way to break RSA. Not anymore.",
+   "published": "2026-09-24T11:15:44+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "ars",
+   "title": "Review: Apple's hyper-pricey M5 Ultra Mac Studio made me into a vibe coder",
+   "url": "https://arstechnica.com/gadgets/2026/09/review-apples-hyper-pricey-m5-ultra-mac-studio-made-me-into-a-vibe-coder/",
+   "summary": "Usable local AI is a lot of fun, but how much would you pay for it?",
+   "published": "2026-09-24T11:00:04+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": "cdc-covid-vaccine-orders",
+   "source": "ars",
+   "title": "RFK Jr.'s CDC isn’t letting states order COVID-19 shots for kids, blocking access",
+   "url": "https://arstechnica.com/health/2026/09/rfk-jr-s-cdc-isnt-letting-states-order-covid-19-shots-for-kids-blocking-access/",
+   "summary": "US health deptartment said it wants to ensure the vaccine orders are \"appropriate.\"",
+   "published": "2026-09-23T22:17:25+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "ars",
+   "title": "FBI rushes to investigate if ShinyHunters hack of thousands of employees is real",
+   "url": "https://arstechnica.com/tech-policy/2026/09/fbi-rushes-to-investigate-if-shinyhunters-hack-of-thousands-of-employees-is-real/",
+   "summary": "It's unclear what will happen if FBI misses ShinyHunters' deadline.",
+   "published": "2026-09-23T21:46:36+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "ars",
+   "title": "Disney+ and Hulu raise prices by up to 13 percent after doubling profits",
+   "url": "https://arstechnica.com/gadgets/2026/09/disney-and-hulu-raise-prices-by-up-to-13-percent-after-doubling-profits/",
+   "summary": "The Disney+ ad-free plan is now more expensive than Netflix's.",
+   "published": "2026-09-23T21:18:53+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": "bentley-ev",
+   "source": "ars",
+   "title": "Here's the Torcal, the first fully electric Bentley",
+   "url": "https://arstechnica.com/cars/2026/09/heres-the-torcal-the-first-fully-electric-bentley/",
+   "summary": "It sounds like a V8, rides like a Flying Spur, but handles like a Continental GT.",
+   "published": "2026-09-23T21:06:07+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "ars",
+   "title": "Trump’s China rivalry and “AI race” delusion may endanger US, experts say",
+   "url": "https://arstechnica.com/tech-policy/2026/09/china-silent-as-us-touts-plan-for-ai-safety-alerts-that-omits-tech-experts/",
+   "summary": "Trump focus on winning “AI race” may deter China from sharing safety intel.",
+   "published": "2026-09-23T20:52:28+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "ars",
+   "title": "XPRIZE Wildfire winners spotted fires within 10 min—but couldn’t stop them",
+   "url": "https://arstechnica.com/gadgets/2026/09/xprize-wildfire-winners-spotted-fires-within-10-min-but-couldnt-stop-them/",
+   "summary": "$11M competition showed wildfire detection is still easier than stopping fires.",
+   "published": "2026-09-23T20:28:42+00:00",
+   "weight": 1.0,
+   "score": 0
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "CVE-2025-13032: Entering and Breaking the Avast Antivirus Sandbox Part 2",
+   "url": "https://www.safateam.com/intelligence-hub/research/technical-articles/cve-2025-13032-entering-and-breaking-the-avast-antivirus-sandbox-part-2",
+   "summary": "",
+   "published": "2026-09-25T07:03:46+00:00",
+   "weight": 0.9,
+   "score": 42
+  },
+  {
+   "story": "f-droid-2",
+   "source": "hn",
+   "title": "F-Droid 2.0",
+   "url": "https://f-droid.org/2026/09/24/f-droid-2.0-a-new-chapter-for-android-freedom.html",
+   "summary": "",
+   "published": "2026-09-24T15:26:12+00:00",
+   "weight": 0.9,
+   "score": 1228
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "Pentium II at 600Mhz with Voodoo 3 Emulated on 86Box with M6 Mac Mini",
+   "url": "https://nyaa.sh/reviews/mac-mini-m6-emulation",
+   "summary": "",
+   "published": "2026-09-25T07:27:45+00:00",
+   "weight": 0.9,
+   "score": 26
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "Dutch governments builds alternative for Microsoft based on NixOS",
+   "url": "https://www.dawo.community/en/",
+   "summary": "",
+   "published": "2026-09-25T08:06:49+00:00",
+   "weight": 0.9,
+   "score": 10
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "Show HN: Make cursed fonts like Times New Bastard",
+   "url": "https://bastardica.mitpit.com",
+   "summary": "A joke tool that abuses OpenType's ligature feature to mix fonts. It works pretty fast on client-side by loading Python in WASM.",
+   "published": "2026-09-23T22:53:28+00:00",
+   "weight": 0.9,
+   "score": 685
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "Show HN: Whiteboard (YC W26) – An open-source IDE for thoughtful software design",
+   "url": "https://github.com/devdotfast/whiteboard",
+   "summary": "Hello! We’re Sid, Alex, Ketan, and Milan. We’re building Whiteboard ( https://whiteboard.dev.fast/ ), an open-source desktop app where humans and agents can architect software together in a common workspace. Here’s our repo: https://github.com/devdotfast/whiteboard . We were missing the feeling of a “whiteboard session” with another dev where you leave with a deep understanding of a system, so we built this app for ourselves. Whiteboard plugs into the tools you already use - e.g. Claude Code, Codex, etc. – and gives your agent an SDK to draw on an in-app canvas to describe its work. We began with an MVP based on HTML artifacts and started rethinking the app as we ran into limitations: 1. Built on top of CodeOSS: We found that in pure HTML tools it was hard to connect a spec or diagram to code. In Whiteboard, when you click on visualizations like a sequence diagram, an entity relationship diagram, or a quote from the agent’s trace, you can jump to the underlying code directly. When navigating code, you get keybindings and LSP support from VSCode out of the box. We’ve found this is especially valuable because tradeoffs are often only discovered after a first pass at implementation (re: slop) 2. Semantic diff viewer: we wrote a semantic, AST-aware diff viewer in Rust so you can only view the code changes which are relevant to you [1]. We’ve set up some sane defaults: large added functions are summarized as pseudocode, and things like unit tests and large documentation changes are collapsed / hidden. This is all customizable with a WASM-based plugin system. 3. Decision Log: We found it difficult to reason about what set of decisions our agents made autonomously. So we built tools for agents to query and link their own traces to the Whiteboard, so you can understand how the requirements that you set were implemented, and understand what decisions your agent made autonomously. Here’s a quick demo video explaining more: https://www.youtube.com/watch?v=ChPn3ftULWE Folks at companies like Salesforce and Modal are using Whiteboard today as a review tool for architecture or spec-level changes – really any change where they want to be involved: 1. Reviewing your own coding agent’s work: because Whiteboard makes it easier to review large amounts of code, folks will typically have their AI agents create a prototype and a corresponding Whiteboard session so they can iterate on the design. 2. Reviewing other people’s changes: We’ve found that Whiteboard is particularly helpful when composed with tools like Greptile. For example, you can run an automated code reviewer on small changes and escalate to a Whiteboard session for the changes that require human judgement. Why we built this: we’re four buddies from college who quit our jobs as tech leads right before agentic coding became industry standard. As we iterated towards an MVP for a previous idea, we struggled to maintain a comprehensible codebase while reaping all the velocity benefits of agentic coding. As more PRs were merged without our understanding, we felt a ‘cognitive debt’ begin to seep in, until it became difficult for us to even contribute to the system [2]. We’re releasing our desktop app under an MIT license. Please poke through and feel free to contribute! Eventually we’ll charge companies for a hosted web version that manages whiteboard session creation alongside features like trajectory storage and multiplayer reviews. Everything will always remain self-hostable. Thanks for reading, and we hope you try it out! We would love to hear any feedback and to learn from your expertise. Here’s are the project links again: https://github.com/devdotfast/whiteboard , and you can install (for MacOS + Linux) at https://install.dev.fast [1] diffs library: https://github.com/devdotfast/diffr [2] Credit for the term ‘cognitive debt’ goes to https://www.geoffreylitt.com/2026/07/02/understanding-is-the...",
+   "published": "2026-09-24T17:21:36+00:00",
+   "weight": 0.9,
+   "score": 302
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "Why is the liver so weirdly regenerative?",
+   "url": "https://dynomight.substack.com/p/liver",
+   "summary": "",
+   "published": "2026-09-24T16:23:00+00:00",
+   "weight": 0.9,
+   "score": 401
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "2DWillNeverDie",
+   "url": "https://2dwillneverdie.com/",
+   "summary": "",
+   "published": "2026-09-22T14:00:08+00:00",
+   "weight": 0.9,
+   "score": 228
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "Fearless SIMD v1.0",
+   "url": "https://linebender.org/blog/fearless-simd-1-0/",
+   "summary": "",
+   "published": "2026-09-22T12:23:37+00:00",
+   "weight": 0.9,
+   "score": 257
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "Rails World 2026 Opening Keynote [video]",
+   "url": "https://www.youtube.com/watch?v=vDjW_dRyKXY",
+   "summary": "",
+   "published": "2026-09-23T15:33:33+00:00",
+   "weight": 0.9,
+   "score": 332
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "Jev Based Code Review",
+   "url": "https://github.com/egma-ai/jev-code-reviewer",
+   "summary": "",
+   "published": "2026-09-25T04:49:23+00:00",
+   "weight": 0.9,
+   "score": 26
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "Toyota is taking the Corolla electric",
+   "url": "https://electrek.co/2026/09/23/toyota-best-selling-corolla-electric/",
+   "summary": "",
+   "published": "2026-09-23T22:37:28+00:00",
+   "weight": 0.9,
+   "score": 325
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "My weird new hobby: Wandering around Tokyo on Google Maps",
+   "url": "https://ahmedhossamdev.com/writing/my-weird-new-hobby-wandering-around-tokyo/",
+   "summary": "",
+   "published": "2026-09-22T17:49:46+00:00",
+   "weight": 0.9,
+   "score": 329
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "Using LLMs to trace alchemical knowledge and decode 17th century letters",
+   "url": "https://resobscura.substack.com/p/ai-labs-need-to-start-funding-historical",
+   "summary": "",
+   "published": "2026-09-24T19:14:27+00:00",
+   "weight": 0.9,
+   "score": 131
+  },
+  {
+   "story": "google-suncatcher",
+   "source": "hn",
+   "title": "Google’s Project Suncatcher to put ML infrastructure in space",
+   "url": "https://blog.google/innovation-and-ai/models-and-research/google-research/google-project-suncatcher-facts/",
+   "summary": "https://www.nytimes.com/2026/09/24/technology/google-suncatc... ( https://archive.ph/BGFnP )",
+   "published": "2026-09-24T13:53:29+00:00",
+   "weight": 0.9,
+   "score": 179
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "Opus 5.5 is good at explainer videos",
+   "url": "https://launchvideo.io",
+   "summary": "",
+   "published": "2026-09-24T20:28:47+00:00",
+   "weight": 0.9,
+   "score": 249
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "Two-tier encryption in the UK",
+   "url": "https://macanorak.com/two-tier-encryption-in-the-uk/",
+   "summary": "",
+   "published": "2026-09-24T10:39:19+00:00",
+   "weight": 0.9,
+   "score": 446
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "What About Rails?",
+   "url": "https://jardo.dev/what-about-rails",
+   "summary": "",
+   "published": "2026-09-25T02:50:16+00:00",
+   "weight": 0.9,
+   "score": 30
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "Writing Parquet files using Haskell",
+   "url": "https://www.datahaskell.org/blog/2026/09/18/writing-parquet-files-using-haskell.html",
+   "summary": "",
+   "published": "2026-09-22T15:02:39+00:00",
+   "weight": 0.9,
+   "score": 60
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "Book review: Is parallel programming hard, and, if so, what can you do about it?",
+   "url": "https://ahelwer.ca/post/2026-09-21-concurrency-textbook/",
+   "summary": "",
+   "published": "2026-09-21T14:30:00+00:00",
+   "weight": 0.9,
+   "score": 119
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "The Board Game of the Alpha Nerds (2014)",
+   "url": "https://grantland.com/features/diplomacy-the-board-game-of-the-alpha-nerds/",
+   "summary": "",
+   "published": "2026-09-24T20:53:39+00:00",
+   "weight": 0.9,
+   "score": 87
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "Sourcehut account takeover via build logs (XSS in ansi2html)",
+   "url": "https://blog.arusekk.pl/posts/srht-account-takeover/",
+   "summary": "",
+   "published": "2026-09-24T19:54:21+00:00",
+   "weight": 0.9,
+   "score": 112
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "California is chasing wealth that has feet",
+   "url": "https://blog.landeconomics.org/p/california-is-chasing-wealth-that",
+   "summary": "",
+   "published": "2026-09-24T20:34:32+00:00",
+   "weight": 0.9,
+   "score": 231
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "Nokia Design Archive (2025)",
+   "url": "https://repo.aalto.fi/index.php?name=SO_b66a9391-dcf8-4399-8e87-611f84c3fc4c",
+   "summary": "",
+   "published": "2026-09-24T09:49:33+00:00",
+   "weight": 0.9,
+   "score": 233
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "Show HN: Air-gapped file encryption as self-decrypting HTML page",
+   "url": "https://cms-sfx-demo.apeleg.com/",
+   "summary": "Air-gapped file encryption packed into a single, self-decrypting HTML page. Repo: https://github.com/ApelegHQ/ts-cms-ep-sfx I was inspired by self-extracting archives. I wanted to share files with basically no dependencies. The goal was: 1. Something that didn't require any installation (assuming a web browser) 2. Have a single file with no network that could self-decrypt 3. Be fully auditable The second point is done by having (sort of(*)) reproducible builds and embedded OpenPGP signatures. The first point is made by cleverly manipulating the HTML structure so that it can decrypt without breaking the PGP signature. It can even decrypt using bare openssl (which was a design goal too, though getting the exact structure right took some work and bug reports). The third point is accomplished by the first two, and by the source being freely available. (*) Depends on the OS at the moment.",
+   "published": "2026-09-24T07:22:17+00:00",
+   "weight": 0.9,
+   "score": 68
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "The forgotten battle of East Lansing",
+   "url": "https://eastlansinginfo.news/the-forgotten-battle-of-east-lansing/",
+   "summary": "",
+   "published": "2026-09-21T20:07:08+00:00",
+   "weight": 0.9,
+   "score": 98
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "WaveDigger: Dig into wireless signals to discover their physical locations",
+   "url": "https://github.com/christianrowlands/wavedigger",
+   "summary": "",
+   "published": "2026-09-23T12:57:07+00:00",
+   "weight": 0.9,
+   "score": 111
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "The Bayeux Tapestry: Woven by the Victors",
+   "url": "https://www.historytoday.com/archive/out-margins/bayeux-tapestry-woven-victors",
+   "summary": "",
+   "published": "2026-09-23T21:54:35+00:00",
+   "weight": 0.9,
+   "score": 27
+  },
+  {
+   "story": null,
+   "source": "hn",
+   "title": "Geothermal heat map of US hot springs",
+   "url": "https://www.soakingsprings.com/hot-springs/geothermal-map",
+   "summary": "",
+   "published": "2026-09-23T20:12:10+00:00",
+   "weight": 0.9,
+   "score": 101
+  },
+  {
+   "story": "rsa-signature-forgery",
+   "source": "hn",
+   "title": "Forging 1024-bit RSA signatures in nearly SNFS time [pdf]",
+   "url": "https://eprint.iacr.org/2026/2131.pdf",
+   "summary": "https://arstechnica.com/security/2026/09/theres-a-new-way-to...",
+   "published": "2026-09-24T14:26:32+00:00",
+   "weight": 0.9,
+   "score": 63
+  }
+ ]
+}
