@@ -1,4 +1,4 @@
-"""Command line entry point: `newsbrief run|schedule|unsubscribe|serve|check`."""
+"""Command line entry point: `newsbrief run|schedule|unsubscribe|serve|check|eval`."""
 from __future__ import annotations
 
 import argparse
@@ -77,6 +77,20 @@ def cmd_check(args) -> int:
     return 0
 
 
+def cmd_eval(args) -> int:
+    from .evaluate import DEFAULT_SET, evaluate, load_set
+
+    r = evaluate(load_set(args.set or DEFAULT_SET))
+    print(f"{r.items} items, {r.gold_pairs} labeled same-story pairs, {r.predicted_pairs} predicted")
+    print(f"precision {r.precision:.3f}  recall {r.recall:.3f}  f1 {r.f1:.3f}")
+    for label, pairs in (("false merge", r.false_merges), ("missed", r.misses)):
+        for a, b in pairs[: args.show]:
+            print(f"  {label}: [{a.source}] {a.title}\n{' ' * (len(label) + 4)}[{b.source}] {b.title}")
+        if len(pairs) > args.show:
+            print(f"  ... {len(pairs) - args.show} more {label} pairs (--show N)")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="newsbrief", description=__doc__)
     p.add_argument("-c", "--config", default="newsbrief.yaml")
@@ -110,6 +124,11 @@ def main(argv: list[str] | None = None) -> int:
 
     c = sub.add_parser("check", help="validate config and show who gets what")
     c.set_defaults(func=cmd_check)
+
+    e = sub.add_parser("eval", help="score story clustering against a labeled set")
+    e.add_argument("--set", help="labeled JSON set (default: the bundled 2026-09-25 feed snapshot)")
+    e.add_argument("--show", type=int, default=10, help="list up to N false merges and misses each")
+    e.set_defaults(func=cmd_eval)
 
     args = p.parse_args(argv)
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO, format="%(levelname)s %(name)s: %(message)s")

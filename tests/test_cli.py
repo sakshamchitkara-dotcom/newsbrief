@@ -64,3 +64,19 @@ def test_schedule_loop_survives_failures_and_reloads(cfg_path, monkeypatch):
     with pytest.raises(Stop):
         main(["-c", cfg_path, "schedule", "--dry-run", "--interval", "7"])
     assert calls == [True, True] and sleeps == [7, 7]
+
+
+def test_eval_reports_scores(tmp_path, capsys):
+    import json
+
+    items = [
+        {"story": "rates", "source": "a", "title": "Central bank raises interest rates", "url": "https://a/1"},
+        {"story": "rates", "source": "b", "title": "Central bank raises interest rates again", "url": "https://b/1"},
+        {"story": None, "source": "c", "title": "Floods hit northern Italy", "url": "https://c/1"},
+    ]
+    p = tmp_path / "set.json"
+    p.write_text(json.dumps({"items": items}))
+    assert main(["eval", "--set", str(p)]) == 0
+    out = capsys.readouterr().out
+    assert "3 items, 1 labeled same-story pairs, 1 predicted" in out
+    assert "precision 1.000  recall 1.000  f1 1.000" in out
