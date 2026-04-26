@@ -4,6 +4,7 @@ from __future__ import annotations
 import math
 import re
 from collections import Counter
+from dataclasses import dataclass
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from .models import Article, Story
@@ -81,22 +82,52 @@ def idf_weights(docs: list[set[str]]) -> dict[str, float]:
 BODY_THRESHOLD = 0.4  # shingle Jaccard: syndicated / lightly edited copies
 KEYWORD_THRESHOLD = 0.11  # idf-weighted keyword Jaccard over title + lede
 TITLE_OVERLAP = 0.75  # near-identical titles with thin ledes ("F-Droid 2.0")
+ENTITY_MIN, ENTITY_WEIGHT = 3, 8.0  # shared names, and their summed idf
 
 
 def _lede(a: Article) -> str:
     return a.title + " " + a.body[:300]
 
 
-def _doc(a: Article, boiler: set[tuple[str, ...]] = frozenset()) -> set[str]:
-    """Keywords of title + lede, minus any phrase that is the outlet's boilerplate."""
-    toks = tokens(_lede(a))
-    if boiler:
+_WORD = re.compile(r"[A-Za-z0-9]+")
+# Anything between two words that ends a sentence or clause: a capital after it is not a name.
+_BREAK = re.compile(r"[.!?:;|\u2013\u2014\"\u201c\u2018']|\s-\s")
+
+
+@dataclass
+class Terms:
+    keywords: set[str]  # stemmed title + lede words, outlet boilerplate removed
+    entities: set[str]  # the subset written as names: "OpenAI", "Medicare", "NYC"
+
+
+def terms(a: Article, boiler: set[tuple[str, ...]] = frozenset()) -> Terms:
+    """Keywords of title + lede, minus the outlet's boilerplate, plus which of them are names.
+
+    A name is a word capitalised mid-sentence, or an acronym. Title Case headlines (HN,
+    The Verge) capitalise everything, so there only acronyms count.
+    """
+    kws, ents = set(), set()
+    for seg in (a.title, a.body[:300]):
+        words = list(_WORD.finditer(seg))
+        low = [m.group().lower() for m in words]
         drop = set()
-        for i in range(len(toks) - 3):
-            if tuple(toks[i : i + 4]) in boiler:
-                drop.update(range(i, i + 4))
-        toks = [t for i, t in enumerate(toks) if i not in drop]
-    return {_stem(t) for t in toks if t not in STOPWORDS and len(t) > 2}
+        if boiler:
+            for i in range(len(low) - 3):
+                if tuple(low[i : i + 4]) in boiler:
+                    drop.update(range(i, i + 4))
+        title_case = sum(m.group()[0].isupper() for m in words) > 0.6 * len(words)
+        prev_end = 0
+        for i, m in enumerate(words):
+            w, lw, gap, prev_end = m.group(), low[i], seg[prev_end : m.start()], m.end()
+            if i in drop or lw in STOPWORDS or len(lw) <= 2:
+                continue
+            stem = _stem(lw)
+            kws.add(stem)
+            acronym = sum(c.isupper() for c in w) >= 2
+            mid_sentence = i > 0 and not _BREAK.search(gap)
+            if acronym or (w[0].isupper() and mid_sentence and not title_case):
+                ents.add(stem)
+    return Terms(kws, ents)
 
 
 def source_boilerplate(articles: list[Article], min_repeats: int = 3) -> dict[str, set[tuple[str, ...]]]:
@@ -107,19 +138,25 @@ def source_boilerplate(articles: list[Article], min_repeats: int = 3) -> dict[st
     return {src: {sh for sh, n in c.items() if n >= min_repeats} for src, c in counts.items()}
 
 
-def similar(
-    a: Article, b: Article, idf: dict[str, float] | None = None, boiler: dict[str, set[tuple[str, ...]]] | None = None
-) -> bool:
-    idf, boiler = idf or {}, boiler or {}
+def similar(a: Article, b: Article, ta: Terms, tb: Terms, idf: dict[str, float], n_docs: int = 0) -> bool:
     # Shingle overlap only across outlets: within one outlet it mostly measures shared
     # boilerplate ("Get our breaking news email..."), and same-outlet dupes share a URL.
     if a.source != b.source and jaccard(shingles(a.body[:2000]), shingles(b.body[:2000])) >= BODY_THRESHOLD:
         return True
-    da, db = _doc(a, boiler.get(a.source, set())), _doc(b, boiler.get(b.source, set()))
-    kw = weighted_jaccard(da, db, idf)
+    shared = ta.keywords & tb.keywords
+    kw = weighted_jaccard(ta.keywords, tb.keywords, idf)
     # One shared rare word is not a story ("What About Rails?" vs "Rails World keynote"):
     # a one-keyword title makes any match look like a big Jaccard score.
-    if kw >= KEYWORD_THRESHOLD and len(da & db) >= 2:
+    if kw >= KEYWORD_THRESHOLD and len(shared) >= 2:
+        return True
+    # Names are the strongest same-event signal and survive rewording that dilutes Jaccard:
+    # three shared names that aren't everywhere today ("Susan Sarandon", "Netanyahu") ...
+    names = ta.entities & tb.entities
+    if len(names) >= ENTITY_MIN and sum(idf.get(w, 1.0) for w in names) >= ENTITY_WEIGHT:
+        return True
+    # ... or two, one of which no other article mentions ("Medicare" + "Australia").
+    only_here = math.log(1 + n_docs / 2) if n_docs else math.inf
+    if len(names) >= 2 and kw >= 0.07 and max(idf.get(w, 0.0) for w in names) >= only_here:
         return True
     # Thin-lede title match is for the same launch/post seen by two outlets ("F-Droid 2.0");
     # within one feed, two short titles sharing a word are two different items.
@@ -154,14 +191,15 @@ def cluster(articles: list[Article]) -> list[Story]:
     articles = sorted(dedupe_urls(articles), key=lambda a: (is_live(a), -a.weight, -len(a.body)))
     # Rare words (names, places) say far more about "same event" than common ones.
     boiler = source_boilerplate(articles)
-    idf = idf_weights([_doc(a, boiler.get(a.source, set())) for a in articles])
-    groups: list[list[Article]] = []
+    t = [terms(a, boiler.get(a.source, set())) for a in articles]
+    idf = idf_weights([x.keywords for x in t])
+    groups: list[list[int]] = []
     # ponytail: O(n * clusters) scan, fine for a few hundred items/day; MinHash LSH beyond that
-    for a in articles:
+    for i, a in enumerate(articles):
         for g in groups:
-            if similar(g[0], a, idf, boiler):
-                g.append(a)
+            if similar(articles[g[0]], a, t[g[0]], t[i], idf, len(articles)):
+                g.append(i)
                 break
         else:
-            groups.append([a])
-    return [Story(articles=g) for g in groups]
+            groups.append([i])
+    return [Story(articles=[articles[i] for i in g]) for g in groups]

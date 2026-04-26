@@ -101,4 +101,17 @@ def test_eval_set_known_pairs():
     assert frozenset({"What About Rails?", "Rails World 2026 Opening Keynote [video]"}) not in merged
     missed = {frozenset(a.title for a in p) for p in r.misses}
     assert not any("F-Droid 2.0" in p for p in missed)  # thin title still matched across outlets
+    medicare = [p for p in missed if all("Medicare" in t for t in p)]
+    assert medicare == []  # the Guardian live blog + news piece on the OpenAI Medicare hack
     assert r.precision >= 0.9
+
+
+def test_terms_find_names_but_not_sentence_starts_or_title_case():
+    from newsbrief.dedupe import terms
+
+    t = terms(Article("PM rejects claim he delayed revealing OpenAI Medicare hack", "u", "g",
+                      summary="Experts say Australia's laws need work. The CDC and NYC weighed in."))
+    assert {"openai", "medicare", "australia", "cdc", "nyc"} <= t.entities
+    assert "expert" not in t.entities and "the" not in t.keywords  # sentence-initial, stopword
+    hn = terms(Article("Show HN: Make Cursed Fonts Like Times New Bastard", "u", "hn"))
+    assert hn.entities == set()  # Title Case capitalises everything; only acronyms would count
