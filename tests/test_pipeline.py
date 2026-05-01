@@ -88,3 +88,14 @@ def test_scheduler_dry_run_sends_once_per_local_day(cfg):
     first = pipeline.run(cfg, dry_run=True, only_due=True, now=NOW, fetch_text=False, dry_run_log=log)
     assert [o.subscriber for o in first] == ["ann@example.com"]  # London is past 07:00, LA is not
     assert pipeline.run(cfg, dry_run=True, only_due=True, now=NOW, fetch_text=False, dry_run_log=log) == []
+
+
+def test_fetch_text_policy_skips_blocking_sources(cfg, monkeypatch):
+    cfg.sources["wire"].fetch_text = False
+    fetched = []
+    monkeypatch.setattr(pipeline, "enrich", lambda arts: fetched.extend(a.source for a in arts))
+    st = State(cfg.state_db)
+    arts = pipeline.collect(list(cfg.sources.values()))
+    brief = pipeline.build_brief(cfg, cfg.subscribers[0], arts, st, NOW, fetch_text=True, use_claude=False)
+    leads = {s.lead.source for s in brief.stories}
+    assert "wire" in leads and fetched and "wire" not in fetched

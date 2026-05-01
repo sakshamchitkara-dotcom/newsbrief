@@ -23,6 +23,7 @@ class Source:
     weight: float = 1.0
     topics: list[str] = field(default_factory=list)
     limit: int = 30
+    fetch_text: bool = True  # false for sites that block scripted article fetches (NPR: HTTP 402)
 
 
 @dataclass

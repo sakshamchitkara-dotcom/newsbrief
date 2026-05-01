@@ -58,7 +58,8 @@ def build_brief(
     stories = [s for s in rank(cluster(mine), cfg.sources, now) if within(s, now, cfg.lookback_hours)]
     stories = diversify(state.unseen(sub.email, stories), sub.max_stories or cfg.max_stories, cfg.max_per_topic)
     if fetch_text:
-        enrich([s.lead for s in stories])
+        feed_only = {name for name, src in cfg.sources.items() if not src.fetch_text}
+        enrich([s.lead for s in stories if s.lead.source not in feed_only])
     brief = Brief(sub.email, stories, generated_at=now)
     return summarize(brief, use_claude=use_claude)
 
