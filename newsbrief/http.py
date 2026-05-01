@@ -1,7 +1,10 @@
-"""Tiny HTTP layer: polite GETs with a UA, timeouts and robots.txt checks."""
+"""Tiny HTTP layer: polite GETs with a UA, timeouts, robots.txt checks, retries
+and a per-domain circuit breaker."""
 from __future__ import annotations
 
 import logging
+import threading
+import time
 import urllib.error
 import urllib.request
 import urllib.robotparser
@@ -20,13 +23,72 @@ class FetchError(Exception):
     pass
 
 
-def get(url: str, *, timeout: float = TIMEOUT) -> bytes:
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "*/*"})
+BLOCKED = {401, 402, 403, 451}  # the site refuses scripted fetches: no point retrying today
+RETRY = {429, 500, 502, 503, 504}
+RETRIES = 2
+BACKOFF = 1.0  # seconds, doubled per retry; Retry-After wins when the server sends it
+MAX_WAIT = 10.0
+TRIP_AFTER = 3  # consecutive failures before a domain's circuit opens
+COOLDOWN = 300.0  # seconds a tripped domain is skipped
+BLOCKED_COOLDOWN = 3600.0
+
+_sleep = time.sleep
+_clock = time.monotonic
+_lock = threading.Lock()
+_fails: dict[str, int] = {}
+_open_until: dict[str, float] = {}
+
+
+def _host(url: str) -> str:
+    return urlsplit(url).netloc.lower()
+
+
+def reset_breakers() -> None:
+    with _lock:
+        _fails.clear()
+        _open_until.clear()
+
+
+def _failed(host: str, blocked: bool) -> None:
+    with _lock:
+        _fails[host] = _fails.get(host, 0) + 1
+        if blocked or _fails[host] >= TRIP_AFTER:
+            _open_until[host] = _clock() + (BLOCKED_COOLDOWN if blocked else COOLDOWN)
+            log.warning("circuit open for %s (%s)", host, "blocked" if blocked else f"{_fails[host]} failures")
+
+
+def _retry_after(e: urllib.error.HTTPError, attempt: int) -> float:
     try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            return resp.read(MAX_BYTES)
-    except (urllib.error.URLError, TimeoutError, OSError, ValueError) as e:
-        raise FetchError(f"{url}: {e}") from e
+        return min(float(e.headers.get("Retry-After", "")), MAX_WAIT)
+    except (TypeError, ValueError):
+        return min(BACKOFF * 2**attempt, MAX_WAIT)
+
+
+def get(url: str, *, timeout: float = TIMEOUT) -> bytes:
+    """GET with retries on 429/5xx. A domain that keeps failing, or answers 401/402/403,
+    is skipped for a while instead of costing a timeout per article."""
+    host = _host(url)
+    with _lock:
+        if _open_until.get(host, 0) > _clock():
+            raise FetchError(f"{url}: skipped, circuit open for {host}")
+    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "*/*"})
+    for attempt in range(RETRIES + 1):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                body = resp.read(MAX_BYTES)
+            with _lock:
+                _fails.pop(host, None)
+            return body
+        except urllib.error.HTTPError as e:
+            if e.code in RETRY and attempt < RETRIES:
+                _sleep(_retry_after(e, attempt))
+                continue
+            _failed(host, blocked=e.code in BLOCKED)
+            raise FetchError(f"{url}: HTTP {e.code}") from e
+        except (urllib.error.URLError, TimeoutError, OSError, ValueError) as e:
+            _failed(host, blocked=False)
+            raise FetchError(f"{url}: {e}") from e
+    raise AssertionError("unreachable")
 
 
 @lru_cache(maxsize=256)
