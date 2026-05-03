@@ -2,13 +2,15 @@
 from __future__ import annotations
 
 import math
+import re
 from collections import Counter
 from datetime import datetime, timezone
 
-from .config import Source
+from .config import Source, Subscriber
 from .models import Story
 
 HALF_LIFE_HOURS = 12.0
+BOOST = 1.5  # rank multiplier when a story mentions one of the subscriber's boost terms
 
 
 def newest(story: Story) -> datetime | None:
@@ -58,3 +60,25 @@ def diversify(stories: list[Story], n: int, per_topic: int) -> list[Story]:
             return picked
     picked += overflow[: n - len(picked)]
     return sorted(picked, key=lambda s: s.rank, reverse=True)
+
+
+def _mentions(story: Story, terms: list[str]) -> bool:
+    if not terms:
+        return False
+    pat = re.compile(r"\b(?:" + "|".join(re.escape(t.strip()) for t in terms if t.strip()) + r")\b", re.I)
+    return any(pat.search(a.title) or pat.search(a.summary) for a in story.articles)
+
+
+def personalize(stories: list[Story], sub: Subscriber) -> list[Story]:
+    """Apply a subscriber's topic weights, boosts and mutes to ranked stories, then re-sort.
+
+    Mutes drop a story when any of its articles mentions the term in its title or blurb.
+    """
+    out = []
+    for s in stories:
+        if _mentions(s, sub.mute):
+            continue
+        s.rank *= sub.topic_weights.get(s.topic, 1.0) * (BOOST if _mentions(s, sub.boost) else 1.0)
+        if s.rank > 0:
+            out.append(s)
+    return sorted(out, key=lambda s: s.rank, reverse=True)

@@ -17,7 +17,7 @@ from .feeds import fetch_feed
 from .hn import fetch_hn
 from .http import FetchError
 from .models import Article, Brief
-from .rank import diversify, rank, within
+from .rank import diversify, personalize, rank, within
 from .render import render_html, render_text
 from .scrape import fetch_page
 from .state import State
@@ -56,6 +56,7 @@ def build_brief(
 ) -> Brief:
     mine = [a for s in cfg.sources_for(sub) for a in articles.get(s.name, [])]
     stories = [s for s in rank(cluster(mine), cfg.sources, now) if within(s, now, cfg.lookback_hours)]
+    stories = personalize(stories, sub)
     stories = diversify(state.unseen(sub.email, stories), sub.max_stories or cfg.max_stories, cfg.max_per_topic)
     if fetch_text:
         feed_only = {name for name, src in cfg.sources.items() if not src.fetch_text}

@@ -35,6 +35,9 @@ class Subscriber:
     topics: list[str] = field(default_factory=list)  # empty = all
     sources: list[str] = field(default_factory=list)  # empty = all
     max_stories: int | None = None
+    topic_weights: dict[str, float] = field(default_factory=dict)  # {tech: 1.5, business: 0.5}
+    boost: list[str] = field(default_factory=list)  # words/phrases that lift a story
+    mute: list[str] = field(default_factory=list)  # words/phrases that drop a story
 
 
 @dataclass
@@ -97,6 +100,10 @@ def parse_config(data: dict) -> Config:
         unknown = set(sub.sources) - set(sources)
         if unknown:
             raise ConfigError(f"{sub.email}: unknown sources {sorted(unknown)}")
+        if not isinstance(sub.topic_weights, dict) or not all(
+            isinstance(w, (int, float)) and w >= 0 for w in sub.topic_weights.values()
+        ):
+            raise ConfigError(f"{sub.email}: topic_weights must map topics to numbers >= 0")
         subs.append(sub)
 
     top = {k: v for k, v in data.items() if k not in ("sources", "subscribers")}

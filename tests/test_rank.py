@@ -42,3 +42,23 @@ def test_diversify_caps_topics_but_fills_slots():
     assert [s.topic for s in diversify(stories, 4, per_topic=2)] == ["w", "w", "t", "b"]
     # not enough other topics: overflow fills remaining slots in rank order
     assert [s.rank for s in diversify(stories, 6, per_topic=2)] == [10, 9, 8, 7, 6, 5]
+
+
+def test_personalize_weights_boosts_and_mutes():
+    from newsbrief.config import Subscriber
+    from newsbrief.rank import personalize
+
+    def story(title, topic, rank):
+        return Story([Article(title, f"https://x/{title}", "s", summary=f"About {title}.")], rank=rank, topic=topic)
+
+    stories = [story("Election results", "world", 3.0), story("New GPU launch", "tech", 2.0),
+               story("Rust 2.0 released", "tech", 1.0), story("Celebrity gossip roundup", "world", 2.5)]
+    sub = Subscriber("me@x.com", topic_weights={"tech": 1.2, "world": 0.5}, boost=["rust"], mute=["celebrity"])
+    out = personalize(stories, sub)
+    assert [s.lead.title for s in out] == ["New GPU launch", "Rust 2.0 released", "Election results"]
+    assert [round(s.rank, 2) for s in out] == [2.4, 1.8, 1.5]
+    # whole words only: "rust" must not boost "trust"
+    assert personalize([story("Voters trust polls", "world", 1.0)], Subscriber("a@b.c", boost=["rust"]))[0].rank == 1.0
+    # a zero weight hides a topic entirely
+    assert personalize(stories[:2], Subscriber("a@b.c", topic_weights={"tech": 0}))[0].lead.title == "Election results"
+    assert len(personalize(stories[:2], Subscriber("a@b.c", topic_weights={"tech": 0}))) == 1

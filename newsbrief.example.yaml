@@ -30,3 +30,6 @@ subscribers:
     # topics: [world, tech]     # optional: restrict by topic
     # sources: [bbc-world, hn]  # optional: restrict by source name
     # max_stories: 8
+    # topic_weights: {tech: 1.5, business: 0.5}   # optional: scale ranking per topic (0 hides it)
+    # boost: [climate, "open source"]             # optional: lift stories mentioning these
+    # mute: [celebrity, football]                 # optional: drop stories mentioning these
