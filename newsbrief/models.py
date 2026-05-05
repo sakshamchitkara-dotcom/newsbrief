@@ -4,6 +4,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
 
+WORDS_PER_MINUTE = 230
+
 
 @dataclass
 class Article:
@@ -45,6 +47,12 @@ class Story:
     @property
     def urls(self) -> list[str]:
         return [a.url for a in self.articles]
+
+    @property
+    def reading_minutes(self) -> int:
+        """Minutes to read the lead article; 0 when only the feed blurb is known."""
+        words = len(self.lead.text.split())
+        return max(1, round(words / WORDS_PER_MINUTE)) if words else 0
 
 
 @dataclass

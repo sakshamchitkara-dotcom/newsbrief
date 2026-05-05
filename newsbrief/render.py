@@ -49,11 +49,12 @@ def _story_html(s: Story) -> str:
         if len(s.sources) > 1
         else ""
     )
+    minutes = f" &middot; {s.reading_minutes} min read" if s.reading_minutes else ""
     return f"""
 <tr><td style="padding:18px 0;border-top:1px solid {RULE};">
   <a href="{escape(s.lead.url)}" style="color:{INK};text-decoration:none;font:bold 20px/1.3 {SERIF};">{escape(s.headline or s.lead.title)}</a>{coverage}
   <p style="margin:8px 0 0;font:16px/1.55 {SERIF};color:{INK};">{escape(s.summary)}</p>{why}
-  <p style="margin:10px 0 0;font:13px/1.5 {SANS};color:{MUTED};">{links}{more}</p>
+  <p style="margin:10px 0 0;font:13px/1.5 {SANS};color:{MUTED};">{links}{more}{minutes}</p>
 </td></tr>"""
 
 
@@ -113,7 +114,8 @@ def render_text(brief: Brief, *, date: datetime, name: str = "", unsubscribe_url
     for topic, stories in group_by_topic(brief.stories):
         lines += [f"## {topic.upper()}", ""]
         for s in stories:
-            lines += [wrap(f"* {s.headline or s.lead.title}"), wrap(s.summary, "  ")]
+            minutes = f" ({s.reading_minutes} min read)" if s.reading_minutes else ""
+            lines += [wrap(f"* {s.headline or s.lead.title}{minutes}"), wrap(s.summary, "  ")]
             if s.why_it_matters:
                 lines.append(wrap(f"Why it matters: {s.why_it_matters}", "  "))
             for a in s.articles[:5]:
