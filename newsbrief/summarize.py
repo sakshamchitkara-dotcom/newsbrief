@@ -6,6 +6,7 @@ otherwise an extractive summarizer that picks the most central sentences.
 from __future__ import annotations
 
 import logging
+import re
 from collections import Counter
 from html import escape
 
@@ -16,12 +17,22 @@ from .text import sentences, truncate
 log = logging.getLogger(__name__)
 
 
-def extractive_summary(story: Story, n: int = 2) -> str:
-    """Pick the n sentences most representative of the whole cluster, in original order."""
+def _centroid(story: Story) -> Counter:
     centroid = Counter(w for a in story.articles for w in keywords(a.title + " " + a.body[:1500]))
     for a in story.articles:  # titles are the best signal of what the story is about
         for w in keywords(a.title):
             centroid[w] += 2
+    return centroid
+
+
+def _centrality(s: str, centroid: Counter) -> float:
+    kw = keywords(s)
+    return sum(centroid[w] for w in kw) / (len(kw) ** 0.5 or 1)
+
+
+def extractive_summary(story: Story, n: int = 2) -> str:
+    """Pick the n sentences most representative of the whole cluster, in original order."""
+    centroid = _centroid(story)
     # An outlet's own feed blurb is an editor-written lede: better than sentences
     # mined from the page. Fall back to the extracted page text when blurbs are thin.
     blurbs = [a.summary for a in story.articles if len(a.summary) >= 80]
@@ -32,8 +43,7 @@ def extractive_summary(story: Story, n: int = 2) -> str:
         return truncate(body, 280)
 
     def score(s: str) -> float:
-        kw = keywords(s)
-        return sum(centroid[w] for w in kw) / (len(kw) ** 0.5 or 1)
+        return _centrality(s, centroid)
 
     top = sorted(sorted(range(len(sents)), key=lambda i: -score(sents[i]))[:n])
     # early sentences in news copy are usually the lede; bias towards the first one
@@ -42,10 +52,37 @@ def extractive_summary(story: Story, n: int = 2) -> str:
     return truncate(" ".join(sents[i] for i in top), 480)
 
 
+# Words that mark a sentence as consequence or context rather than a restated event.
+_CONTEXT = re.compile(
+    r"\b(because|means|could|would|expected|first|largest|biggest|highest|lowest|record|since|"
+    r"threat\w*|risk\w*|warn\w*|impact\w*|affect\w*|consequence\w*|significan\w*|fears?)\b",
+    re.I,
+)
+
+
+def extractive_why(story: Story) -> str:
+    """A "why it matters" line mined from the cluster: the most on-topic sentence that
+    carries context (consequences, records, risks) and isn't already in the summary.
+    Returns "" rather than a weak guess."""
+    centroid = _centroid(story)
+    seen = story.summary + " " + story.headline
+    cands = {
+        x
+        for a in story.articles
+        for x in sentences(a.body[:5000])
+        if 40 <= len(x) <= 300 and _CONTEXT.search(x) and x not in seen
+    }
+    if not cands:
+        return ""
+    return truncate(max(sorted(cands), key=lambda x: _centrality(x, centroid)), 240)
+
+
 def summarize_extractive(brief: Brief) -> Brief:
     for s in brief.stories:
         s.headline = s.lead.title
         s.summary = extractive_summary(s)
+    if brief.stories:
+        brief.stories[0].why_it_matters = extractive_why(brief.stories[0])
     topics = Counter(s.topic for s in brief.stories)
     n = len(brief.stories)
     brief.intro = f"{n} {'story' if n == 1 else 'stories'} today" + (
