@@ -89,6 +89,7 @@ def deliver_brief(
         text=text,
         headers=list_unsubscribe_headers(cfg.base_url, cfg.from_email, sub.email),
     )
+    state.save_brief(sub.email, local.date().isoformat(), brief)  # for `newsbrief archive`
     if dry_run:
         paths = write_outbox(msg, html, cfg.outbox, f"{sub.email} {local:%Y-%m-%d}")
         return Outcome(sub.email, len(brief.stories), "outbox", paths)

@@ -25,3 +25,23 @@ def test_deliveries_and_unsubscribe_persist(tmp_path):
     st = State(path)
     assert st.delivered("me@x.com", "2026-09-24") and not st.delivered("me@x.com", "2026-09-25")
     assert st.is_unsubscribed("me@x.com")
+
+
+def test_briefs_round_trip_for_the_archive(tmp_path):
+    from datetime import datetime, timezone
+
+    from newsbrief.models import Article, Brief, Story
+
+    st = State(str(tmp_path / "s.db"))
+    pub = datetime(2026, 9, 25, 6, tzinfo=timezone.utc)
+    s = Story([Article("T", "https://a/1", "bbc", published=pub, text="w " * 500, score=3)],
+              topic="world", headline="H", summary="S", why_it_matters="W", rank=1.5)
+    st.save_brief("Me@X.com", "2026-09-25", Brief("me@x.com", [s], intro="i", generated_at=pub, summarizer="extractive"))
+    st.save_brief("me@x.com", "2026-09-25", Brief("me@x.com", [s, s], intro="again", generated_at=pub))  # replaces
+    st.save_brief("you@x.com", "2026-09-24", Brief("you@x.com", [], intro="quiet"))
+    rows = st.briefs()
+    assert [(d, sub, len(b.stories)) for d, sub, b in rows] == [("2026-09-24", "you@x.com", 0), ("2026-09-25", "me@x.com", 2)]
+    b = st.briefs("ME@x.com")[0][2]
+    assert b.intro == "again" and b.generated_at == pub
+    got = b.stories[0]
+    assert (got.headline, got.why_it_matters, got.lead.published, got.reading_minutes) == ("H", "W", pub, 2)
