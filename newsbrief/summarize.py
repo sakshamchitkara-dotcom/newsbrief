@@ -102,7 +102,9 @@ For every cluster write:
 - headline: a clear, neutral headline (max ~12 words), no clickbait.
 - summary: 2-3 sentences stating what happened, who is involved and key numbers. \
 Use only facts present in the provided text; if outlets disagree, say so.
-- why_it_matters: one short sentence of context for a busy reader.
+- why_it_matters: for cluster 0 only (the day's top story), one short sentence on \
+why it matters to a busy reader, grounded in the provided text. Use an empty string \
+for every other cluster.
 
 Also write a 1-2 sentence intro capturing the day's main themes.
 
@@ -161,7 +163,9 @@ def summarize_claude(brief: Brief, client=None, model: str = MODEL) -> Brief:
     for item in out.stories:
         if 0 <= item.id < len(brief.stories):
             s = brief.stories[item.id]
-            s.headline, s.summary, s.why_it_matters = item.headline, item.summary, item.why_it_matters
+            s.headline, s.summary = item.headline, item.summary
+            if item.id == 0 and item.why_it_matters.strip():
+                s.why_it_matters = item.why_it_matters.strip()
     brief.intro = out.intro or brief.intro
     brief.summarizer = model
     return brief
