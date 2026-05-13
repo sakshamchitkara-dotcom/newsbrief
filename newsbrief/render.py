@@ -58,7 +58,10 @@ def _story_html(s: Story) -> str:
 </td></tr>"""
 
 
-def render_html(brief: Brief, *, date: datetime, name: str = "", unsubscribe_url: str = "") -> str:
+def render_html(
+    brief: Brief, *, date: datetime, name: str = "", unsubscribe_url: str = "", home_url: str = ""
+) -> str:
+    """home_url: link back to an archive index (web archive pages only)."""
     sections = []
     for topic, stories in group_by_topic(brief.stories):
         sections.append(
@@ -77,6 +80,12 @@ def render_html(brief: Brief, *, date: datetime, name: str = "", unsubscribe_url
         else ""
     )
     datestr = f"{date:%A, %B} {date.day}, {date.year}"
+    home = (
+        f'<div style="margin-bottom:12px;font:13px/1.4 {SANS};"><a href="{escape(home_url)}" '
+        f'style="color:{ACCENT};">&larr; All briefs</a></div>'
+        if home_url
+        else ""
+    )
     return f"""<!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -91,7 +100,7 @@ def render_html(brief: Brief, *, date: datetime, name: str = "", unsubscribe_url
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="wrap"
  style="max-width:640px;background:#ffffff;border-radius:6px;padding:32px 36px;">
 <tr><td style="border-bottom:3px double {INK};padding-bottom:14px;">
-  <div style="font:bold 34px/1.1 {SERIF};color:{INK};">The Daily Brief</div>
+  {home}<div style="font:bold 34px/1.1 {SERIF};color:{INK};">The Daily Brief</div>
   <div style="margin-top:6px;font:13px/1.4 {SANS};color:{MUTED};">{escape(datestr)} &middot; {len(brief.stories)} stories</div>
 </td></tr>
 <tr><td style="padding:18px 0 0;font:17px/1.55 {SERIF};color:{INK};">
