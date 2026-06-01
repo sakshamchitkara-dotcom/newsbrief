@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -121,7 +122,30 @@ def parse_config(data: dict) -> Config:
 
 
 def load_config(path: str | Path) -> Config:
+    return parse_config(load_raw(path))
+
+
+def load_raw(path: str | Path) -> dict:
     path = Path(path)
     text = path.read_text(encoding="utf-8")
-    data = json.loads(text) if path.suffix == ".json" else yaml.safe_load(text)
-    return parse_config(data)
+    return (json.loads(text) if path.suffix == ".json" else yaml.safe_load(text)) or {}
+
+
+def save_subscribers(path: str | Path, subscribers: list[dict]) -> None:
+    """Validate, then rewrite only the config's `subscribers:` section.
+
+    The rest of a YAML file (comments included) is left as is; comments inside the
+    subscribers section itself are not preserved.
+    """
+    path = Path(path)
+    data = {**load_raw(path), "subscribers": subscribers}
+    parse_config(data)  # never write a config that won't load
+    if path.suffix == ".json":
+        path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+        return
+    text = path.read_text(encoding="utf-8")
+    block = yaml.safe_dump({"subscribers": subscribers}, sort_keys=False, allow_unicode=True, width=100)
+    # the section runs to the next top-level key ("- item" lines at column 0 still belong to it)
+    m = re.search(r"^subscribers:.*?(?=^[A-Za-z_][\w-]*\s*:|\Z)", text, re.M | re.S)
+    text = text[: m.start()] + block + text[m.end() :] if m else text.rstrip("\n") + "\n\n" + block
+    path.write_text(text, encoding="utf-8")
