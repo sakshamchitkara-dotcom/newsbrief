@@ -74,7 +74,15 @@ def cmd_check(args) -> int:
     for s in cfg.subscribers:
         names = ", ".join(x.name for x in cfg.sources_for(s)) or "(none!)"
         print(f"  {s.email} at {s.send_at} {s.timezone}: {names}")
-    return 0
+    if not args.feeds:
+        return 0
+    from .health import check_feeds, report
+
+    table, ok = report(check_feeds(list(cfg.sources.values()), probe_text=cfg.fetch_articles),
+                       stale_hours=args.stale_hours)
+    print()
+    print(table)
+    return 0 if ok else 3
 
 
 def _csv(v: str | None) -> list[str]:
@@ -188,7 +196,9 @@ def main(argv: list[str] | None = None) -> int:
     v.add_argument("--port", type=int, default=8025)
     v.set_defaults(func=cmd_serve)
 
-    c = sub.add_parser("check", help="validate config and show who gets what")
+    c = sub.add_parser("check", help="validate config and show who gets what; --feeds for feed health")
+    c.add_argument("--feeds", action="store_true", help="fetch every source and report freshness and failures")
+    c.add_argument("--stale-hours", type=float, default=24, help="flag feeds whose newest item is older (default 24)")
     c.set_defaults(func=cmd_check)
 
     a = sub.add_parser("archive", help="build a static HTML archive of past briefs (e.g. for GitHub Pages)")
