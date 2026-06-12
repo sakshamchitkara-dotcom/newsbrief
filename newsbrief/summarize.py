@@ -60,17 +60,25 @@ _CONTEXT = re.compile(
 )
 
 
+_ASIDE = re.compile(r"(?:but|and|or|so|yet|also|meanwhile|still)\b", re.I)
+
+
 def extractive_why(story: Story) -> str:
     """A "why it matters" line mined from the cluster: the most on-topic sentence that
     carries context (consequences, records, risks) and isn't already in the summary.
     Returns "" rather than a weak guess."""
     centroid = _centroid(story)
     seen = story.summary + " " + story.headline
+    about = {w for a in story.articles for w in keywords(a.title)}
     cands = {
         x
         for a in story.articles
         for x in sentences(a.body[:5000])
-        if 40 <= len(x) <= 300 and _CONTEXT.search(x) and x not in seen
+        if 40 <= len(x) <= 300
+        and _CONTEXT.search(x)
+        and x not in seen
+        and not _ASIDE.match(x)  # "But one notable absence was..." leans on the sentence before it
+        and keywords(x) & about  # about this story, not a tangent in the same article
     }
     if not cands:
         return ""
