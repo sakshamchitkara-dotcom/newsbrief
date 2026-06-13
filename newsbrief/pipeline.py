@@ -60,7 +60,9 @@ def build_brief(
     stories = diversify(state.unseen(sub.email, stories), sub.max_stories or cfg.max_stories, cfg.max_per_topic)
     if fetch_text:
         feed_only = {name for name, src in cfg.sources.items() if not src.fetch_text}
-        enrich([s.lead for s in stories if s.lead.source not in feed_only])
+        # every outlet's text for the top story, so its "why it matters" line has more to draw on
+        wanted = [s.lead for s in stories] + (stories[0].articles[1:4] if stories else [])
+        enrich([a for a in wanted if a.source not in feed_only])
     brief = Brief(sub.email, stories, generated_at=now)
     return summarize(brief, use_claude=use_claude)
 
