@@ -25,12 +25,13 @@ sources ──► collect ──► cluster ──► rank ──► filter ─�
 | Step | Module | Notes |
 |---|---|---|
 | Sources | `feeds.py`, `hn.py`, `scrape.py` | RSS 2.0, RSS 1.0 (RDF) and Atom via `xml.etree`; the official HN API; `page` sources scrape headline links from a section page. Tracking params (`utm_*`, `at_medium`, ...) are stripped. |
-| Article text | `extract.py` | Fetches each chosen story's page, respecting `robots.txt`, and keeps the parent element holding the most paragraph text. |
-| Dedupe | `dedupe.py` | Exact URL dedupe, then leader clustering: cross-outlet 3-word shingle Jaccard (syndicated copy), or idf-weighted keyword Jaccard over title + lede (rewrites of the same event). Phrases an outlet repeats across items ("Get our breaking news email...") are stripped first, and live blogs never lead a story. |
-| Ranking | `rank.py` | `recency (12h half-life) × source weight × (1 + log2 outlets) × HN popularity`, then a per-topic cap so one busy beat can't fill the brief. |
-| State | `state.py` | SQLite: URLs already sent to each subscriber (so tomorrow's brief doesn't repeat them), deliveries per local day, unsubscribes. |
-| Summaries | `summarize.py` | `claude-opus-5-5` via `messages.parse` with a Pydantic schema (headline, summary, why it matters, intro), `effort: medium`. Falls back to extractive summaries with no API key, a refusal, truncation or any API error. |
-| Email | `render.py`, `deliver.py`, `unsubscribe.py` | Table layout with inline CSS and a text/plain alternative. HMAC unsubscribe link, `List-Unsubscribe` and one-click `List-Unsubscribe-Post` headers. |
+| Article text | `extract.py`, `http.py` | Fetches each chosen story's page (and every outlet's page for the top story), respecting `robots.txt` and per-source `fetch_text`, and keeps the parent element holding the most paragraph text. 429/5xx are retried with backoff; a domain that answers 401/402/403 is skipped for an hour, one that fails 3 times in a row for 5 minutes. |
+| Dedupe | `dedupe.py` | Exact URL dedupe, then leader clustering: cross-outlet 3-word shingle Jaccard (syndicated copy), idf-weighted keyword Jaccard over title + lede with at least two shared keywords (rewrites of the same event), or shared names: words capitalised mid-sentence and acronyms ("OpenAI", "Medicare", "NYC"). Phrases an outlet repeats across items ("Get our breaking news email...") are stripped first, and live blogs never lead a story. Scored by `newsbrief eval`. |
+| Ranking | `rank.py` | `recency (12h half-life) × source weight × (1 + log2 outlets) × HN popularity`, then each subscriber's topic weights, boosts and mutes, then a per-topic cap so one busy beat can't fill the brief. |
+| State | `state.py` | SQLite: URLs already sent to each subscriber (so tomorrow's brief doesn't repeat them), deliveries per local day, unsubscribes, and each day's brief for the web archive. |
+| Summaries | `summarize.py` | `claude-opus-5-5` via `messages.parse` with a Pydantic schema (headline, summary, intro, and a "why it matters" line for the top story only), `effort: medium`. Falls back to extractive summaries with no API key, a refusal, truncation or any API error. The extractive "why it matters" picks an on-topic sentence about consequences, records or risks, and is left out when none qualifies. |
+| Email | `render.py`, `deliver.py`, `unsubscribe.py` | Table layout with inline CSS and a text/plain alternative, with reading time for stories whose article text was fetched. HMAC unsubscribe link, `List-Unsubscribe` and one-click `List-Unsubscribe-Post` headers. |
+| Archive | `archive.py` | Static `index.html` plus one page per day, no subscriber data, GitHub Pages ready. |
 
 ## Quick start
 
@@ -42,6 +43,8 @@ cp .env.example .env                        # fill in what you need
 set -a; . ./.env; set +a
 
 newsbrief check                 # validate config, show who gets which sources
+newsbrief check --feeds         # also fetch every feed: freshness, failures, article access
+newsbrief subscribers add you@example.com --tz Europe/London --send-at 07:00
 newsbrief run --dry-run         # build briefs into ./outbox/*.eml + *.html, send nothing
 open outbox/*.html
 newsbrief run                   # really send (needs a transport, see below)
@@ -49,6 +52,8 @@ newsbrief run                   # really send (needs a transport, see below)
 
 Only addresses listed under `subscribers:` ever receive email. `--dry-run` never sends
 and never writes sent-story state, so a dry run doesn't hide stories from the next real run.
+It does store the brief itself, so `newsbrief archive` can preview the site; a real send
+the same day replaces it.
 
 ## Configuration
 
@@ -64,6 +69,7 @@ sources:
   bbc-world: {type: rss, url: "https://feeds.bbci.co.uk/news/world/rss.xml", weight: 1.3, topics: [world]}
   hn:        {type: hackernews, url: topstories, limit: 30, weight: 0.9, topics: [tech]}
   npr-sci:   {type: page, url: "https://www.npr.org/sections/science/", topics: [science]}
+  npr:       {type: rss, url: "https://feeds.npr.org/1001/rss.xml", topics: [us], fetch_text: false}  # blocks page fetches
 subscribers:
   - email: you@example.com
     name: You
@@ -72,7 +78,24 @@ subscribers:
     topics: [world, tech]       # optional filter
     sources: [bbc-world, hn]    # optional filter
     max_stories: 8              # optional override
+    topic_weights: {tech: 1.5, business: 0.5}   # optional rank multiplier per topic; 0 hides it
+    boost: [climate, "open source"]             # optional: x1.5 when a title/blurb mentions one
+    mute: [celebrity]                           # optional: drop stories that mention one
 ```
+
+Unknown topics, sources or keys, duplicate subscribers, bad timezones and bad `send_at`
+values are config errors.
+
+### Managing subscribers
+
+```sh
+newsbrief subscribers list
+newsbrief subscribers add ann@example.com --name Ann --tz Asia/Kolkata --send-at 06:30 --topics world,tech
+newsbrief subscribers remove ann@example.com
+```
+
+`add` validates the whole resulting config before writing. Only the `subscribers:` section
+of a YAML file is rewritten: comments elsewhere survive, comments inside that section don't.
 
 ### Environment
 
@@ -106,22 +129,94 @@ Every email has an unsubscribe link and `List-Unsubscribe` header, signed with `
   anyone. The POST (also used by RFC 8058 one-click) records the unsubscribe.
 - `newsbrief unsubscribe EMAIL TOKEN` does the same from the shell, for example for mailto requests.
 
+## Feed health
+
+`newsbrief check --feeds` fetches every source and reports freshness, failures and whether
+article pages can be fetched (it probes each feed's first item). It exits 3 if any feed is
+`FAIL`, `EMPTY` or `STALE` (newest item older than `--stale-hours`, default 24), so it can
+drive a monitor. Plain `newsbrief check` stays offline. Live output, 2026-09-25:
+
+```
+$ newsbrief -c newsbrief.example.yaml check --feeds
+8 sources, 1 subscribers
+  you@example.com at 07:00 America/New_York: bbc-world, bbc-business, npr, guardian, aljazeera, verge, ars, hn
+
+source         status items   newest  article text
+bbc-world      OK        30      12m  ok
+bbc-business   OK        30      60m  ok
+npr            OK        10      31m  off
+guardian       OK        30      12m  ok
+aljazeera      OK        25      59m  ok
+verge          OK        10       0m  ok
+ars            OK        20    11.0h  ok
+hn             OK        30      33m  n/a
+```
+
+NPR is `off` because the example config sets `fetch_text: false` for it: fetching six NPR
+articles in a row the same morning gave one `200` and then `HTTP 402`, after which the circuit
+breaker skipped the rest of the domain instead of spending a request on each.
+
+## Web archive
+
+```sh
+newsbrief archive --out site      # index.html + 2026-09-25.html ... + .nojekyll
+```
+
+Every run stores the day's brief in the state db; `archive` renders them as a static site,
+newest first, using the email's own layout. If subscribers got different cuts, the fullest
+brief represents the day (or pick one with `--subscriber`). Pages contain no names, emails
+or unsubscribe links, so the folder can be published as is: push it to a `gh-pages` branch,
+or upload it with `actions/upload-pages-artifact` from the scheduled workflow.
+
+## Clustering eval
+
+`newsbrief eval` scores clustering against [`newsbrief/data/cluster_eval.json`](newsbrief/data/cluster_eval.json):
+the 180 URL-unique items the example feeds carried on 2026-09-25, with 16 hand-labeled
+multi-outlet stories. A pair of articles counts as positive when both land in one cluster.
+
+| | precision | recall | f1 |
+|---|---|---|---|
+| 0.1.0 | 0.933 | 0.151 | 0.259 |
+| two-shared-keywords rule (fixes the Rails false merge) | 1.000 | 0.151 | 0.262 |
+| + named-entity overlap (fixes the Medicare miss) | 0.955 | 0.226 | 0.365 |
+
+```
+$ newsbrief eval --show 2
+180 items, 93 labeled same-story pairs, 22 predicted
+precision 0.955  recall 0.226  f1 0.365
+  false merge: [aljazeera] Brazil’s Lula and Flavio Bolsonaro still essentially tied in new poll
+               [guardian] Lula says Trump wants to ‘colonise’ and capture Brazil’s resources by meddling in election
+  missed: [ars] OpenAI agent “didn’t accept no for an answer” in Australian government breach
+          [bbc-world] Why Australia chose the world's biggest political stage to reveal OpenAI hack
+  ...
+```
+
+Recall is low partly because of how the labels are drawn: the day's Trump/Xi visit is one
+11-article story (55 of the 93 pairs), and headlines like "Pomp and toasts: Day 2 of Trump
+and Xi in DC" vs "The world's two most powerful men just met" share no keywords at all.
+In experiments, linking new articles to any cluster member instead of only the leader
+reached recall 0.43, but precision fell to 0.70-0.77 (a 2024 rally shooting joined the Xi
+story through "Trump"), so clustering stays leader-based. `tests/test_dedupe.py` fails if precision drops
+below 0.9 or either known case regresses.
+
 ## Real output
 
 A dry run against the example config's live feeds (BBC World and Business, NPR, Guardian,
-Al Jazeera, The Verge, Ars Technica, HN) on 2026-09-25. No API key was set, so it used
-the extractive summaries:
+Al Jazeera, The Verge, Ars Technica, HN) on 2026-09-25, with `topic_weights: {tech: 1.3,
+business: 0.8}`, `boost: [OpenAI, "open source"]` and `mute: [celebrity]`. No API key was set,
+so it used the extractive summaries:
 
 ```
 $ newsbrief run --dry-run
-INFO newsbrief.pipeline: aljazeera       25 items
 INFO newsbrief.pipeline: verge           10 items
 INFO newsbrief.pipeline: ars             20 items
+INFO newsbrief.pipeline: aljazeera       25 items
 INFO newsbrief.pipeline: npr             10 items
-INFO newsbrief.pipeline: bbc-business    30 items
 INFO newsbrief.pipeline: guardian        30 items
+INFO newsbrief.pipeline: bbc-business    30 items
 INFO newsbrief.pipeline: bbc-world       30 items
 INFO newsbrief.pipeline: hn              30 items
+WARNING newsbrief.http: circuit open for openai.com (blocked)
 you@...: 12 stories via outbox -> outbox/you-...-2026-09-25.html
 ```
 
@@ -136,36 +231,44 @@ Good morning, Saksham. 12 stories today across world, tech, business.
 ## WORLD
 
 * Trump and Xi exchange warm words at state dinner but little progress on
-key issues
-  The two superpowers seek greater dialogue despite differences over issues
-  such as Iran, Taiwan, AI and trade.
+key issues (1 min read)
+  Despite diplomatic niceties and gifts, little was shared on substantial
+  issues separating the leaders.
+  Why it matters: Xi and Trump discussed tensions over Taiwan, trade and
+  artificial intelligence during business hours, all while a First Amendment
+  fight over press access at the White House was unfolding.
   - bbc-world: https://www.bbc.co.uk/news/articles/cxq63dqp93n1o
   - aljazeera: https://www.aljazeera.com/news/2026/9/25/trump-praises-us-china-friendship-at-state-dinner-with-xi-jinping
 
-* Four civilians killed in Pakistani strikes in Afghanistan, Taliban says
-  Pakistan says it struck 10 targets, adding the strikes were "strictly
-  limited to identified military objectives".
-  - bbc-world: https://www.bbc.co.uk/news/articles/cm86xn0nnw58o
-  - aljazeera: https://www.aljazeera.com/news/2026/9/25/pakistani-forces-kill-afghan-taliban-fighters-in-border-escalation
+* Saudi Arabia intercepts wave of Houthi missiles as oil climbs to one-week
+high (3 min read)
+  ...
+  - guardian: https://www.theguardian.com/world/2026/sep/25/saudi-arabia-intercepts-houthi-missiles-oil-prices-climbs
+  - aljazeera: https://www.aljazeera.com/news/2026/9/25/saudi-arabia-allies-line-up-support-as-houthi-attacks-mount
+  - aljazeera: https://www.aljazeera.com/news/2026/9/25/saudi-turkish-pakistani-chiefs-plan-urgent-talks-amid-yemen-fighting
+  - aljazeera: https://www.aljazeera.com/economy/2026/9/25/oil-prices-jump-after-yemens-houthis-claim-attacks-on-saudi-facilities
 
 ## TECH
 
 * F-Droid gets its biggest update in a decade with new UI and smoother app
-installs
+installs (2 min read)
   ...
   - ars: https://arstechnica.com/gadgets/2026/09/f-droid-gets-its-biggest-update-in-a-decade-with-new-ui-and-smoother-app-installs/
   - hn: https://f-droid.org/2026/09/24/f-droid-2.0-a-new-chapter-for-android-freedom.html
-    discussion (1206 pts): https://news.ycombinator.com/item?id=49831968
+    discussion (1237 pts): https://news.ycombinator.com/item?id=49831968
 ```
-
-On that day's 185 items, clustering merged same-event coverage across outlets, including
-BBC/Al Jazeera, BBC/Guardian, BBC/NPR, Guardian/Al Jazeera, Ars/BBC and Ars/HN pairs.
 
 ### Known limits
 
-- Keyword clustering still makes mistakes. On the day above it merged two different
-  Rails posts from HN and missed a Guardian/Guardian pair about the same Medicare hack.
-- Some sites block scripted fetches (NPR answered `402`). Those stories fall back to the feed blurb.
+- Clustering recall is low on big multi-angle stories (see [Clustering eval](#clustering-eval)):
+  the Trump/Xi visit still came out as two clusters plus singletons.
+- Irregular demonyms aren't matched to places ("Italian"/"Italy", "French"/"France"). A simple
+  suffix rule did match "Australian"/"Australia" but also "Israeli"/"Israel" into false merges,
+  so it was left out.
+- The extractive "why it matters" line keys on cue words ("could", "first", "record", ...), so it
+  can pick a sentence that is on topic but not really context. Claude writes a proper one.
+- `check --feeds` probes one article per feed, so a site that blocks only some pages (NPR) can
+  still show `ok`.
 - Pairwise clustering is O(n × clusters), which is fine for a few hundred items a day.
   Beyond that, switch to MinHash LSH.
 
@@ -174,6 +277,7 @@ BBC/Al Jazeera, BBC/Guardian, BBC/NPR, Guardian/Al Jazeera, Ars/BBC and Ars/HN p
 ```sh
 pip install -e '.[dev,claude]'
 pytest -q        # local fixtures only; a conftest guard fails any test that touches the network
+newsbrief eval   # clustering precision/recall on the labeled real-feed set
 ```
 
 MIT licensed.
