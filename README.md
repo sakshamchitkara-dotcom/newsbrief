@@ -179,6 +179,7 @@ multi-outlet stories. A pair of articles counts as positive when both land in on
 | 0.1.0 | 0.933 | 0.151 | 0.259 |
 | two-shared-keywords rule (fixes the Rails false merge) | 1.000 | 0.151 | 0.262 |
 | + named-entity overlap (fixes the Medicare miss) | 0.955 | 0.226 | 0.365 |
+| + names at sentence starts, in Title Case and "Xi" (0.3.0) | 0.966 | 0.301 | 0.459 |
 
 ```
 $ newsbrief eval --show 2

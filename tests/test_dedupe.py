@@ -115,3 +115,21 @@ def test_terms_find_names_but_not_sentence_starts_or_title_case():
     assert "expert" not in t.entities and "the" not in t.keywords  # sentence-initial, stopword
     hn = terms(Article("Show HN: Make Cursed Fonts Like Times New Bastard", "u", "hn"))
     assert hn.entities == set()  # Title Case capitalises everything; only acronyms would count
+
+
+def test_names_found_at_sentence_start_and_in_title_case():
+    from newsbrief.dedupe import promote_names, terms
+
+    arts = [
+        Article("Trump and Xi exchange warm words at state dinner", "u1", "bbc"),
+        Article("State dinner: how Trump welcomed Xi", "u2", "bbc", summary="Xi was met by Trump."),
+        Article("Xi leaves Washington", "u5", "npr", summary="Aides said Trump saw him off."),
+        Article("Her performance trumped nine other finalists", "u3", "aj"),  # lowercase "trump"
+        Article("Google's Project Suncatcher To Put ML In Space", "u4", "hn",
+                summary="The company said Suncatcher will launch soon."),
+    ]
+    ts = [terms(a) for a in arts]
+    assert "trump" not in ts[0].entities  # sentence start: not a name on its own ...
+    promote_names(ts)
+    assert {"trump", "xi"} <= ts[0].entities  # ... but written as one elsewhere today
+    assert "suncatcher" in ts[4].entities and "project" not in ts[4].entities
