@@ -180,25 +180,36 @@ multi-outlet stories. A pair of articles counts as positive when both land in on
 | two-shared-keywords rule (fixes the Rails false merge) | 1.000 | 0.151 | 0.262 |
 | + named-entity overlap (fixes the Medicare miss) | 0.955 | 0.226 | 0.365 |
 | + names at sentence starts, in Title Case and "Xi" (0.3.0) | 0.966 | 0.301 | 0.459 |
+| + two names shared by both headlines (0.3.0) | 0.955 | 0.677 | 0.792 |
 
 ```
 $ newsbrief eval --show 2
-180 items, 93 labeled same-story pairs, 22 predicted
-precision 0.955  recall 0.226  f1 0.365
+180 items, 93 labeled same-story pairs, 66 predicted
+precision 0.955  recall 0.677  f1 0.792
+  false merge: [ars] New York defies Trump admin, asks court to shut down Polymarket gambling
+               [guardian] Delcy Rodríguez poses with Trump in New York as Maduro languishes in jail nearby
   false merge: [aljazeera] Brazil’s Lula and Flavio Bolsonaro still essentially tied in new poll
                [guardian] Lula says Trump wants to ‘colonise’ and capture Brazil’s resources by meddling in election
+  ... 1 more false merge pairs (--show N)
   missed: [ars] OpenAI agent “didn’t accept no for an answer” in Australian government breach
           [bbc-world] Why Australia chose the world's biggest political stage to reveal OpenAI hack
   ...
 ```
 
-Recall is low partly because of how the labels are drawn: the day's Trump/Xi visit is one
-11-article story (55 of the 93 pairs), and headlines like "Pomp and toasts: Day 2 of Trump
-and Xi in DC" vs "The world's two most powerful men just met" share no keywords at all.
-In experiments, linking new articles to any cluster member instead of only the leader
-reached recall 0.43, but precision fell to 0.70-0.77 (a 2024 rally shooting joined the Xi
-story through "Trump"), so clustering stays leader-based. `tests/test_dedupe.py` fails if precision drops
-below 0.9 or either known case regresses.
+Most of the labeled pairs belong to the day's Trump/Xi visit: one 11-article story (55 of the 93
+pairs) whose headlines ("Pomp and toasts: Day 2 of Trump and Xi in DC", "Trump swoons over
+strongman soulmate Xi") share almost nothing but the two names. Two changes in 0.3.0 recovered it
+as a single cluster without giving up precision:
+
+- names are recognised at sentence starts and in Title Case headlines once today's other articles
+  write the word as a name mid-sentence, and two-letter names like "Xi" are kept (acronyms like
+  "UN" and "UK" are not: they merged unrelated UN-speech and UK-economy stories);
+- two articles whose headlines share two or more names with a summed idf of at least 5 are one story.
+
+Linking new articles to any cluster member instead of only the leader was tried again: recall
+barely moves now and precision drops to 0.69-0.83, so clustering stays leader-based. The rules were
+tuned on this one day, so treat the numbers as an upper bound on other days.
+`tests/test_dedupe.py` fails if precision drops below 0.9, recall below 0.6, or a known case regresses.
 
 ## Real output
 
@@ -261,8 +272,9 @@ installs (2 min read)
 
 ### Known limits
 
-- Clustering recall is low on big multi-angle stories (see [Clustering eval](#clustering-eval)):
-  the Trump/Xi visit still came out as two clusters plus singletons.
+- Clustering is leader-based, so a story whose articles share little with its lead still splits:
+  the OpenAI/Australia hack came out as three clusters (see [Clustering eval](#clustering-eval)).
+  Place names that are also people's surroundings ("New York" + "Trump") can merge two stories.
 - Irregular demonyms aren't matched to places ("Italian"/"Italy", "French"/"France"). A simple
   suffix rule did match "Australian"/"Australia" but also "Israeli"/"Israel" into false merges,
   so it was left out.
