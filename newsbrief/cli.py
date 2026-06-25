@@ -78,7 +78,8 @@ def cmd_check(args) -> int:
         return 0
     from .health import check_feeds, report
 
-    table, ok = report(check_feeds(list(cfg.sources.values()), probe_text=cfg.fetch_articles),
+    table, ok = report(check_feeds(list(cfg.sources.values()), probe_text=cfg.fetch_articles and args.probe > 0,
+                                   probes=args.probe),
                        stale_hours=args.stale_hours)
     print()
     print(table)
@@ -199,6 +200,8 @@ def main(argv: list[str] | None = None) -> int:
     c = sub.add_parser("check", help="validate config and show who gets what; --feeds for feed health")
     c.add_argument("--feeds", action="store_true", help="fetch every source and report freshness and failures")
     c.add_argument("--stale-hours", type=float, default=24, help="flag feeds whose newest item is older (default 24)")
+    c.add_argument("--probe", type=int, default=3, metavar="N",
+                   help="article pages to fetch per feed to test access (default 3, 0 to skip)")
     c.set_defaults(func=cmd_check)
 
     a = sub.add_parser("archive", help="build a static HTML archive of past briefs (e.g. for GitHub Pages)")
