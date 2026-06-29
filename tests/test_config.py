@@ -1,4 +1,5 @@
 import json
+import re
 
 import pytest
 
@@ -60,3 +61,13 @@ def test_json_and_yaml_loading(tmp_path):
 def test_duplicate_subscribers_rejected():
     with pytest.raises(ConfigError, match="duplicate subscriber"):
         parse_config({**BASE, "subscribers": [{"email": "a@b.c"}, {"email": "A@b.c"}]})
+
+
+@pytest.mark.parametrize("raw,err", [
+    ({"max_storie": 5, "sources": {"a": {"url": "x"}}}, "config: unknown keys ['max_storie']"),
+    ({"sources": {"a": {"url": "x", "wieght": 2}}}, "source a: unknown keys ['wieght']"),
+    ({"sources": {"a": ["x"]}}, "source a: expected a mapping"),
+])
+def test_typos_are_config_errors(raw, err):
+    with pytest.raises(ConfigError, match=re.escape(err)):
+        parse_config(raw)
