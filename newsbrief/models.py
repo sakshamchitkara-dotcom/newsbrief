@@ -36,6 +36,9 @@ class Story:
     headline: str = ""
     summary: str = ""
     why_it_matters: str = ""
+    since: str = ""  # ISO date this story first appeared in the subscriber's brief ("" = new today)
+    day: int = 0  # 2 = second day in the brief, ...
+    previously: str = ""  # headline it ran under last time
 
     @property
     def lead(self) -> Article:

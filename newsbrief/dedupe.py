@@ -5,6 +5,7 @@ import math
 import re
 from collections import Counter
 from dataclasses import dataclass, field
+from datetime import date
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from .models import Article, Story
@@ -237,3 +238,24 @@ def cluster(articles: list[Article]) -> list[Story]:
         else:
             groups.append([i])
     return [Story(articles=[articles[i] for i in g]) for g in groups]
+
+
+def track(stories: list[Story], past: list[tuple[str, Story]], today: date) -> None:
+    """Mark stories that continue one from an earlier brief: `past` is (ISO date, story),
+    newest first. A story continues the most recent past story any of its articles
+    resembles, by the same test clustering uses, and inherits that story's start date."""
+    if not stories or not past:
+        return
+    arts = [a for s in stories for a in s.articles[:5]] + [a for _, p in past for a in p.articles[:5]]
+    boiler = source_boilerplate(arts)
+    t = {id(a): terms(a, boiler.get(a.source, set())) for a in arts}
+    promote_names(list(t.values()))
+    idf = idf_weights([x.keywords for x in t.values()])
+    n = len(arts)
+    for s in stories:
+        for day, p in past:
+            if any(similar(x, y, t[id(x)], t[id(y)], idf, n) for x in s.articles[:5] for y in p.articles[:5]):
+                s.since = p.since or day
+                s.day = (today - date.fromisoformat(s.since)).days + 1
+                s.previously = p.headline or p.lead.title
+                break

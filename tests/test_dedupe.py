@@ -150,3 +150,19 @@ def test_two_names_in_both_headlines_merge_a_reworded_story():
     assert any({a.url for a in s.articles} == {a.url for a in xi} for s in stories)
     alone = {a.url for a in other}
     assert all(len(s.articles) == 1 for s in stories if s.lead.url in alone)  # one shared name is not enough
+
+
+def test_track_links_follow_ups_and_inherits_start_date():
+    from datetime import date
+
+    from newsbrief.dedupe import track
+    from newsbrief.models import Story
+
+    fill = [Story([Article(f"{t} ({i})", f"https://f.com/{i}", f"f{i}")]) for i, t in enumerate(FILLER_TITLES * 5)]
+    past = [("2026-09-24", Story([Article("Pope Leo visits France for first papal visit in 18 years", "https://g/1", "guardian")],
+                                 headline="Pope arrives in France", since="2026-09-23"))] + [("2026-09-24", s) for s in fill]
+    today = [Story([Article("Pope Leo celebrates Mass for huge crowd in Paris on France visit", "https://b/2", "bbc")]),
+             Story([Article("Volcano erupts in Iceland", "https://b/3", "bbc")])]
+    track(today, past, date(2026, 9, 25))
+    assert (today[0].since, today[0].day, today[0].previously) == ("2026-09-23", 3, "Pope arrives in France")
+    assert today[1].day == 0 and today[1].since == ""

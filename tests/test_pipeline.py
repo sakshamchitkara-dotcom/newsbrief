@@ -106,3 +106,18 @@ def test_fetch_text_policy_skips_blocking_sources(cfg, monkeypatch):
     fetched.clear()
     pipeline.build_brief(cfg, cfg.subscribers[0], arts, State(cfg.state_db), NOW, fetch_text=True, use_claude=False)
     assert len(fetched) == len(brief.stories) + len(top.articles) - 1  # all of the top story's outlets
+
+
+def test_developing_story_is_tracked_across_days(cfg, monkeypatch):
+    from datetime import timedelta
+
+    monkeypatch.setenv("NEWSBRIEF_SECRET", "test-secret")
+    monkeypatch.setattr(pipeline, "send", lambda *a: "smtp")
+    pipeline.run(cfg, dry_run=False, now=NOW, fetch_text=False, subscriber="ann@example.com")
+    # next day the wire runs a follow-up on the rates story
+    feed = (FIX / "rss2.xml").read_bytes().replace(b"wire.example.com/rates", b"wire.example.com/rates-reaction")
+    monkeypatch.setitem(pipeline.FETCHERS, "rss", lambda src: parse_feed(
+        feed if src.url == "rss2.xml" else (FIX / src.url).read_bytes(), src))
+    (out,) = pipeline.run(cfg, dry_run=True, now=NOW + timedelta(days=1), fetch_text=False, subscriber="ann@example.com")
+    page = out.paths[1].read_text()
+    assert out.stories == 1 and "Day 2</span>" in page and "Following since Sep 24." in page

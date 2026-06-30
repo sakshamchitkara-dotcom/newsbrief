@@ -28,7 +28,7 @@ sources ──► collect ──► cluster ──► rank ──► filter ─�
 | Article text | `extract.py`, `http.py` | Fetches each chosen story's page (and every outlet's page for the top story), respecting `robots.txt` and per-source `fetch_text`, and keeps the parent element holding the most paragraph text. 429/5xx are retried with backoff; a domain that answers 401/402/403 is skipped for an hour, one that fails 3 times in a row for 5 minutes. |
 | Dedupe | `dedupe.py` | Exact URL dedupe, then leader clustering: cross-outlet 3-word shingle Jaccard (syndicated copy), idf-weighted keyword Jaccard over title + lede with at least two shared keywords (rewrites of the same event), or shared names: words capitalised mid-sentence and acronyms ("OpenAI", "Medicare", "NYC"). Phrases an outlet repeats across items ("Get our breaking news email...") are stripped first, and live blogs never lead a story. Scored by `newsbrief eval`. |
 | Ranking | `rank.py` | `recency (12h half-life) × source weight × (1 + log2 outlets) × HN popularity`, then each subscriber's topic weights, boosts and mutes, then a per-topic cap so one busy beat can't fill the brief. |
-| State | `state.py` | SQLite: URLs already sent to each subscriber (so tomorrow's brief doesn't repeat them), deliveries per local day, unsubscribes, and each day's brief for the web archive. |
+| State | `state.py` | SQLite: URLs already sent to each subscriber (so tomorrow's brief doesn't repeat them, while a developing story returns with its new articles), deliveries per local day, unsubscribes, and each day's brief for the web archive. |
 | Summaries | `summarize.py` | `claude-opus-5-5` via `messages.parse` with a Pydantic schema (headline, summary, intro, and a "why it matters" line for the top story only), `effort: medium`. Falls back to extractive summaries with no API key, a refusal, truncation or any API error. The extractive "why it matters" picks an on-topic sentence about consequences, records or risks, and is left out when none qualifies. |
 | Email | `render.py`, `deliver.py`, `unsubscribe.py` | Table layout with inline CSS and a text/plain alternative, with reading time for stories whose article text was fetched. HMAC unsubscribe link, `List-Unsubscribe` and one-click `List-Unsubscribe-Post` headers. |
 | Archive | `archive.py` | Static `index.html` plus one page per day, no subscriber data, GitHub Pages ready. |
@@ -119,6 +119,15 @@ Each subscriber gets one brief per local day, on the first run after their `send
   variable `NEWSBRIEF_ENABLED=true`. The config lives in the `NEWSBRIEF_CONFIG` secret, so subscriber
   addresses stay out of the repo. The SQLite state is carried between runs in the Actions cache.
   A manual dispatch defaults to a dry run and uploads the outbox as an artifact.
+
+## Developing stories
+
+Each brief is compared with the subscriber's briefs from the past 7 days (kept in the state db).
+A story that continues an earlier one, by the same test clustering uses, gets a **Day N** badge
+and a line like "Following since Sep 23. Previously: Pope arrives in France". Articles the
+subscriber already received are dropped from the story, not the whole story, so a big story
+comes back each day with that day's reporting. On archive pages the start date links to that
+day's page, so a story can be followed back through the archive.
 
 ## Unsubscribing
 
