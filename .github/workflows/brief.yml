@@ -1,6 +1,10 @@
 # Scheduled delivery. Runs hourly; each subscriber gets their brief on the first run
 # after their local send_at. Opt-in: set repo variable NEWSBRIEF_ENABLED=true.
 #
+# Web archive: set repo variable NEWSBRIEF_PAGES=true and choose "GitHub Actions" as the
+# Pages source (Settings > Pages) to publish `newsbrief archive` (no subscriber data) after
+# every run.
+#
 # Secrets:
 #   NEWSBRIEF_CONFIG   full YAML config (kept secret so subscriber emails stay private)
 #   NEWSBRIEF_SECRET   unsubscribe token key
@@ -77,3 +81,31 @@ jobs:
           name: outbox
           path: outbox/
           if-no-files-found: ignore
+
+      - name: Configure Pages
+        id: pages
+        if: vars.NEWSBRIEF_PAGES == 'true'
+        uses: actions/configure-pages@v5
+
+      - name: Build archive
+        if: vars.NEWSBRIEF_PAGES == 'true'
+        run: newsbrief archive --out site --site-url "${{ steps.pages.outputs.base_url }}"
+
+      - uses: actions/upload-pages-artifact@v3
+        if: vars.NEWSBRIEF_PAGES == 'true'
+        with:
+          path: site/
+
+  pages:
+    needs: brief
+    if: vars.NEWSBRIEF_PAGES == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4
