@@ -81,6 +81,7 @@ subscribers:
     topic_weights: {tech: 1.5, business: 0.5}   # optional rank multiplier per topic; 0 hides it
     boost: [climate, "open source"]             # optional: x1.5 when a title/blurb mentions one
     mute: [celebrity]                           # optional: drop stories that mention one
+    weekly: true                                # optional: also gets `newsbrief digest`
 ```
 
 Unknown topics, sources or keys, duplicate subscribers, bad timezones and bad `send_at`
@@ -128,6 +129,19 @@ and a line like "Following since Sep 23. Previously: Pope arrives in France". Ar
 subscriber already received are dropped from the story, not the whole story, so a big story
 comes back each day with that day's reporting. On archive pages the start date links to that
 day's page, so a story can be followed back through the archive.
+
+## Weekly digest
+
+```sh
+newsbrief digest --dry-run          # subscribers with weekly: true
+newsbrief digest --dry-run --subscriber you@example.com --days 7
+```
+
+`digest` rebuilds the week from the briefs stored each day: stories that ran on several days are
+grouped into one thread (by the clustering test), threads are ranked by days in the brief and then
+by outlets, and each is shown as its latest version with a "Day N" badge and the headline it
+started under. It sends to subscribers with `weekly: true` (all the usual transports, and it needs
+`NEWSBRIEF_SECRET` like `run`); run it once a week from cron, for example `0 8 * * SUN`.
 
 ## Unsubscribing
 

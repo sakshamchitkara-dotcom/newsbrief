@@ -39,6 +39,7 @@ class Subscriber:
     topic_weights: dict[str, float] = field(default_factory=dict)  # {tech: 1.5, business: 0.5}
     boost: list[str] = field(default_factory=list)  # words/phrases that lift a story
     mute: list[str] = field(default_factory=list)  # words/phrases that drop a story
+    weekly: bool = False  # also gets `newsbrief digest`, the week's biggest stories
 
 
 @dataclass
