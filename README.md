@@ -143,6 +143,18 @@ by outlets, and each is shown as its latest version with a "Day N" badge and the
 started under. It sends to subscribers with `weekly: true` (all the usual transports, and it needs
 `NEWSBRIEF_SECRET` like `run`); run it once a week from cron, for example `0 8 * * SUN`.
 
+## Audio brief
+
+```sh
+newsbrief audio                       # newest stored brief -> outbox/brief-2026-09-25.m4a (macOS `say`)
+newsbrief audio --voice Samantha --rate 190 --out ~/Podcasts/brief.m4a
+newsbrief audio --script-only         # just the spoken script as .txt, for any other TTS engine
+```
+
+Reads the intro, then each story's headline, summary and "why it matters", grouped by topic, and
+leaves links out. A real run on the 2026-09-25 brief: `588 words -> outbox/brief-2026-09-25.m4a`,
+a 3 min 46 s mono AAC file, written in 23 s. The script is saved next to the audio as `.txt`.
+
 ## Unsubscribing
 
 Every email has an unsubscribe link and `List-Unsubscribe` header, signed with `NEWSBRIEF_SECRET`.
