@@ -7,7 +7,7 @@ from datetime import datetime
 from itertools import combinations
 from pathlib import Path
 
-from .dedupe import cluster
+from .dedupe import cluster, dedupe_urls
 from .models import Article
 
 DEFAULT_SET = Path(__file__).parent / "data" / "cluster_eval.json"
@@ -70,3 +70,20 @@ def evaluate(labeled: list[tuple[Article, str | None]]) -> EvalResult:
         false_merges=[pair(x) for x in sorted(p - g, key=sorted)],
         misses=[pair(x) for x in sorted(g - p, key=sorted)],
     )
+
+
+def snapshot(articles: list[Article], captured: str) -> dict:
+    """A new labeled set to hand-correct: today's items, URL-deduplicated, with each
+    multi-article cluster pre-labeled "c1", "c2", ... so labeling starts from the
+    current clustering instead of from scratch."""
+    labels = {}
+    for n, s in enumerate((s for s in cluster(articles) if len(s.articles) > 1), 1):
+        labels.update({a.url: f"c{n}" for a in s.articles})
+    items = [
+        {"story": labels.get(a.url), "source": a.source, "title": a.title, "url": a.url, "summary": a.summary,
+         "published": a.published.isoformat() if a.published else None, "weight": a.weight, "score": a.score}
+        for a in sorted(dedupe_urls(articles), key=lambda a: (labels.get(a.url) or "~", a.source, a.title))
+    ]
+    return {"captured": captured, "description": "Pre-labeled by newsbrief's own clustering: fix the "
+            "labels by hand (same label = same event, null = stands alone) before using it with `eval --set`.",
+            "items": items}

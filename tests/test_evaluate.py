@@ -37,3 +37,20 @@ def test_shipped_eval_set_is_well_formed():
     assert titles["What About Rails?"] is None and titles["Rails World 2026 Opening Keynote [video]"] is None
     medicare = [t for t, s in titles.items() if s == "openai-australia-medicare-hack" and "Medicare" in t]
     assert len(medicare) == 2
+
+
+def test_snapshot_prelabels_clusters_and_round_trips(tmp_path):
+    import json
+
+    from newsbrief.evaluate import evaluate, load_set, snapshot
+    from newsbrief.models import Article
+
+    arts = [Article("Central bank raises interest rates", "https://a/1?utm_source=x", "a"),
+            Article("Central bank raises interest rates again", "https://b/1", "b"),
+            Article("Floods hit northern Italy", "https://c/1", "c")]
+    data = snapshot(arts, "2026-09-25")
+    assert [(it["story"], it["source"]) for it in data["items"]] == [("c1", "a"), ("c1", "b"), (None, "c")]
+    p = tmp_path / "day.json"
+    p.write_text(json.dumps(data))
+    r = evaluate(load_set(p))
+    assert (r.precision, r.recall) == (1.0, 1.0)  # unedited, it agrees with itself by construction
