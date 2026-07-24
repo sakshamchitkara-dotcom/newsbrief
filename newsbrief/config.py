@@ -88,6 +88,7 @@ def parse_config(data: dict) -> Config:
         if stype != "hackernews" and not raw.get("url"):
             raise ConfigError(f"source {name}: url is required")
         _known_keys(Source, raw, f"source {name}", reserved={"name"})  # the mapping key is the name
+        _lists(raw, ("topics",), f"source {name}")
         sources[name] = Source(name=name, type=stype, **raw)
     if not sources:
         raise ConfigError("at least one source is required")
@@ -95,6 +96,9 @@ def parse_config(data: dict) -> Config:
     known_topics = {t for s in sources.values() for t in s.topics} | {"news"}  # "news": untagged sources
     subs, emails = [], set()
     for raw in data.get("subscribers") or []:
+        if isinstance(raw, dict):
+            raw = dict(raw)
+            _lists(raw, ("topics", "sources", "boost", "mute"), f"subscriber {raw.get('email', '?')!r}")
         try:
             sub = Subscriber(**raw)
         except TypeError as e:
@@ -124,6 +128,16 @@ def parse_config(data: dict) -> Config:
     top = {k: v for k, v in data.items() if k not in ("sources", "subscribers")}
     _known_keys(Config, top, "config")
     return Config(sources=sources, subscribers=subs, **top)
+
+
+def _lists(raw: dict, keys: tuple[str, ...], where: str) -> None:
+    """`mute: celebrity` means [celebrity]; left as a string it would be iterated letter by letter."""
+    for k in keys:
+        v = raw.get(k)
+        if isinstance(v, str):
+            raw[k] = [v]
+        elif v is not None and not (isinstance(v, list) and all(isinstance(x, str) for x in v)):
+            raise ConfigError(f"{where}: {k} must be a list of strings, got {v!r}")
 
 
 def _known_keys(cls, raw: dict, where: str, reserved: set[str] = frozenset()) -> None:

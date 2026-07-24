@@ -71,3 +71,11 @@ def test_duplicate_subscribers_rejected():
 def test_typos_are_config_errors(raw, err):
     with pytest.raises(ConfigError, match=re.escape(err)):
         parse_config(raw)
+
+
+def test_single_string_lists_are_one_item_lists():
+    c = parse_config({"sources": {"a": {"url": "x", "topics": "world"}},
+                      "subscribers": [{"email": "a@b.c", "mute": "celebrity", "topics": "world"}]})
+    assert c.sources["a"].topics == ["world"] and c.subscribers[0].mute == ["celebrity"]
+    with pytest.raises(ConfigError, match="boost must be a list of strings"):
+        parse_config({"sources": {"a": {"url": "x"}}, "subscribers": [{"email": "a@b.c", "boost": {"x": 1}}]})
