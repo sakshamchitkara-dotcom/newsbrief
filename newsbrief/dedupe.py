@@ -237,7 +237,18 @@ def cluster(articles: list[Article]) -> list[Story]:
                 break
         else:
             groups.append([i])
-    return [Story(articles=[articles[i] for i in g]) for g in groups]
+    return [Story(articles=spread([articles[i] for i in g])) for g in groups]
+
+
+def spread(articles: list[Article]) -> list[Article]:
+    """Lead first, then one article per other outlet, then the rest. Links, Claude's
+    prompt and the top story's text fetch all take the first few articles, and a big
+    story would otherwise show five BBC links and hide the Guardian, NPR and Al Jazeera."""
+    firsts, rest, seen = [], [], set()
+    for a in articles:
+        (rest if a.source in seen else firsts).append(a)
+        seen.add(a.source)
+    return firsts + rest
 
 
 def track(stories: list[Story], past: list[tuple[str, Story]], today: date) -> None:
