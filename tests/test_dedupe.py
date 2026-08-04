@@ -174,3 +174,12 @@ def test_story_articles_spread_across_outlets():
     arts = [Article(str(i), f"u{i}", src) for i, src in enumerate(["bbc", "bbc", "bbc", "guardian", "bbc", "npr"])]
     assert [a.source for a in spread(arts)] == ["bbc", "guardian", "npr", "bbc", "bbc", "bbc"]
     assert spread(arts)[0] is arts[0]
+
+
+def test_video_clips_do_not_lead_a_story():
+    clip = Article("Pope Leo visits France for first papal visit in 18 years", "https://bbc.co.uk/news/videos/c1",
+                   "bbc-world", weight=1.3, summary="Pope Leo visits France, the first papal visit in 18 years.")
+    news = Article("Pope Leo visits France in first papal visit in 18 years", "https://aj.com/pope", "aljazeera",
+                   weight=1.0, summary="Pope Leo visits France, the first papal visit in 18 years.")
+    (story,) = cluster([clip, news])
+    assert story.lead is news

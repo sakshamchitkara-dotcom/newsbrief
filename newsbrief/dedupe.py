@@ -199,6 +199,11 @@ def similar(a: Article, b: Article, ta: Terms, tb: Terms, idf: dict[str, float],
     return kw >= 0.07 and overlap(keywords(a.title), keywords(b.title), idf) >= TITLE_OVERLAP
 
 
+def is_clip(a: Article) -> bool:
+    """A video page: a headline and a caption, no reporting to summarize or read."""
+    return "/videos/" in a.url or "/video/" in a.url or a.title.lower().startswith("watch:")
+
+
 def is_live(a: Article) -> bool:
     t = a.title.lower()
     return "/live/" in a.url or t.endswith((" – live", " - live", "as it happened")) or t.startswith("live:")
@@ -221,8 +226,9 @@ def cluster(articles: list[Article]) -> list[Story]:
     mentions everything.
     """
     # Leaders (and so story leads) are the heaviest sources; live blogs go last since
-    # their feed blurb and headline wander across many events.
-    articles = sorted(dedupe_urls(articles), key=lambda a: (is_live(a), -a.weight, -len(a.body)))
+    # their feed blurb and headline wander across many events, and video clips just before
+    # them: a clip makes a thin lead ("Pomp and toasts" led the Trump/Xi story, 1 min read).
+    articles = sorted(dedupe_urls(articles), key=lambda a: (is_live(a), is_clip(a), -a.weight, -len(a.body)))
     # Rare words (names, places) say far more about "same event" than common ones.
     boiler = source_boilerplate(articles)
     t = [terms(a, boiler.get(a.source, set())) for a in articles]
