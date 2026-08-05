@@ -103,6 +103,7 @@ class Terms:
     capitalized: set[str] = field(default_factory=set)  # capitalised anywhere, sentence starts included
     lowercase: set[str] = field(default_factory=set)  # seen lowercase mid-sentence
     title: set[str] = field(default_factory=set)  # keywords of the headline alone
+    adjacent: set[frozenset[str]] = field(default_factory=set)  # capitalised neighbours in the headline
 
     @property
     def title_names(self) -> set[str]:
@@ -115,7 +116,7 @@ def terms(a: Article, boiler: set[tuple[str, ...]] = frozenset()) -> Terms:
     A name is a word capitalised mid-sentence, or an acronym. Title Case headlines (HN,
     The Verge) capitalise everything, so there only acronyms count.
     """
-    kws, ents, caps, lower, title = set(), set(), set(), set(), set()
+    kws, ents, caps, lower, title, adjacent = set(), set(), set(), set(), set(), set()
     for n_seg, seg in enumerate((a.title, a.body[:300])):
         words = list(_WORD.finditer(seg))
         low = [m.group().lower() for m in words]
@@ -125,12 +126,13 @@ def terms(a: Article, boiler: set[tuple[str, ...]] = frozenset()) -> Terms:
                 if tuple(low[i : i + 4]) in boiler:
                     drop.update(range(i, i + 4))
         title_case = sum(m.group()[0].isupper() for m in words) > 0.6 * len(words)
-        prev_end = 0
+        prev_end, prev_cap = 0, ""
         for i, m in enumerate(words):
             w, lw, gap, prev_end = m.group(), low[i], seg[prev_end : m.start()], m.end()
             # two-letter words count only as names like "Xi"; "UN", "UK" and "US" merge too much
             short = len(lw) < 2 or (len(lw) == 2 and not (w[0].isupper() and w[1].islower()))
             if i in drop or lw in STOPWORDS or short:
+                prev_cap = ""
                 continue
             stem = _stem(lw)
             kws.add(stem)
@@ -142,9 +144,14 @@ def terms(a: Article, boiler: set[tuple[str, ...]] = frozenset()) -> Terms:
                 ents.add(stem)
             if w[0].isupper():
                 caps.add(stem)
-            elif mid_sentence:
-                lower.add(stem)
-    return Terms(kws, ents, caps, lower, title)
+                if n_seg == 0 and prev_cap and gap.strip() == "":
+                    adjacent.add(frozenset((prev_cap, stem)))  # "Elon Musk": one person, two words
+                prev_cap = stem
+            else:
+                prev_cap = ""
+                if mid_sentence:
+                    lower.add(stem)
+    return Terms(kws, ents, caps, lower, title, adjacent)
 
 
 def promote_names(ts: list[Terms]) -> None:
@@ -185,8 +192,10 @@ def similar(a: Article, b: Article, ta: Terms, tb: Terms, idf: dict[str, float],
         return True
     # ... or two names in both headlines that are rare enough between them: a headline names
     # its story's actors ("Trump ... Xi", "OpenAI ... Australia") even when the rest is reworded.
+    # Two words of one name ("Elon Musk") are one name, not two.
     both = ta.title_names & tb.title_names
-    if len(both) >= 2 and sum(idf.get(w, 1.0) for w in both) >= TITLE_NAMES_WEIGHT:
+    one_name = len(both) == 2 and frozenset(both) in ta.adjacent | tb.adjacent
+    if len(both) >= 2 and not one_name and sum(idf.get(w, 1.0) for w in both) >= TITLE_NAMES_WEIGHT:
         return True
     # ... or two, one of which no other article mentions ("Medicare" + "Australia").
     only_here = math.log(1 + n_docs / 2) if n_docs else math.inf
