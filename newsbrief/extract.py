@@ -43,6 +43,8 @@ class _Extractor(HTMLParser):
                 self.meta.setdefault(key, a["content"])
             return
         if tag in VOID:
+            if tag == "br" and self.para is not None:
+                self.para.append(" ")
             return
         self.next_id += 1
         self.stack.append((tag, self.next_id))
@@ -65,7 +67,8 @@ class _Extractor(HTMLParser):
             elif t == "a":
                 self.in_link = max(0, self.in_link - 1)
             elif t == "p" and self.para is not None:
-                self.paras.append((self.para_parent, clean(" ".join(self.para)), self.link_chars))
+                # joined as written: a space here put one before every comma after a link ("go deep , have")
+                self.paras.append((self.para_parent, clean("".join(self.para)), self.link_chars))
                 self.para = None
             if t == tag:
                 break
