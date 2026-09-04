@@ -106,7 +106,7 @@ def render_html(
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light only">
-<title>Your news brief &middot; {escape(datestr)}</title>
+<title>{escape(title)} &middot; {escape(datestr)}</title>
 <style>@media (max-width:620px){{.wrap{{padding:20px 16px!important}}}}</style>
 </head>
 <body style="margin:0;padding:0;background:{BG};">

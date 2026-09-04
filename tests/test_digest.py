@@ -54,7 +54,7 @@ def test_digest_dry_run_only_for_weekly_subscribers(cfg):
     email, n, transport, page = out
     assert (email, transport) == ("ann@example.com", "outbox") and n == 10
     html = page.read_text()
-    assert "The Weekly Brief" in html and "Day 3</span>" in html and "Following since Sep 23" in html
+    assert "<title>The Weekly Brief &middot; Friday, September 25, 2026</title>" in html and "Day 3</span>" in html and "Following since Sep 23" in html
     eml = page.with_suffix(".eml").read_text()
     assert "Subject: Weekly Brief, Sep 19-Sep 25" in eml
     assert run_digest(cfg, dry_run=True, now=now, subscriber="bob@example.com")[0][1] == 0  # nothing stored
