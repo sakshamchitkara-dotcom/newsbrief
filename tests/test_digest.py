@@ -1,3 +1,4 @@
+from dataclasses import replace
 from datetime import datetime, timezone
 
 import pytest
@@ -63,3 +64,27 @@ def test_real_digest_needs_secret(cfg, monkeypatch):
     monkeypatch.delenv("NEWSBRIEF_SECRET", raising=False)
     with pytest.raises(RuntimeError, match="NEWSBRIEF_SECRET"):
         run_digest(cfg, dry_run=False)
+
+
+def test_weekly_links_reworded_story_across_days_by_its_articles():
+    # headlines share only "Trump" and "Xi"; the stored articles carry the overlap
+    d1 = Story([Article("Trump and Xi exchange warm words at state dinner", "https://b/xi1", "bbc",
+                        summary="Donald Trump hosted Xi Jinping at a White House state dinner on the second day of the Chinese leader's visit."),
+                Article("Trump toasts Xi Jinping at lavish White House dinner", "https://g/xi1", "guardian",
+                        summary="Xi Jinping was toasted by Donald Trump at the White House state dinner.")],
+               headline="Trump and Xi exchange warm words at state dinner", summary="Warm words.")
+    d2 = Story([Article("Xi got Trump's red carpet welcome - but not everything he wanted", "https://b/xi2", "bbc",
+                        summary="Xi Jinping leaves Washington with pageantry from Donald Trump but little on trade.")],
+               headline="Xi got Trump's red carpet welcome - but not everything he wanted", summary="Pageantry.")
+    fill = [(f"2026-09-2{i % 2 + 4}", story(f"Filler{i} topic{i} update{i}", f"https://f/{i}", f"f{i}")) for i in range(12)]
+    top = weekly([("2026-09-24", d1), ("2026-09-25", d2)] + fill, n=3)
+    assert (top[0].headline, top[0].day, top[0].previously) == (d2.headline, 2, d1.headline)
+
+
+def test_weekly_follows_the_daily_trackers_link_and_keeps_one_days_stories_apart():
+    a = story("Pope Leo to visit France", "https://g/1", "guardian")
+    b = replace(story("Crowds greet pontiff in Paris", "https://b/2"), previously="Pope Leo to visit France", since="2026-09-24")
+    same_day = story("Pope Leo to visit France next month", "https://aj/3", "aljazeera")  # same day as a
+    top = weekly([("2026-09-24", a), ("2026-09-24", same_day), ("2026-09-25", b)], n=5)
+    assert sorted(s.day for s in top) == [1, 2]
+    assert top[0].headline == "Crowds greet pontiff in Paris" and top[0].since == "2026-09-24"
