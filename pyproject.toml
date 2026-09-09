@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "newsbrief"
-version = "0.3.0"
+version = "0.3.1"
 description = "Collect the day's news from RSS/Atom and Hacker News, dedupe, rank, summarize with Claude, and email a daily brief."
 readme = "README.md"
 requires-python = ">=3.10"

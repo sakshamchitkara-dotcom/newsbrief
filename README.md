@@ -138,10 +138,17 @@ newsbrief digest --dry-run          # subscribers with weekly: true
 newsbrief digest --dry-run --subscriber you@example.com --days 7
 ```
 
-`digest` rebuilds the week from the briefs stored each day: stories that ran on several days are
-grouped into one thread (by the clustering test), threads are ranked by days in the brief and then
-by outlets, and each is shown as its latest version with a "Day N" badge and the headline it
-started under. It sends to subscribers with `weekly: true` (all the usual transports, and it needs
+`digest` rebuilds the week from the briefs stored each day. Day by day, a story joins an earlier
+thread when the daily tracker already linked them ("Previously: ..."), when they share an article
+URL, or when their stored articles pass the clustering test (idf over all the week's articles).
+Two stories from the same day never merge: that day's clustering already kept them apart.
+Threads are ranked by days in the brief and then by outlets, and each is shown as its latest
+version with a "Day N" badge and the headline it started under.
+
+Checked on real stored briefs (0.3.1): with the 10:11 UTC brief relabeled as Sep 24 and its Trump/Xi
+story reworded to the headline it ran under earlier ("Trump and Xi exchange warm words at state
+dinner"), the 0.3.0 digest showed that story twice as two one-day threads; 0.3.1 shows 12 threads,
+each "Day 2", Trump/Xi included. It sends to subscribers with `weekly: true` (all the usual transports, and it needs
 `NEWSBRIEF_SECRET` like `run`); run it once a week from cron, for example `0 8 * * SUN`.
 
 ## Audio brief
@@ -345,9 +352,8 @@ Subject: Weekly Brief, Sep 19-Sep 25
   so it was left out.
 - The extractive "why it matters" line keys on cue words ("could", "first", "record", ...), so it
   can pick a sentence that is on topic but not really context. Claude writes a proper one.
-- The weekly digest re-clusters stored headlines and summaries, a much smaller corpus than a
-  day's feeds, so name weights are lower and a story can show up as two threads (the stored
-  0.2.0 brief's two Trump/Xi stories did).
+- The weekly digest keeps whatever split a day's clustering made: if one brief carried a story as
+  two stories (the stored 0.2.0 brief's two Trump/Xi stories), the digest shows two threads.
 - Story tracking and the digest have been checked on two briefs from one day, relabeled; not yet
   on a real week of briefs.
 - Pairwise clustering is O(n × clusters), which is fine for a few hundred items a day.
