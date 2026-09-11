@@ -99,3 +99,59 @@ def test_pick_transport():
     assert pick_transport({"SMTP_HOST": "h"}) == "smtp"
     with pytest.raises(DeliveryError):
         pick_transport({})
+
+
+def test_smtp_port_465_uses_implicit_tls(monkeypatch):
+    import smtplib
+
+    from newsbrief.deliver import send_smtp
+
+    monkeypatch.setattr(smtplib, "SMTP_SSL", FakeSMTP)
+    monkeypatch.setattr(smtplib, "SMTP", lambda *a, **k: (_ for _ in ()).throw(AssertionError("plain SMTP")))
+    send_smtp(msg(), {"SMTP_HOST": "smtp.example.com", "SMTP_PORT": "465"})
+    s = FakeSMTP.instances[-1]
+    assert s.port == 465 and s.log == [("send", "me@x.com"), "quit"]  # no STARTTLS, no login without a user
+
+
+def test_smtp_failure_is_a_delivery_error(monkeypatch):
+    import smtplib
+
+    import pytest
+
+    from newsbrief.deliver import DeliveryError, send_smtp
+
+    class Refused(FakeSMTP):
+        def login(self, u, p):
+            raise smtplib.SMTPAuthenticationError(535, b"bad credentials")
+
+    monkeypatch.setattr(smtplib, "SMTP", Refused)
+    with pytest.raises(DeliveryError, match="smtp: .*bad credentials"):
+        send_smtp(msg(), {"SMTP_HOST": "h", "SMTP_USER": "u"})
+    monkeypatch.setattr(smtplib, "SMTP", lambda *a, **k: (_ for _ in ()).throw(ConnectionRefusedError("refused")))
+    with pytest.raises(DeliveryError, match="smtp: refused"):
+        send_smtp(msg(), {"SMTP_HOST": "h"})
+
+
+def test_sendgrid_and_api_errors(monkeypatch):
+    import pytest
+
+    from newsbrief import http
+    from newsbrief.deliver import DeliveryError, send, send_api
+
+    calls = []
+    monkeypatch.setattr(http, "post_json", lambda url, payload, headers: calls.append((url, payload)) or b"")
+    assert send(msg(), "<p>h</p>", "t", {"SENDGRID_API_KEY": "SG.x"}) == "sendgrid"
+    assert calls[0][0] == "https://api.sendgrid.com/v3/mail/send"
+    assert calls[0][1]["personalizations"] == [{"to": [{"email": "me@x.com"}]}]
+
+    with pytest.raises(DeliveryError, match="SENDGRID_API_KEY is not set"):
+        send(msg(), "", "", {"NEWSBRIEF_TRANSPORT": "sendgrid", "RESEND_API_KEY": "re_1"})
+    with pytest.raises(DeliveryError, match="unknown provider 'mailgun'"):
+        send_api("mailgun", msg(), "", "", {})
+
+    def rejected(url, payload, headers):
+        raise http.FetchError(f"{url}: HTTP 422: b'invalid from'")
+
+    monkeypatch.setattr(http, "post_json", rejected)
+    with pytest.raises(DeliveryError, match="resend: .*HTTP 422"):
+        send(msg(), "", "", {"RESEND_API_KEY": "re_1"})
