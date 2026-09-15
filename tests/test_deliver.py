@@ -97,6 +97,7 @@ def test_pick_transport():
 
     assert pick_transport({"SMTP_HOST": "h", "NEWSBRIEF_TRANSPORT": "sendgrid"}) == "sendgrid"
     assert pick_transport({"SMTP_HOST": "h"}) == "smtp"
+    assert pick_transport({"NEWSBRIEF_TRANSPORT": " SMTP "}) == "smtp"  # e.g. from a GitHub secret
     with pytest.raises(DeliveryError):
         pick_transport({})
 
