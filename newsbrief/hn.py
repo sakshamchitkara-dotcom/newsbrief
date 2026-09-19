@@ -42,7 +42,10 @@ def _item(i: int) -> dict | None:
 
 def fetch_hn(source: Source) -> list[Article]:
     feed = source.url or "topstories"  # topstories | beststories | newstories
-    ids = json.loads(get(f"{API}/{feed}.json"))[: source.limit]
+    try:
+        ids = json.loads(get(f"{API}/{feed}.json"))[: source.limit]
+    except (ValueError, TypeError) as e:  # an HTML error page or `null` must not crash the whole run
+        raise FetchError(f"hn {feed}: bad response: {e}") from e
     with ThreadPoolExecutor(max_workers=8) as pool:
         items = list(pool.map(_item, ids))
     return [a for it in items if (a := item_to_article(it, source)) and a.title]
