@@ -1,7 +1,8 @@
 """Core data types shared across the pipeline."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+import json
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 
 WORDS_PER_MINUTE = 230
@@ -62,3 +63,16 @@ class Brief:
     intro: str = ""
     generated_at: datetime | None = None
     summarizer: str = "extractive"
+
+    def to_json(self) -> str:
+        return json.dumps(asdict(self), default=lambda d: d.isoformat())
+
+    @classmethod
+    def from_json(cls, raw: str) -> "Brief":
+        d = json.loads(raw)
+        when = lambda v: datetime.fromisoformat(v) if v else None  # noqa: E731
+        stories = []
+        for s in d.pop("stories"):
+            arts = [Article(**{**a, "published": when(a["published"])}) for a in s.pop("articles")]
+            stories.append(Story(articles=arts, **s))
+        return cls(stories=stories, **{**d, "generated_at": when(d["generated_at"])})

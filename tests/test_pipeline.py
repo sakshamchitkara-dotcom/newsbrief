@@ -51,7 +51,9 @@ def test_dry_run_writes_outbox_and_does_not_record(cfg):
     assert msg["Subject"].startswith("Daily Brief, Sep 24: Central bank raises interest rates")
     # bob only follows tech -> only the atom feed
     assert outs[1].stories == 2
-    assert not State(cfg.state_db).delivered("ann@example.com", "2026-09-24")
+    st = State(cfg.state_db)
+    assert not st.delivered("ann@example.com", "2026-09-24")
+    assert [(d, len(b.stories)) for d, _, b in st.briefs("ann@example.com")] == [("2026-09-24", 3)]  # archived
 
 
 def test_real_send_records_and_next_run_skips_seen(cfg, monkeypatch):
