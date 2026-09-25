@@ -110,8 +110,16 @@ def run(
     subscriber: str | None = None,
     now: datetime | None = None,
     fetch_text: bool | None = None,
+    dry_run_log: set[tuple[str, str]] | None = None,
 ) -> list[Outcome]:
+    """dry_run_log: (email, local date) pairs already written to the outbox by a
+    long-running scheduler, since dry runs deliberately leave the state db untouched."""
     now = now or datetime.now(timezone.utc)
+    dry_run_log = set() if dry_run_log is None else dry_run_log
+
+    def local_day(s: Subscriber) -> tuple[str, str]:
+        return s.email.lower(), now.astimezone(ZoneInfo(s.timezone)).date().isoformat()
+
     state = State(cfg.state_db)
     try:
         subs = [
@@ -119,7 +127,7 @@ def run(
             for s in cfg.subscribers
             if (subscriber is None or s.email.lower() == subscriber.lower())
             and not state.is_unsubscribed(s.email)
-            and (not only_due or is_due(s, now, state))
+            and (not only_due or (is_due(s, now, state) and local_day(s) not in dry_run_log))
         ]
         if not subs:
             log.info("no subscribers to deliver to")
@@ -133,6 +141,8 @@ def run(
                 fetch_text=cfg.fetch_articles if fetch_text is None else fetch_text,
             )
             out = deliver_brief(cfg, sub, brief, state, now, dry_run=dry_run)
+            if dry_run:
+                dry_run_log.add(local_day(sub))
             log.info("%s: %d stories via %s", out.subscriber, out.stories, out.transport)
             outcomes.append(out)
         return outcomes

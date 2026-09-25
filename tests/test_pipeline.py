@@ -80,3 +80,10 @@ def test_is_due_respects_local_time(cfg, tmp_path):
     assert not pipeline.is_due(bob, NOW, st)
     st.record("ann@example.com", "2026-09-24", [])
     assert not pipeline.is_due(ann, NOW, st)
+
+
+def test_scheduler_dry_run_sends_once_per_local_day(cfg):
+    log = set()
+    first = pipeline.run(cfg, dry_run=True, only_due=True, now=NOW, fetch_text=False, dry_run_log=log)
+    assert [o.subscriber for o in first] == ["ann@example.com"]  # London is past 07:00, LA is not
+    assert pipeline.run(cfg, dry_run=True, only_due=True, now=NOW, fetch_text=False, dry_run_log=log) == []

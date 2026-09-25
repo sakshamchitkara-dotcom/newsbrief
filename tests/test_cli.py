@@ -36,3 +36,31 @@ def test_bad_config_reports_error(tmp_path, capsys):
     p.write_text("sources: {x: {type: telepathy, url: y}}")
     assert main(["-c", str(p), "check"]) == 1
     assert "unknown type" in capsys.readouterr().err
+
+
+def test_schedule_loop_survives_failures_and_reloads(cfg_path, monkeypatch):
+    import newsbrief.cli as cli
+
+    calls = []
+
+    def fake_run(cfg, **kw):
+        calls.append(kw["only_due"])
+        if len(calls) == 1:
+            raise RuntimeError("feed exploded")
+        return []
+
+    class Stop(Exception):
+        pass
+
+    sleeps = []
+
+    def fake_sleep(s):
+        sleeps.append(s)
+        if len(sleeps) == 2:
+            raise Stop
+
+    monkeypatch.setattr(cli, "run", fake_run)
+    monkeypatch.setattr(cli.time, "sleep", fake_sleep)
+    with pytest.raises(Stop):
+        main(["-c", cfg_path, "schedule", "--dry-run", "--interval", "7"])
+    assert calls == [True, True] and sleeps == [7, 7]
