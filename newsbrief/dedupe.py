@@ -15,14 +15,23 @@ STOPWORDS = frozenset(
     just can could may might should do does did now also""".split()
 )
 _TOKEN = re.compile(r"[a-z0-9]+")
-TRACKING = ("utm_", "fbclid", "gclid", "ocid", "cmpid", "at_medium", "at_campaign")
+TRACKING = ("utm_", "fbclid", "gclid", "ocid", "cmpid", "at_medium", "at_campaign", "traffic_source")
+
+
+def strip_tracking(url: str) -> str:
+    """Drop utm_*/campaign params so links in the email are clean."""
+    s = urlsplit(url.strip())
+    if not s.query:
+        return url.strip()
+    q = [(k, v) for k, v in parse_qsl(s.query, keep_blank_values=True) if not k.lower().startswith(TRACKING)]
+    return urlunsplit((s.scheme, s.netloc, s.path, urlencode(q), s.fragment))
 
 
 def normalize_url(url: str) -> str:
-    s = urlsplit(url.strip())
-    q = [(k, v) for k, v in parse_qsl(s.query) if not k.lower().startswith(TRACKING)]
+    """Identity key for a URL: tracking-free, scheme/www/trailing-slash insensitive."""
+    s = urlsplit(strip_tracking(url))
     host = s.netloc.lower().removeprefix("www.")
-    return urlunsplit(("https", host, s.path.rstrip("/") or "/", urlencode(q), ""))
+    return urlunsplit(("https", host, s.path.rstrip("/") or "/", s.query, ""))
 
 
 def tokens(text: str) -> list[str]:
