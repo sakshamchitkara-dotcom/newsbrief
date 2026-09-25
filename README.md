@@ -178,8 +178,12 @@ newsbrief archive --out site --site-url https://you.github.io/newsbrief   # also
 Every run stores the day's brief in the state db; `archive` renders them as a static site,
 newest first, using the email's own layout. If subscribers got different cuts, the fullest
 brief represents the day (or pick one with `--subscriber`). Pages contain no names, emails
-or unsubscribe links, so the folder can be published as is: push it to a `gh-pages` branch,
-or upload it with `actions/upload-pages-artifact` from the scheduled workflow.
+or unsubscribe links, so the folder can be published as is.
+
+To publish it on GitHub Pages, set the repo variable `NEWSBRIEF_PAGES=true` and pick
+"GitHub Actions" as the Pages source (Settings > Pages). The scheduled
+[`brief.yml`](.github/workflows/brief.yml) then rebuilds the archive (with `feed.xml`) after
+every run and deploys it.
 
 ## Clustering eval
 
