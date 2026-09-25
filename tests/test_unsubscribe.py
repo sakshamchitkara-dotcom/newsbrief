@@ -1,4 +1,6 @@
-from newsbrief.unsubscribe import list_unsubscribe_headers, make_token, unsubscribe_url, verify_token
+import pytest
+
+from newsbrief.unsubscribe import list_unsubscribe_headers, require_secret, make_token, unsubscribe_url, verify_token
 
 
 def test_tokens_are_per_email_and_secret(monkeypatch):
@@ -21,3 +23,11 @@ def test_headers_with_https_endpoint():
 def test_headers_mailto_only_without_base_url():
     h = list_unsubscribe_headers("", "b@example.com", "me@x.com")
     assert h["List-Unsubscribe"].startswith("<mailto:b@example.com") and "List-Unsubscribe-Post" not in h
+
+
+def test_real_sends_require_secret(monkeypatch):
+    monkeypatch.delenv("NEWSBRIEF_SECRET", raising=False)
+    with pytest.raises(RuntimeError, match="NEWSBRIEF_SECRET"):
+        require_secret()
+    monkeypatch.setenv("NEWSBRIEF_SECRET", "s1")
+    require_secret()

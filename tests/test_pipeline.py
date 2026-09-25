@@ -55,6 +55,7 @@ def test_dry_run_writes_outbox_and_does_not_record(cfg):
 
 
 def test_real_send_records_and_next_run_skips_seen(cfg, monkeypatch):
+    monkeypatch.setenv("NEWSBRIEF_SECRET", "test-secret")
     sent = []
     monkeypatch.setattr(pipeline, "send", lambda msg, html, text, env: sent.append(msg["To"]) or "smtp")
     first = pipeline.run(cfg, dry_run=False, now=NOW, fetch_text=False, subscriber="ann@example.com")

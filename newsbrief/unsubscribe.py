@@ -8,12 +8,18 @@ from email.utils import parseaddr
 from urllib.parse import urlencode
 
 
+DEV_SECRET = "newsbrief-dev-secret"  # public (it's in this repo): dry runs only
+
+
+def require_secret() -> None:
+    """Real sends and the unsubscribe server must not use the public dev key,
+    or anyone could forge unsubscribe links for any subscriber."""
+    if not os.environ.get("NEWSBRIEF_SECRET"):
+        raise RuntimeError("NEWSBRIEF_SECRET must be set for real sends and `serve` (use --dry-run to test)")
+
+
 def _secret() -> bytes:
-    s = os.environ.get("NEWSBRIEF_SECRET", "")
-    if not s:
-        # ponytail: dev-only default so dry runs work; real sends should set NEWSBRIEF_SECRET
-        s = "newsbrief-dev-secret"
-    return s.encode()
+    return (os.environ.get("NEWSBRIEF_SECRET") or DEV_SECRET).encode()
 
 
 def make_token(email: str) -> str:

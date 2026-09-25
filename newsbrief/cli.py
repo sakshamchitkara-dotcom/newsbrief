@@ -59,7 +59,9 @@ def cmd_unsubscribe(args) -> int:
 
 def cmd_serve(args) -> int:
     from .server import serve
+    from .unsubscribe import require_secret
 
+    require_secret()
     cfg = load_config(args.config)
     print(f"unsubscribe endpoint on http://{args.host}:{args.port}/unsubscribe")
     serve(cfg.state_db, args.host, args.port)
@@ -115,6 +117,9 @@ def main(argv: list[str] | None = None) -> int:
         return args.func(args)
     except (ConfigError, FileNotFoundError) as e:
         print(f"config error: {e}", file=sys.stderr)
+        return 1
+    except RuntimeError as e:
+        print(f"error: {e}", file=sys.stderr)
         return 1
 
 
