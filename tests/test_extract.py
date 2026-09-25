@@ -33,3 +33,9 @@ def test_robots_disallow_blocks_fetch(monkeypatch):
 
     with pytest.raises(http.FetchError, match="robots"):
         http.polite_get("https://ex.com/private/a")
+
+
+def test_no_space_before_punctuation_after_links():
+    body = "<p>Your edge lies in your ability to <a href='/x'>go deep</a>, have stances<br>and defend them.</p>"
+    assert extract_text("<article>" + body * 2 + "</article>").split("\n\n")[0] == (
+        "Your edge lies in your ability to go deep, have stances and defend them.")
