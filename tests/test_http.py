@@ -71,3 +71,20 @@ def test_success_resets_failure_count(monkeypatch):
     for _ in range(2):
         with pytest.raises(http.FetchError, match="404"):
             http.get("https://x.example/a")  # still under TRIP_AFTER since the success
+
+
+def test_robots_txt_is_refetched_after_ttl(monkeypatch):
+    fetched = []
+
+    def fake_get(url, timeout=0):
+        fetched.append(url)
+        return b"User-agent: *\nDisallow: /private" if len(fetched) == 1 else b"User-agent: *\nDisallow:"
+
+    t = [0.0]
+    monkeypatch.setattr(http, "get", fake_get)
+    monkeypatch.setattr(http, "_clock", lambda: t[0])
+    http._robots_cached.cache_clear()
+    assert not http.allowed("https://ttl.example/private/x")
+    assert not http.allowed("https://ttl.example/private/y") and len(fetched) == 1  # cached
+    t[0] += http.ROBOTS_TTL
+    assert http.allowed("https://ttl.example/private/x") and len(fetched) == 2  # site changed its rules

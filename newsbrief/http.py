@@ -91,8 +91,15 @@ def get(url: str, *, timeout: float = TIMEOUT) -> bytes:
     raise AssertionError("unreachable")
 
 
-@lru_cache(maxsize=256)
+ROBOTS_TTL = 6 * 3600.0  # `newsbrief schedule` runs for weeks: re-read robots.txt a few times a day
+
+
 def _robots(origin: str) -> urllib.robotparser.RobotFileParser | None:
+    return _robots_cached(origin, int(_clock() // ROBOTS_TTL))
+
+
+@lru_cache(maxsize=256)
+def _robots_cached(origin: str, _epoch: int) -> urllib.robotparser.RobotFileParser | None:
     rp = urllib.robotparser.RobotFileParser()
     try:
         rp.parse(get(origin + "/robots.txt", timeout=8).decode("utf-8", "replace").splitlines())
