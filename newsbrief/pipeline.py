@@ -11,7 +11,7 @@ from zoneinfo import ZoneInfo
 
 from .config import Config, Source, Subscriber
 from .dedupe import cluster, track
-from .deliver import build_message, send, write_outbox
+from .deliver import build_message, pick_transport, send, write_outbox
 from .extract import enrich
 from .feeds import fetch_feed
 from .hn import fetch_hn
@@ -126,6 +126,7 @@ def run(
     long-running scheduler, since dry runs deliberately leave the state db untouched."""
     if not dry_run:
         require_secret()
+        pick_transport(dict(os.environ))  # fail before fetching feeds and paying for summaries
     now = now or datetime.now(timezone.utc)
     dry_run_log = set() if dry_run_log is None else dry_run_log
 

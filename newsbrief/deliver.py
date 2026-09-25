@@ -113,9 +113,14 @@ def send_api(provider: str, msg: EmailMessage, html: str, text: str, env: dict[s
         raise DeliveryError(f"{provider}: {e}") from e
 
 
+TRANSPORTS = ("smtp", "resend", "sendgrid")
+
+
 def pick_transport(env: dict[str, str]) -> str:
     """Explicit NEWSBRIEF_TRANSPORT wins; otherwise the first configured provider."""
-    if t := env.get("NEWSBRIEF_TRANSPORT"):
+    if t := env.get("NEWSBRIEF_TRANSPORT", "").strip().lower():
+        if t not in TRANSPORTS:
+            raise DeliveryError(f"NEWSBRIEF_TRANSPORT must be one of {', '.join(TRANSPORTS)}, got {t!r}")
         return t
     for t, var in (("resend", "RESEND_API_KEY"), ("sendgrid", "SENDGRID_API_KEY"), ("smtp", "SMTP_HOST")):
         if env.get(var):

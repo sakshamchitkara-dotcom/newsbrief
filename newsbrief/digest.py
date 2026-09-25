@@ -9,7 +9,7 @@ from zoneinfo import ZoneInfo
 
 from .config import Config, Subscriber
 from .dedupe import idf_weights, normalize_url, promote_names, similar, source_boilerplate, terms
-from .deliver import build_message, send, write_outbox
+from .deliver import build_message, pick_transport, send, write_outbox
 from .models import Brief, Story
 from .render import render_html, render_text
 from .state import State
@@ -79,6 +79,7 @@ def run_digest(cfg: Config, *, dry_run: bool, subscriber: str | None = None, day
     Returns (email, stories, transport, outbox html path)."""
     if not dry_run:
         require_secret()
+        pick_transport(dict(os.environ))
     now = now or datetime.now(timezone.utc)
     state = State(cfg.state_db)
     out = []

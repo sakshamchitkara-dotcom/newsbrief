@@ -58,6 +58,7 @@ def test_dry_run_writes_outbox_and_does_not_record(cfg):
 
 def test_real_send_records_and_next_run_skips_seen(cfg, monkeypatch):
     monkeypatch.setenv("NEWSBRIEF_SECRET", "test-secret")
+    monkeypatch.setenv("NEWSBRIEF_TRANSPORT", "smtp")
     sent = []
     monkeypatch.setattr(pipeline, "send", lambda msg, html, text, env: sent.append(msg["To"]) or "smtp")
     first = pipeline.run(cfg, dry_run=False, now=NOW, fetch_text=False, subscriber="ann@example.com")
@@ -112,6 +113,7 @@ def test_developing_story_is_tracked_across_days(cfg, monkeypatch):
     from datetime import timedelta
 
     monkeypatch.setenv("NEWSBRIEF_SECRET", "test-secret")
+    monkeypatch.setenv("NEWSBRIEF_TRANSPORT", "smtp")
     monkeypatch.setattr(pipeline, "send", lambda *a: "smtp")
     pipeline.run(cfg, dry_run=False, now=NOW, fetch_text=False, subscriber="ann@example.com")
     # next day the wire runs a follow-up on the rates story
@@ -121,3 +123,17 @@ def test_developing_story_is_tracked_across_days(cfg, monkeypatch):
     (out,) = pipeline.run(cfg, dry_run=True, now=NOW + timedelta(days=1), fetch_text=False, subscriber="ann@example.com")
     page = out.paths[1].read_text()
     assert out.stories == 1 and "Day 2</span>" in page and "Following since Sep 24." in page
+
+
+def test_real_run_checks_the_transport_before_fetching(cfg, monkeypatch):
+    from newsbrief.deliver import DeliveryError
+
+    for var in ("NEWSBRIEF_TRANSPORT", "SMTP_HOST", "RESEND_API_KEY", "SENDGRID_API_KEY"):
+        monkeypatch.delenv(var, raising=False)
+    monkeypatch.setenv("NEWSBRIEF_SECRET", "test-secret")
+    monkeypatch.setattr(pipeline, "collect", lambda *a: pytest.fail("fetched feeds without a transport"))
+    with pytest.raises(DeliveryError, match="no transport configured"):
+        pipeline.run(cfg, dry_run=False, now=NOW)
+    monkeypatch.setenv("NEWSBRIEF_TRANSPORT", "smpt")
+    with pytest.raises(DeliveryError, match="must be one of smtp, resend, sendgrid, got 'smpt'"):
+        pipeline.run(cfg, dry_run=False, now=NOW)
