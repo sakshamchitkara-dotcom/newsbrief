@@ -1,7 +1,9 @@
 """Near-duplicate detection and story clustering (shingling + Jaccard)."""
 from __future__ import annotations
 
+import math
 import re
+from collections import Counter
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from .models import Article, Story
@@ -48,13 +50,67 @@ def jaccard(a: set, b: set) -> float:
     return len(a & b) / len(a | b) if a and b else 0.0
 
 
-def similar(a: Article, b: Article, body_threshold: float = 0.4, title_threshold: float = 0.3) -> bool:
-    # Body shingles catch syndicated copies; keyword overlap catches rewrites of the same event.
-    ta = a.title + " " + (a.body[:300] if a.body else "")
-    tb = b.title + " " + (b.body[:300] if b.body else "")
-    if jaccard(shingles(a.body[:2000]), shingles(b.body[:2000])) >= body_threshold:
+def weighted_jaccard(a: set[str], b: set[str], idf: dict[str, float]) -> float:
+    inter = sum(idf.get(w, 1.0) for w in a & b)
+    union = sum(idf.get(w, 1.0) for w in a | b)
+    return inter / union if union else 0.0
+
+
+def overlap(a: set[str], b: set[str], idf: dict[str, float]) -> float:
+    """Weighted overlap coefficient: how much of the smaller set the other covers."""
+    small = min(sum(idf.get(w, 1.0) for w in a), sum(idf.get(w, 1.0) for w in b))
+    return sum(idf.get(w, 1.0) for w in a & b) / small if small else 0.0
+
+
+def idf_weights(docs: list[set[str]]) -> dict[str, float]:
+    df = Counter(w for d in docs for w in d)
+    n = len(docs)
+    return {w: math.log(1 + n / c) for w, c in df.items()}
+
+
+# Tuned on a real day of BBC/NPR/Guardian/Al Jazeera/Verge/Ars/HN headlines.
+BODY_THRESHOLD = 0.4  # shingle Jaccard: syndicated / lightly edited copies
+KEYWORD_THRESHOLD = 0.11  # idf-weighted keyword Jaccard over title + lede
+TITLE_OVERLAP = 0.75  # near-identical titles with thin ledes ("F-Droid 2.0")
+
+
+def _lede(a: Article) -> str:
+    return a.title + " " + a.body[:300]
+
+
+def _doc(a: Article, boiler: set[tuple[str, ...]] = frozenset()) -> set[str]:
+    """Keywords of title + lede, minus any phrase that is the outlet's boilerplate."""
+    toks = tokens(_lede(a))
+    if boiler:
+        drop = set()
+        for i in range(len(toks) - 3):
+            if tuple(toks[i : i + 4]) in boiler:
+                drop.update(range(i, i + 4))
+        toks = [t for i, t in enumerate(toks) if i not in drop]
+    return {_stem(t) for t in toks if t not in STOPWORDS and len(t) > 2}
+
+
+def source_boilerplate(articles: list[Article], min_repeats: int = 3) -> dict[str, set[tuple[str, ...]]]:
+    """4-word phrases repeated across several items of one outlet ("Get our breaking news email")."""
+    counts: dict[str, Counter] = {}
+    for a in articles:
+        counts.setdefault(a.source, Counter()).update(shingles(_lede(a), 4))
+    return {src: {sh for sh, n in c.items() if n >= min_repeats} for src, c in counts.items()}
+
+
+def similar(
+    a: Article, b: Article, idf: dict[str, float] | None = None, boiler: dict[str, set[tuple[str, ...]]] | None = None
+) -> bool:
+    idf, boiler = idf or {}, boiler or {}
+    # Shingle overlap only across outlets: within one outlet it mostly measures shared
+    # boilerplate ("Get our breaking news email..."), and same-outlet dupes share a URL.
+    if a.source != b.source and jaccard(shingles(a.body[:2000]), shingles(b.body[:2000])) >= BODY_THRESHOLD:
         return True
-    return jaccard(keywords(ta), keywords(tb)) >= title_threshold
+    da, db = _doc(a, boiler.get(a.source, set())), _doc(b, boiler.get(b.source, set()))
+    kw = weighted_jaccard(da, db, idf)
+    if kw >= KEYWORD_THRESHOLD:
+        return True
+    return kw >= 0.07 and overlap(keywords(a.title), keywords(b.title), idf) >= TITLE_OVERLAP
 
 
 def dedupe_urls(articles: list[Article]) -> list[Article]:
@@ -67,28 +123,23 @@ def dedupe_urls(articles: list[Article]) -> list[Article]:
 
 
 def cluster(articles: list[Article]) -> list[Story]:
-    """Group articles covering the same event. Union-find over pairwise similarity."""
-    articles = dedupe_urls(articles)
-    parent = list(range(len(articles)))
+    """Group articles covering the same event.
 
-    def find(i: int) -> int:
-        while parent[i] != i:
-            parent[i] = parent[parent[i]]
-            i = parent[i]
-        return i
-
-    # ponytail: O(n^2) pairwise scan, fine for a few hundred items/day; use MinHash LSH beyond that
-    for i in range(len(articles)):
-        for j in range(i + 1, len(articles)):
-            if find(i) != find(j) and similar(articles[i], articles[j]):
-                parent[find(j)] = find(i)
-
-    groups: dict[int, list[Article]] = {}
-    for i, a in enumerate(articles):
-        groups.setdefault(find(i), []).append(a)
-    stories = []
-    for arts in groups.values():
-        # lead = highest-weight source, then the longest text
-        arts.sort(key=lambda a: (-a.weight, -len(a.body)))
-        stories.append(Story(articles=arts))
-    return stories
+    Leader clustering: an article joins the first cluster whose leader it resembles.
+    Unlike union-find this doesn't chain unrelated stories through a live blog that
+    mentions everything.
+    """
+    articles = sorted(dedupe_urls(articles), key=lambda a: (-a.weight, -len(a.body)))
+    # Rare words (names, places) say far more about "same event" than common ones.
+    boiler = source_boilerplate(articles)
+    idf = idf_weights([_doc(a, boiler.get(a.source, set())) for a in articles])
+    groups: list[list[Article]] = []
+    # ponytail: O(n * clusters) scan, fine for a few hundred items/day; MinHash LSH beyond that
+    for a in articles:
+        for g in groups:
+            if similar(g[0], a, idf, boiler):
+                g.append(a)
+                break
+        else:
+            groups.append([a])
+    return [Story(articles=g) for g in groups]
