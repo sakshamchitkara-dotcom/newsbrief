@@ -87,9 +87,16 @@ def parse_config(data: dict) -> Config:
     if not sources:
         raise ConfigError("at least one source is required")
 
-    subs = []
+    known_topics = {t for s in sources.values() for t in s.topics} | {"news"}  # "news": untagged sources
+    subs, emails = [], set()
     for raw in data.get("subscribers") or []:
-        sub = Subscriber(**raw)
+        try:
+            sub = Subscriber(**raw)
+        except TypeError as e:
+            raise ConfigError(f"subscriber {raw.get('email', raw)!r}: {e}") from e
+        if sub.email.lower() in emails:
+            raise ConfigError(f"duplicate subscriber {sub.email!r}")
+        emails.add(sub.email.lower())
         if "@" not in sub.email:
             raise ConfigError(f"invalid subscriber email {sub.email!r}")
         try:
@@ -104,6 +111,9 @@ def parse_config(data: dict) -> Config:
             isinstance(w, (int, float)) and w >= 0 for w in sub.topic_weights.values()
         ):
             raise ConfigError(f"{sub.email}: topic_weights must map topics to numbers >= 0")
+        typos = (set(sub.topics) | set(sub.topic_weights or {})) - known_topics
+        if typos:
+            raise ConfigError(f"{sub.email}: unknown topics {sorted(typos)}; sources cover {sorted(known_topics)}")
         subs.append(sub)
 
     top = {k: v for k, v in data.items() if k not in ("sources", "subscribers")}

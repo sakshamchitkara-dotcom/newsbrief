@@ -30,6 +30,10 @@ def test_defaults_and_source_selection():
         ({"email": "not-an-email"}, "invalid subscriber"),
         ({"topic_weights": {"tech": -1}}, "topic_weights"),
         ({"topic_weights": {"tech": "lots"}}, "topic_weights"),
+        ({"topic_weights": 3}, "topic_weights"),
+        ({"topics": ["tehc"]}, "unknown topics"),
+        ({"topic_weights": {"sport": 2}}, "unknown topics"),
+        ({"favourite_colour": "red"}, "unexpected keyword"),
     ],
 )
 def test_invalid_subscribers(bad, msg):
@@ -51,3 +55,8 @@ def test_json_and_yaml_loading(tmp_path):
     y = tmp_path / "c.yaml"
     y.write_text("sources:\n  a: {url: 'https://a/rss'}\nmax_stories: 5\n")
     assert load_config(y).max_stories == 5
+
+
+def test_duplicate_subscribers_rejected():
+    with pytest.raises(ConfigError, match="duplicate subscriber"):
+        parse_config({**BASE, "subscribers": [{"email": "a@b.c"}, {"email": "A@b.c"}]})
