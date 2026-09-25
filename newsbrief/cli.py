@@ -1,4 +1,4 @@
-"""Command line entry point: `newsbrief run|schedule|digest|subscribers|unsubscribe|serve|check|eval|archive`."""
+"""Command line entry point: `newsbrief run|schedule|digest|subscribers|unsubscribe|serve|check|eval|archive|audio`."""
 from __future__ import annotations
 
 import argparse
@@ -153,6 +153,35 @@ def cmd_digest(args) -> int:
     return 0
 
 
+def cmd_audio(args) -> int:
+    from datetime import date as Date
+    from pathlib import Path
+
+    from .archive import pick_daily
+    from .audio import script, synthesize
+
+    cfg = load_config(args.config)
+    st = State(cfg.state_db)
+    try:
+        days = pick_daily(st.briefs(args.subscriber))
+    finally:
+        st.close()
+    day = args.date or (max(days) if days else "")
+    if day not in days:
+        print(f"no stored brief for {day or 'any day'} (run `newsbrief run --dry-run` first)", file=sys.stderr)
+        return 1
+    text = script(days[day], Date.fromisoformat(day))
+    out = Path(args.out or f"{cfg.outbox}/brief-{day}.m4a")
+    if args.script_only:
+        out = out.with_suffix(".txt")
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(text, encoding="utf-8")
+    else:
+        synthesize(text, out, voice=args.voice, rate=args.rate)
+    print(f"{len(text.split())} words -> {out}")
+    return 0
+
+
 def cmd_eval(args) -> int:
     from .evaluate import DEFAULT_SET, evaluate, load_set
 
@@ -231,6 +260,15 @@ def main(argv: list[str] | None = None) -> int:
     a.add_argument("--title", default="The Daily Brief archive")
     a.add_argument("--site-url", default="", help="public URL of the site; also writes an Atom feed.xml")
     a.set_defaults(func=cmd_archive)
+
+    au = sub.add_parser("audio", help="voice a stored brief as a podcast-style audio file (macOS `say`)")
+    au.add_argument("--date", help="YYYY-MM-DD (default: the newest stored brief)")
+    au.add_argument("--subscriber", help="that subscriber's brief (default: the fullest brief of the day)")
+    au.add_argument("--out", help="output .m4a or .aiff (default: <outbox>/brief-DATE.m4a)")
+    au.add_argument("--voice", default="", help="`say` voice, e.g. Samantha (see `say -v ?`)")
+    au.add_argument("--rate", type=int, default=0, help="words per minute (default: the voice's own)")
+    au.add_argument("--script-only", action="store_true", help="write the spoken script as .txt, no audio")
+    au.set_defaults(func=cmd_audio)
 
     e = sub.add_parser("eval", help="score story clustering against a labeled set")
     e.add_argument("--set", help="labeled JSON set (default: the bundled 2026-09-25 feed snapshot)")
