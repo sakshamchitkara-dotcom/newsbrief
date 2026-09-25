@@ -1,0 +1,6 @@
+# Linux cron: check every 15 minutes; each subscriber is sent once per local day
+# after their send_at time. Install with `crontab -e`.
+*/15 * * * * cd $HOME/newsbrief && set -a && . ./.env && set +a && .venv/bin/newsbrief run --only-due >> $HOME/newsbrief.log 2>&1
+
+# Or keep one long-lived process instead (systemd, tmux, docker...):
+#   newsbrief schedule --interval 300
