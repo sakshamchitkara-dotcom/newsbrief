@@ -68,3 +68,13 @@ def test_strip_tracking_keeps_real_params():
     assert strip_tracking("https://www.bbc.co.uk/news/a?at_medium=RSS&at_campaign=rss") == "https://www.bbc.co.uk/news/a"
     assert strip_tracking("https://aj.com/x?traffic_source=rss&page=2") == "https://aj.com/x?page=2"
     assert strip_tracking("https://news.ycombinator.com/item?id=42") == "https://news.ycombinator.com/item?id=42"
+
+
+def test_live_blogs_never_lead_a_story():
+    live = Article("Pope Leo visits France for first papal visit – Europe live",
+                   "https://g.com/world/live/2026/sep/25/pope", "guardian", weight=1.3,
+                   summary="Pope Leo visits France for the first papal visit in 18 years.")
+    news = Article("Pope Leo visits France in first papal visit in 18 years", "https://aj.com/pope", "aljazeera",
+                   weight=1.0, summary="Pope Leo visits France, the first papal visit in 18 years.")
+    (story,) = cluster([live, news])
+    assert story.lead is news

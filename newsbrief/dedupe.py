@@ -122,6 +122,11 @@ def similar(
     return kw >= 0.07 and overlap(keywords(a.title), keywords(b.title), idf) >= TITLE_OVERLAP
 
 
+def is_live(a: Article) -> bool:
+    t = a.title.lower()
+    return "/live/" in a.url or t.endswith((" – live", " - live", "as it happened")) or t.startswith("live:")
+
+
 def dedupe_urls(articles: list[Article]) -> list[Article]:
     seen: dict[str, Article] = {}
     for a in articles:
@@ -138,7 +143,9 @@ def cluster(articles: list[Article]) -> list[Story]:
     Unlike union-find this doesn't chain unrelated stories through a live blog that
     mentions everything.
     """
-    articles = sorted(dedupe_urls(articles), key=lambda a: (-a.weight, -len(a.body)))
+    # Leaders (and so story leads) are the heaviest sources; live blogs go last since
+    # their feed blurb and headline wander across many events.
+    articles = sorted(dedupe_urls(articles), key=lambda a: (is_live(a), -a.weight, -len(a.body)))
     # Rare words (names, places) say far more about "same event" than common ones.
     boiler = source_boilerplate(articles)
     idf = idf_weights([_doc(a, boiler.get(a.source, set())) for a in articles])
