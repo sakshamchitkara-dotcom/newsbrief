@@ -80,3 +80,17 @@ def test_eval_reports_scores(tmp_path, capsys):
     out = capsys.readouterr().out
     assert "3 items, 1 labeled same-story pairs, 1 predicted" in out
     assert "precision 1.000  recall 1.000  f1 1.000" in out
+
+
+def test_archive_command(cfg_path, tmp_path, capsys):
+    from newsbrief.config import load_config
+    from newsbrief.models import Brief
+    from newsbrief.state import State
+
+    st = State(load_config(cfg_path).state_db)
+    st.save_brief("me@example.com", "2026-09-25", Brief("me@example.com", [], intro="quiet"))
+    st.close()
+    out = tmp_path / "site"
+    assert main(["-c", cfg_path, "archive", "--out", str(out)]) == 0
+    assert "wrote 1 day pages + index" in capsys.readouterr().out
+    assert (out / "2026-09-25.html").exists() and (out / "index.html").exists()

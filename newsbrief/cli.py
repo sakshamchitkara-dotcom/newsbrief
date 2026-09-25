@@ -1,4 +1,4 @@
-"""Command line entry point: `newsbrief run|schedule|unsubscribe|serve|check|eval`."""
+"""Command line entry point: `newsbrief run|schedule|unsubscribe|serve|check|eval|archive`."""
 from __future__ import annotations
 
 import argparse
@@ -77,6 +77,19 @@ def cmd_check(args) -> int:
     return 0
 
 
+def cmd_archive(args) -> int:
+    from .archive import build_site
+
+    cfg = load_config(args.config)
+    st = State(cfg.state_db)
+    try:
+        paths = build_site(st, args.out, subscriber=args.subscriber, title=args.title)
+    finally:
+        st.close()
+    print(f"wrote {len(paths) - 1} day pages + index to {paths[0]}")
+    return 0
+
+
 def cmd_eval(args) -> int:
     from .evaluate import DEFAULT_SET, evaluate, load_set
 
@@ -124,6 +137,12 @@ def main(argv: list[str] | None = None) -> int:
 
     c = sub.add_parser("check", help="validate config and show who gets what")
     c.set_defaults(func=cmd_check)
+
+    a = sub.add_parser("archive", help="build a static HTML archive of past briefs (e.g. for GitHub Pages)")
+    a.add_argument("--out", default="site", help="output directory (default: site)")
+    a.add_argument("--subscriber", help="only this subscriber's briefs (default: the fullest brief each day)")
+    a.add_argument("--title", default="The Daily Brief archive")
+    a.set_defaults(func=cmd_archive)
 
     e = sub.add_parser("eval", help="score story clustering against a labeled set")
     e.add_argument("--set", help="labeled JSON set (default: the bundled 2026-09-25 feed snapshot)")
