@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import textwrap
-from datetime import datetime
+from datetime import date, datetime
 from html import escape
 from urllib.parse import urlsplit
 
@@ -29,7 +29,12 @@ def group_by_topic(stories: list[Story]) -> list[tuple[str, list[Story]]]:
     return list(order.items())
 
 
-def _story_html(s: Story) -> str:
+def _since(s: Story) -> str:
+    d = date.fromisoformat(s.since)
+    return f"{d:%b} {d.day}"
+
+
+def _story_html(s: Story, home_url: str = "") -> str:
     link = lambda url, label: f'<a href="{escape(url)}" style="color:{MUTED};text-decoration:underline;">{escape(label)}</a>'  # noqa: E731
     links = " &middot; ".join(
         link(a.url, a.source) + (f" ({link(a.comments_url, f'{a.score} pts, discuss')})" if a.comments_url else "")
@@ -49,6 +54,16 @@ def _story_html(s: Story) -> str:
         if len(s.sources) > 1
         else ""
     )
+    if s.day > 1:
+        coverage += (
+            f'<span style="display:inline-block;margin-left:6px;padding:1px 6px;border-radius:9px;'
+            f'background:{ACCENT};color:#fff;font:bold 11px/1.6 {SANS};">Day {s.day}</span>'
+        )
+        # on archive pages the start date links to that day's brief
+        since = (f'<a href="{escape(s.since)}.html" style="color:{MUTED};">{_since(s)}</a>' if home_url
+                 else _since(s))
+        why += (f'<p style="margin:8px 0 0;font:13px/1.5 {SANS};color:{MUTED};">Following since {since}. '
+                f"Previously: {escape(s.previously)}</p>")
     minutes = f" &middot; {s.reading_minutes} min read" if s.reading_minutes else ""
     return f"""
 <tr><td style="padding:18px 0;border-top:1px solid {RULE};">
@@ -67,7 +82,7 @@ def render_html(
         sections.append(
             f'<tr><td style="padding:26px 0 4px;font:bold 12px/1 {SANS};letter-spacing:.12em;'
             f'text-transform:uppercase;color:{ACCENT};">{escape(topic)}</td></tr>'
-            + "".join(_story_html(s) for s in stories)
+            + "".join(_story_html(s, home_url) for s in stories)
         )
     body = "".join(sections) or (
         f'<tr><td style="padding:24px 0;font:16px/1.5 {SERIF};color:{MUTED};">'
@@ -127,6 +142,8 @@ def render_text(brief: Brief, *, date: datetime, name: str = "", unsubscribe_url
             lines += [wrap(f"* {s.headline or s.lead.title}{minutes}"), wrap(s.summary, "  ")]
             if s.why_it_matters:
                 lines.append(wrap(f"Why it matters: {s.why_it_matters}", "  "))
+            if s.day > 1:
+                lines.append(wrap(f"Day {s.day}, following since {_since(s)}. Previously: {s.previously}", "  "))
             for a in s.articles[:5]:
                 lines.append(f"  - {a.source}: {a.url}")
                 if a.comments_url:

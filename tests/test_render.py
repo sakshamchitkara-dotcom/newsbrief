@@ -63,3 +63,13 @@ def test_reading_time_only_when_article_text_was_fetched():
     html, txt = render_html(b, date=DATE), render_text(b, date=DATE)
     assert html.count("min read") == 1 and "4 min read" in html
     assert "* Deep dive (4 min read)" in txt and "* Blurb\n" in txt
+
+
+def test_developing_story_shows_day_and_previous_headline():
+    b = brief()
+    b.stories[0].since, b.stories[0].day, b.stories[0].previously = "2026-09-23", 3, "Bank <hints> at rise"
+    html = render_html(b, date=DATE)
+    assert "Day 3</span>" in html and "Following since Sep 23. Previously: Bank &lt;hints&gt; at rise" in html
+    assert 'href="2026-09-23.html"' in render_html(b, date=DATE, home_url="index.html")  # archive links back
+    assert "2026-09-23.html" not in html
+    assert "  Day 3, following since Sep 23. Previously: Bank <hints> at rise" in render_text(b, date=DATE)

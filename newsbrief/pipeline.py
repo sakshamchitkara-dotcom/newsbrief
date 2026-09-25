@@ -5,12 +5,12 @@ import logging
 import os
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from .config import Config, Source, Subscriber
-from .dedupe import cluster
+from .dedupe import cluster, track
 from .deliver import build_message, send, write_outbox
 from .extract import enrich
 from .feeds import fetch_feed
@@ -26,6 +26,7 @@ from .unsubscribe import list_unsubscribe_headers, require_secret, unsubscribe_u
 
 log = logging.getLogger(__name__)
 FETCHERS = {"rss": fetch_feed, "hackernews": fetch_hn, "page": fetch_page}
+FOLLOW_DAYS = 7  # how far back a developing story is traced through earlier briefs
 
 
 def collect(sources: list[Source]) -> dict[str, list[Article]]:
@@ -63,8 +64,12 @@ def build_brief(
         # every outlet's text for the top story, so its "why it matters" line has more to draw on
         wanted = [s.lead for s in stories] + (stories[0].articles[1:4] if stories else [])
         enrich([a for a in wanted if a.source not in feed_only])
-    brief = Brief(sub.email, stories, generated_at=now)
-    return summarize(brief, use_claude=use_claude)
+    brief = summarize(Brief(sub.email, stories, generated_at=now), use_claude=use_claude)
+    today = now.astimezone(ZoneInfo(sub.timezone)).date()
+    cutoff = (today - timedelta(days=FOLLOW_DAYS)).isoformat()
+    past = [(d, s) for d, _, b in reversed(state.briefs(sub.email)) if cutoff <= d < today.isoformat() for s in b.stories]
+    track(brief.stories, past, today)
+    return brief
 
 
 @dataclass
