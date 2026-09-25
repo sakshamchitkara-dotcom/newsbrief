@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -78,12 +78,15 @@ def parse_config(data: dict) -> Config:
         raise ConfigError("config must be a mapping")
     sources = {}
     for name, raw in (data.get("sources") or {}).items():
-        raw = dict(raw or {})
+        if not isinstance(raw, dict):
+            raise ConfigError(f"source {name}: expected a mapping like {{type: rss, url: ...}}")
+        raw = dict(raw)
         stype = raw.pop("type", "rss")
         if stype not in SOURCE_TYPES:
             raise ConfigError(f"source {name}: unknown type {stype!r}")
         if stype != "hackernews" and not raw.get("url"):
             raise ConfigError(f"source {name}: url is required")
+        _known_keys(Source, raw, f"source {name}", reserved={"name"})  # the mapping key is the name
         sources[name] = Source(name=name, type=stype, **raw)
     if not sources:
         raise ConfigError("at least one source is required")
@@ -118,7 +121,15 @@ def parse_config(data: dict) -> Config:
         subs.append(sub)
 
     top = {k: v for k, v in data.items() if k not in ("sources", "subscribers")}
+    _known_keys(Config, top, "config")
     return Config(sources=sources, subscribers=subs, **top)
+
+
+def _known_keys(cls, raw: dict, where: str, reserved: set[str] = frozenset()) -> None:
+    """A typo ("max_storie") is a config error, not a TypeError traceback."""
+    unknown = set(raw) - ({f.name for f in fields(cls)} - reserved)
+    if unknown:
+        raise ConfigError(f"{where}: unknown keys {sorted(unknown)}")
 
 
 def load_config(path: str | Path) -> Config:
