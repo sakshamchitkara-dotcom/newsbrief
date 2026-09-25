@@ -9,7 +9,9 @@ responsive HTML brief at their own local send time.
   <img src="docs/brief-mobile.png" width="300" alt="A real brief rendered at phone width">
 </p>
 
-Full-page desktop render of a real run: [docs/brief-desktop.png](docs/brief-desktop.png).
+Full-page desktop render of a real run: [docs/brief-desktop.png](docs/brief-desktop.png). In dark mode
+(Apple Mail, iOS Mail, Outlook for Mac, Thunderbird) it switches palette: [docs/brief-dark-mobile.png](docs/brief-dark-mobile.png).
+Gmail ignores `prefers-color-scheme` and applies its own inversion.
 
 ## How it works
 
@@ -141,7 +143,7 @@ newsbrief digest --dry-run --subscriber you@example.com --days 7
 `digest` rebuilds the week from the briefs stored each day. Day by day, a story joins an earlier
 thread when the daily tracker already linked them ("Previously: ..."), when they share an article
 URL, or when their stored articles pass the clustering test (idf over all the week's articles).
-Two stories from the same day never merge: that day's clustering already kept them apart.
+Two stories from the same day never link to each other directly (that day's clustering kept them apart), but a later story that continues both joins them into one thread.
 Threads are ranked by days in the brief and then by outlets, and each is shown as its latest
 version with a "Day N" badge and the headline it started under.
 
@@ -352,8 +354,8 @@ Subject: Weekly Brief, Sep 19-Sep 25
   so it was left out.
 - The extractive "why it matters" line keys on cue words ("could", "first", "record", ...), so it
   can pick a sentence that is on topic but not really context. Claude writes a proper one.
-- The weekly digest keeps whatever split a day's clustering made: if one brief carried a story as
-  two stories (the stored 0.2.0 brief's two Trump/Xi stories), the digest shows two threads.
+- The weekly digest rejoins a day's split story only when a later brief continues both halves;
+  a split on the last day of the week, or a story that then stops, still shows as two threads.
 - Story tracking and the digest have been checked on two briefs from one day, relabeled; not yet
   on a real week of briefs.
 - Pairwise clustering is O(n × clusters), which is fine for a few hundred items a day.
