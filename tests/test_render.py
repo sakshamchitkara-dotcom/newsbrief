@@ -73,3 +73,17 @@ def test_developing_story_shows_day_and_previous_headline():
     assert 'href="2026-09-23.html"' in render_html(b, date=DATE, home_url="index.html")  # archive links back
     assert "2026-09-23.html" not in html
     assert "  Day 3, following since Sep 23. Previously: Bank <hints> at rise" in render_text(b, date=DATE)
+
+
+def test_every_coloured_element_has_a_dark_mode_class():
+    import re
+
+    story = brief().stories[0]
+    story.day, story.since, story.previously = 2, "2026-09-24", "Rates rise"
+    html = render_html(Brief("me@x.com", [story], intro="x"), date=DATE, unsubscribe_url="https://u",
+                       home_url="index.html")
+    assert '<meta name="color-scheme" content="light dark">' in html and "prefers-color-scheme:dark" in html
+    tags = re.findall(r"<(?!meta)\w+[^>]*style=\"[^\"]*(?:color|background|border)[^\"]*\"[^>]*>", html)
+    assert len(tags) > 15
+    unclassed = [t for t in tags if 'class="' not in t or not re.search(r'class="[^"]*\bnb-', t)]
+    assert unclassed == [], unclassed
