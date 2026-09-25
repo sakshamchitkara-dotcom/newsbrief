@@ -10,8 +10,13 @@ _INVISIBLE = re.compile("[\u200b-\u200d\u2060\ufeff\u00ad]")  # zero-width chars
 _SENT = re.compile(r"(?:(?<=[.!?])|(?<=[.!?][\"'\u201d)\]]))\s+(?=[A-Z0-9\"'\u201c(])")
 
 
+_BREAK = "\x00"  # paragraph boundary marker inside _Stripper output
+_ENDS_SENTENCE = tuple(".!?:;…\"'\u201d\u2019)")
+
+
 class _Stripper(HTMLParser):
     SKIP = {"script", "style", "noscript", "template", "svg"}
+    BLOCK = {"p", "div", "li", "br", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote", "tr", "td", "figcaption"}
 
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
@@ -21,10 +26,14 @@ class _Stripper(HTMLParser):
     def handle_starttag(self, tag, attrs):
         if tag in self.SKIP:
             self.skip += 1
+        elif tag in self.BLOCK:
+            self.parts.append(_BREAK)
 
     def handle_endtag(self, tag):
         if tag in self.SKIP and self.skip:
             self.skip -= 1
+        elif tag in self.BLOCK:
+            self.parts.append(_BREAK)
 
     def handle_data(self, data):
         if not self.skip:
@@ -37,7 +46,11 @@ def strip_html(s: str) -> str:
     p = _Stripper()
     p.feed(s)
     p.close()
-    return clean(" ".join(p.parts))
+    # A standfirst in its own <p> has no full stop ("<p>Fighting escalates</p><p>There are...");
+    # joined bare it runs into the next sentence and the summarizer can't split them.
+    # inline tags join without a space ("<a>London Stock Exchange</a>." stays one word + ".")
+    blocks = [b for b in (clean(x) for x in "".join(p.parts).split(_BREAK)) if b]
+    return " ".join(b if b.endswith(_ENDS_SENTENCE) or i == len(blocks) - 1 else b + "." for i, b in enumerate(blocks))
 
 
 def clean(s: str) -> str:
