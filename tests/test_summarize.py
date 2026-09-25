@@ -98,3 +98,21 @@ def test_extractive_uses_lead_blurb_not_longest():
     other = Article("Pope in France – live", "u2", "guardian",
                     summary="The pope will speak on AI Pope Leo gets off the plane , gets into a chat " * 4)
     assert extractive_summary(Story([lead, other])) == lead.summary
+
+
+def test_extractive_why_it_matters_for_top_story_only():
+    text = BODY + " The move could push mortgage costs to their highest level since 2008. Analysts cheered."
+    b = Brief("me@x.com", [Story([Article("Central bank raises interest rate", "u1", "wire", text=text)], topic="world"),
+                           Story([Article("Chip news", "u2", "hn", text=text)], topic="tech")])
+    summarize_extractive(b)
+    top, second = b.stories
+    assert top.why_it_matters == "The move could push mortgage costs to their highest level since 2008."
+    assert top.why_it_matters not in top.summary and second.why_it_matters == ""
+
+
+def test_extractive_why_prefers_nothing_to_a_weak_guess():
+    from newsbrief.summarize import extractive_why
+
+    s = Story([Article("Club signs striker", "u", "s", summary="The club signed a striker on Tuesday afternoon.")])
+    s.summary = extractive_summary(s)
+    assert extractive_why(s) == ""
