@@ -116,3 +116,17 @@ def test_extractive_why_prefers_nothing_to_a_weak_guess():
     s = Story([Article("Club signs striker", "u", "s", summary="The club signed a striker on Tuesday afternoon.")])
     s.summary = extractive_summary(s)
     assert extractive_why(s) == ""
+
+
+def test_claude_why_it_matters_is_top_story_only_with_extractive_fallback():
+    from newsbrief.summarize import SYSTEM, summarize_claude
+
+    assert "cluster 0 only" in SYSTEM
+    text = BODY + " The move could push mortgage costs to their highest level since 2008."
+    stories = [{"id": 0, "headline": "H0", "summary": "S0", "why_it_matters": ""},
+               {"id": 1, "headline": "H1", "summary": "S1", "why_it_matters": "ignored"}]
+    b = two_story_brief()
+    b.stories[0].articles[0].text = text
+    summarize_claude(b, client=FakeClient({"intro": "i", "stories": stories}))
+    assert b.stories[0].why_it_matters.startswith("The move could push mortgage costs")  # extractive fallback
+    assert b.stories[1].why_it_matters == ""
