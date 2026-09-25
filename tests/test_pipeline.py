@@ -101,3 +101,8 @@ def test_fetch_text_policy_skips_blocking_sources(cfg, monkeypatch):
     brief = pipeline.build_brief(cfg, cfg.subscribers[0], arts, st, NOW, fetch_text=True, use_claude=False)
     leads = {s.lead.source for s in brief.stories}
     assert "wire" in leads and fetched and "wire" not in fetched
+    top = brief.stories[0]
+    cfg.sources["wire"].fetch_text = True
+    fetched.clear()
+    pipeline.build_brief(cfg, cfg.subscribers[0], arts, State(cfg.state_db), NOW, fetch_text=True, use_claude=False)
+    assert len(fetched) == len(brief.stories) + len(top.articles) - 1  # all of the top story's outlets
