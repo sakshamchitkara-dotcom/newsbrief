@@ -50,3 +50,16 @@ def test_discussion_links_for_hn():
     assert 'href="https://news.ycombinator.com/item?id=7"' in render_html(b, date=DATE)
     assert "321 pts, discuss" in render_html(b, date=DATE)
     assert "discussion (321 pts): https://news.ycombinator.com/item?id=7" in render_text(b, date=DATE)
+
+
+def test_reading_time_only_when_article_text_was_fetched():
+    long = Story([Article("Deep dive", "https://e.com/1", "wire", text="word " * 1000)], topic="world",
+                 headline="Deep dive", summary="Long read.")
+    blurb = Story([Article("Blurb", "https://e.com/2", "wire", summary="Only a blurb.")], topic="world",
+                  headline="Blurb", summary="Short.")
+    assert (long.reading_minutes, blurb.reading_minutes) == (4, 0)
+    assert Story([Article("t", "u", "s", text="just a few words")]).reading_minutes == 1
+    b = Brief("me@x.com", [long, blurb], intro="i")
+    html, txt = render_html(b, date=DATE), render_text(b, date=DATE)
+    assert html.count("min read") == 1 and "4 min read" in html
+    assert "* Deep dive (4 min read)" in txt and "* Blurb\n" in txt
