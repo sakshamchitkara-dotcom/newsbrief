@@ -4,7 +4,7 @@ from __future__ import annotations
 import math
 import re
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from .models import Article, Story
@@ -98,6 +98,8 @@ _BREAK = re.compile(r"[.!?:;|\u2013\u2014\"\u201c\u2018']|\s-\s")
 class Terms:
     keywords: set[str]  # stemmed title + lede words, outlet boilerplate removed
     entities: set[str]  # the subset written as names: "OpenAI", "Medicare", "NYC"
+    capitalized: set[str] = field(default_factory=set)  # capitalised anywhere, sentence starts included
+    lowercase: set[str] = field(default_factory=set)  # seen lowercase mid-sentence
 
 
 def terms(a: Article, boiler: set[tuple[str, ...]] = frozenset()) -> Terms:
@@ -106,7 +108,7 @@ def terms(a: Article, boiler: set[tuple[str, ...]] = frozenset()) -> Terms:
     A name is a word capitalised mid-sentence, or an acronym. Title Case headlines (HN,
     The Verge) capitalise everything, so there only acronyms count.
     """
-    kws, ents = set(), set()
+    kws, ents, caps, lower = set(), set(), set(), set()
     for seg in (a.title, a.body[:300]):
         words = list(_WORD.finditer(seg))
         low = [m.group().lower() for m in words]
@@ -119,7 +121,9 @@ def terms(a: Article, boiler: set[tuple[str, ...]] = frozenset()) -> Terms:
         prev_end = 0
         for i, m in enumerate(words):
             w, lw, gap, prev_end = m.group(), low[i], seg[prev_end : m.start()], m.end()
-            if i in drop or lw in STOPWORDS or len(lw) <= 2:
+            # two-letter words count only as names like "Xi"; "UN", "UK" and "US" merge too much
+            short = len(lw) < 2 or (len(lw) == 2 and not (w[0].isupper() and w[1].islower()))
+            if i in drop or lw in STOPWORDS or short:
                 continue
             stem = _stem(lw)
             kws.add(stem)
@@ -127,7 +131,23 @@ def terms(a: Article, boiler: set[tuple[str, ...]] = frozenset()) -> Terms:
             mid_sentence = i > 0 and not _BREAK.search(gap)
             if acronym or (w[0].isupper() and mid_sentence and not title_case):
                 ents.add(stem)
-    return Terms(kws, ents)
+            if w[0].isupper():
+                caps.add(stem)
+            elif mid_sentence:
+                lower.add(stem)
+    return Terms(kws, ents, caps, lower)
+
+
+def promote_names(ts: list[Terms]) -> None:
+    """A word more articles write as a name mid-sentence than in lowercase is a name
+    everywhere: "Trump and Xi exchange..." starts with one, and Title Case headlines (HN)
+    capitalise every word, so their names are only found this way. Counting, rather than
+    "never lowercase", keeps "Trump" a name on a day someone's performance "trumped" others."""
+    as_name = Counter(w for t in ts for w in t.entities)
+    as_word = Counter(w for t in ts for w in t.lowercase)
+    names = {w for w, n in as_name.items() if n > as_word[w]}
+    for t in ts:
+        t.entities |= t.capitalized & names
 
 
 def source_boilerplate(articles: list[Article], min_repeats: int = 3) -> dict[str, set[tuple[str, ...]]]:
@@ -192,6 +212,7 @@ def cluster(articles: list[Article]) -> list[Story]:
     # Rare words (names, places) say far more about "same event" than common ones.
     boiler = source_boilerplate(articles)
     t = [terms(a, boiler.get(a.source, set())) for a in articles]
+    promote_names(t)
     idf = idf_weights([x.keywords for x in t])
     groups: list[list[int]] = []
     # ponytail: O(n * clusters) scan, fine for a few hundred items/day; MinHash LSH beyond that
