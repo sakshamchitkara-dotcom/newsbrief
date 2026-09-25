@@ -88,3 +88,15 @@ def test_weekly_follows_the_daily_trackers_link_and_keeps_one_days_stories_apart
     top = weekly([("2026-09-24", a), ("2026-09-24", same_day), ("2026-09-25", b)], n=5)
     assert sorted(s.day for s in top) == [1, 2]
     assert top[0].headline == "Crowds greet pontiff in Paris" and top[0].since == "2026-09-24"
+
+
+def test_a_later_story_joins_a_days_split_story_into_one_thread():
+    # Sep 24's brief carried the state visit as two stories; Sep 25's clustering saw one
+    dinner = story("Trump and Xi exchange warm words at state dinner", "https://b/xi1")
+    toasts = story("Trump toasts Xi Jinping at lavish White House dinner", "https://g/xi1", "guardian")
+    both = Story([Article("Xi leaves Washington", "https://b/xi2", "bbc"), Article("x", "https://g/xi1", "guardian")],
+                 headline="Xi got Trump's red carpet welcome", previously=dinner.headline, since="2026-09-24")
+    other = story("Volcano erupts in Iceland", "https://b/v")
+    top = weekly([("2026-09-24", dinner), ("2026-09-24", toasts), ("2026-09-24", other), ("2026-09-25", both)], n=5)
+    assert [(s.headline, s.day) for s in top] == [("Xi got Trump's red carpet welcome", 2), ("Volcano erupts in Iceland", 1)]
+    assert top[0].sources == ["bbc", "guardian"] and top[0].since == "2026-09-24"
