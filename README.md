@@ -43,7 +43,7 @@ cp .env.example .env                        # fill in what you need
 set -a; . ./.env; set +a
 
 newsbrief check                 # validate config, show who gets which sources
-newsbrief check --feeds         # also fetch every feed: freshness, failures, article access
+newsbrief check --feeds         # also fetch every feed: freshness, failures, article access (3 probes)
 newsbrief subscribers add you@example.com --tz Europe/London --send-at 07:00
 newsbrief run --dry-run         # build briefs into ./outbox/*.eml + *.html, send nothing
 open outbox/*.html
@@ -132,9 +132,12 @@ Every email has an unsubscribe link and `List-Unsubscribe` header, signed with `
 ## Feed health
 
 `newsbrief check --feeds` fetches every source and reports freshness, failures and whether
-article pages can be fetched (it probes each feed's first item). It exits 3 if any feed is
-`FAIL`, `EMPTY` or `STALE` (newest item older than `--stale-hours`, default 24), so it can
-drive a monitor. Plain `newsbrief check` stays offline. Live output, 2026-09-25:
+article pages can be fetched. It probes the first 3 articles of each feed (`--probe N`, `0` to
+skip), because a site can serve one page and block the next: NPR once answered `200` and then
+`HTTP 402` in a row, which a single probe reports as `ok`. A partly blocked feed shows up as
+`1/3 ok (HTTP 402)`. The command exits 3 if any feed is `FAIL`, `EMPTY` or `STALE` (newest item
+older than `--stale-hours`, default 24), so it can drive a monitor. Plain `newsbrief check` stays
+offline. Live output, 2026-09-25:
 
 ```
 $ newsbrief -c newsbrief.example.yaml check --feeds
@@ -142,19 +145,19 @@ $ newsbrief -c newsbrief.example.yaml check --feeds
   you@example.com at 07:00 America/New_York: bbc-world, bbc-business, npr, guardian, aljazeera, verge, ars, hn
 
 source         status items   newest  article text
-bbc-world      OK        30      12m  ok
-bbc-business   OK        30      60m  ok
-npr            OK        10      31m  off
-guardian       OK        30      12m  ok
-aljazeera      OK        25      59m  ok
-verge          OK        10       0m  ok
-ars            OK        20    11.0h  ok
-hn             OK        30      33m  n/a
+bbc-world      OK        30      23m  ok 3/3
+bbc-business   OK        30     1.5h  ok 3/3
+npr            OK        10      58m  off
+guardian       OK        30       5m  ok 3/3
+aljazeera      OK        25      26m  ok 3/3
+verge          OK        10      27m  ok 3/3
+ars            OK        20    11.5h  ok 3/3
+hn             OK        30      27m  n/a
 ```
 
-NPR is `off` because the example config sets `fetch_text: false` for it: fetching six NPR
-articles in a row the same morning gave one `200` and then `HTTP 402`, after which the circuit
-breaker skipped the rest of the domain instead of spending a request on each.
+NPR is `off` because the example config sets `fetch_text: false` for it, after six NPR article
+fetches in a row one morning gave one `200` and then `HTTP 402`. The block is intermittent: a
+later run with fetching switched on got `ok 5/5`, so `off` stays the safe default.
 
 ## Web archive
 
@@ -280,8 +283,6 @@ installs (2 min read)
   so it was left out.
 - The extractive "why it matters" line keys on cue words ("could", "first", "record", ...), so it
   can pick a sentence that is on topic but not really context. Claude writes a proper one.
-- `check --feeds` probes one article per feed, so a site that blocks only some pages (NPR) can
-  still show `ok`.
 - Pairwise clustering is O(n × clusters), which is fine for a few hundred items a day.
   Beyond that, switch to MinHash LSH.
 

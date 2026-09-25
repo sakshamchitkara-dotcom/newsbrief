@@ -16,7 +16,7 @@ class FeedHealth:
     items: int = 0
     newest: datetime | None = None
     error: str = ""
-    text: str = ""  # article-page fetch: "ok", "off", "n/a" or the error
+    text: str = ""  # article-page probes: "ok 3/3", "1/3 ok (HTTP 402)", "off" or "n/a"
 
     def status(self, now: datetime, stale_hours: float) -> str:
         if self.error:
@@ -34,7 +34,7 @@ class FeedHealth:
         return f"{h * 60:.0f}m" if h < 1 else f"{h:.1f}h" if h < 48 else f"{h / 24:.0f}d"
 
 
-def check_source(src: Source, probe_text: bool = True) -> FeedHealth:
+def check_source(src: Source, probe_text: bool = True, probes: int = 3) -> FeedHealth:
     from .pipeline import FETCHERS  # late import: pipeline imports most of the package
 
     h = FeedHealth(src.name)
@@ -51,17 +51,27 @@ def check_source(src: Source, probe_text: bool = True) -> FeedHealth:
     elif not src.fetch_text:
         h.text = "off"
     elif probe_text:
-        try:
-            http.polite_get(arts[0].url)
-            h.text = "ok"
-        except FetchError as e:
-            h.text = str(e).split(": ", 1)[-1]
+        h.text = probe_articles([a.url for a in arts[:probes]])
     return h
 
 
-def check_feeds(sources: list[Source], probe_text: bool = True) -> list[FeedHealth]:
+def probe_articles(urls: list[str]) -> str:
+    """Fetch each article page in turn: "ok", or "k/n ok (first error)". Sites that block
+    only some pages (NPR answered one 200, then 402s) need more than one probe to show it."""
+    errors = []
+    for url in urls:
+        try:
+            http.polite_get(url)
+        except FetchError as e:
+            errors.append(str(e).split(": ", 1)[-1])
+    if not errors:
+        return "ok" if len(urls) == 1 else f"ok {len(urls)}/{len(urls)}"
+    return f"{len(urls) - len(errors)}/{len(urls)} ok ({errors[0]})"
+
+
+def check_feeds(sources: list[Source], probe_text: bool = True, probes: int = 3) -> list[FeedHealth]:
     with ThreadPoolExecutor(max_workers=8) as pool:
-        return list(pool.map(lambda s: check_source(s, probe_text), sources))
+        return list(pool.map(lambda s: check_source(s, probe_text, probes), sources))
 
 
 def report(results: list[FeedHealth], now: datetime | None = None, stale_hours: float = 24) -> tuple[str, bool]:
