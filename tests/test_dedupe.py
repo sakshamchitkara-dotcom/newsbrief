@@ -166,3 +166,11 @@ def test_track_links_follow_ups_and_inherits_start_date():
     track(today, past, date(2026, 9, 25))
     assert (today[0].since, today[0].day, today[0].previously) == ("2026-09-23", 3, "Pope arrives in France")
     assert today[1].day == 0 and today[1].since == ""
+
+
+def test_story_articles_spread_across_outlets():
+    from newsbrief.dedupe import spread
+
+    arts = [Article(str(i), f"u{i}", src) for i, src in enumerate(["bbc", "bbc", "bbc", "guardian", "bbc", "npr"])]
+    assert [a.source for a in spread(arts)] == ["bbc", "guardian", "npr", "bbc", "bbc", "bbc"]
+    assert spread(arts)[0] is arts[0]
