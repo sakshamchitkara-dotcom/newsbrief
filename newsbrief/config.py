@@ -45,6 +45,7 @@ class Config:
     state_db: str = "newsbrief.db"
     outbox: str = "outbox"
     max_stories: int = 12
+    max_per_topic: int = 5
     lookback_hours: int = 36
     fetch_articles: bool = True
 

@@ -43,3 +43,18 @@ def rank(stories: list[Story], sources: dict[str, Source], now: datetime | None 
 def within(story: Story, now: datetime, hours: float) -> bool:
     ts = newest(story)
     return ts is None or (now - ts).total_seconds() <= hours * 3600
+
+
+def diversify(stories: list[Story], n: int, per_topic: int) -> list[Story]:
+    """Top n in rank order, but no topic takes more than per_topic slots unless nothing else is left."""
+    picked, counts, overflow = [], Counter(), []
+    for s in stories:
+        if counts[s.topic] < per_topic:
+            picked.append(s)
+            counts[s.topic] += 1
+        else:
+            overflow.append(s)
+        if len(picked) == n:
+            return picked
+    picked += overflow[: n - len(picked)]
+    return sorted(picked, key=lambda s: s.rank, reverse=True)
