@@ -94,3 +94,39 @@ def test_archive_command(cfg_path, tmp_path, capsys):
     assert main(["-c", cfg_path, "archive", "--out", str(out)]) == 0
     assert "wrote 1 day pages + index" in capsys.readouterr().out
     assert (out / "2026-09-25.html").exists() and (out / "index.html").exists()
+
+
+def test_subscribers_add_list_remove(cfg_path, capsys):
+    from pathlib import Path
+
+    header = "# my config\n"
+    p = Path(cfg_path)
+    p.write_text(header + p.read_text())
+    assert main(["-c", cfg_path, "subscribers", "add", "new@example.com", "--tz", "Europe/Berlin",
+                 "--send-at", "06:15", "--topics", "tech", "--name", "Neu"]) == 0
+    assert main(["-c", cfg_path, "subscribers", "list"]) == 0
+    out = capsys.readouterr().out
+    assert "new@example.com" in out and "06:15 Europe/Berlin" in out and "topics=tech" in out and "2 subscribers" in out
+    assert p.read_text().startswith(header)  # the rest of the file, comments included, is kept
+    assert main(["-c", cfg_path, "subscribers", "remove", "NEW@example.com"]) == 0
+    assert "new@example.com" not in p.read_text() and "me@example.com" in p.read_text()
+
+
+@pytest.mark.parametrize("extra,err", [
+    (["--tz", "Mars/Olympus"], "unknown timezone"),
+    (["--send-at", "7pm"], "HH:MM"),
+    (["--topics", "sport"], "unknown topics"),
+])
+def test_subscribers_add_validates_before_writing(cfg_path, capsys, extra, err):
+    from pathlib import Path
+
+    before = Path(cfg_path).read_text()
+    assert main(["-c", cfg_path, "subscribers", "add", "x@example.com", *extra]) == 1
+    assert err in capsys.readouterr().err and Path(cfg_path).read_text() == before
+
+
+def test_subscribers_rejects_duplicates_and_unknown(cfg_path, capsys):
+    assert main(["-c", cfg_path, "subscribers", "add", "ME@example.com"]) == 1
+    assert main(["-c", cfg_path, "subscribers", "remove", "ghost@example.com"]) == 1
+    err = capsys.readouterr().err
+    assert "already subscribed" in err and "no subscriber ghost@example.com" in err

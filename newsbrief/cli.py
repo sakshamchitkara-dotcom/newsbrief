@@ -1,4 +1,4 @@
-"""Command line entry point: `newsbrief run|schedule|unsubscribe|serve|check|eval|archive`."""
+"""Command line entry point: `newsbrief run|schedule|subscribers|unsubscribe|serve|check|eval|archive`."""
 from __future__ import annotations
 
 import argparse
@@ -6,7 +6,7 @@ import logging
 import sys
 import time
 
-from .config import ConfigError, load_config
+from .config import ConfigError, load_config, load_raw, save_subscribers
 from .deliver import DeliveryError
 from .pipeline import run
 from .state import State
@@ -77,6 +77,45 @@ def cmd_check(args) -> int:
     return 0
 
 
+def _csv(v: str | None) -> list[str]:
+    return [x.strip() for x in (v or "").split(",") if x.strip()]
+
+
+def cmd_subscribers(args) -> int:
+    raw = load_raw(args.config)
+    subs = list(raw.get("subscribers") or [])
+    idx = {str(s.get("email", "")).lower(): i for i, s in enumerate(subs)}
+    if args.action == "list":
+        cfg = load_config(args.config)
+        st = State(cfg.state_db)
+        try:
+            for s in cfg.subscribers:
+                flags = [f"topics={','.join(s.topics)}" if s.topics else "", f"sources={','.join(s.sources)}" if s.sources else "",
+                         "UNSUBSCRIBED" if st.is_unsubscribed(s.email) else ""]
+                print(f"{s.email:<32} {s.send_at} {s.timezone:<20} {s.name:<12} {' '.join(f for f in flags if f)}".rstrip())
+        finally:
+            st.close()
+        print(f"{len(cfg.subscribers)} subscribers")
+        return 0
+    key = args.email.lower()
+    if args.action == "remove":
+        if key not in idx:
+            print(f"no subscriber {args.email}", file=sys.stderr)
+            return 1
+        del subs[idx[key]]
+        save_subscribers(args.config, subs)
+        print(f"removed {args.email}")
+        return 0
+    if key in idx:
+        print(f"{args.email} is already subscribed", file=sys.stderr)
+        return 1
+    new = {"email": args.email, "name": args.name, "timezone": args.timezone, "send_at": args.send_at,
+           "topics": _csv(args.topics), "sources": _csv(args.sources)}
+    save_subscribers(args.config, subs + [{k: v for k, v in new.items() if v}])  # validates tz, HH:MM, topics
+    print(f"added {args.email}: {args.send_at} {args.timezone}")
+    return 0
+
+
 def cmd_archive(args) -> int:
     from .archive import build_site
 
@@ -124,6 +163,20 @@ def main(argv: list[str] | None = None) -> int:
     delivery_flags(s)
     s.add_argument("--interval", type=int, default=300, help="seconds between checks")
     s.set_defaults(func=cmd_schedule)
+
+    sm = sub.add_parser("subscribers", help="list, add or remove subscribers in the config file")
+    sma = sm.add_subparsers(dest="action", required=True)
+    sma.add_parser("list", help="show subscribers and their schedule")
+    add = sma.add_parser("add", help="add a subscriber (validates timezone and send time)")
+    add.add_argument("email")
+    add.add_argument("--name", default="")
+    add.add_argument("--timezone", "--tz", default="UTC", help="IANA zone, e.g. Europe/London")
+    add.add_argument("--send-at", default="07:00", help="local HH:MM")
+    add.add_argument("--topics", help="comma-separated topic filter")
+    add.add_argument("--sources", help="comma-separated source filter")
+    rm = sma.add_parser("remove", help="remove a subscriber")
+    rm.add_argument("email")
+    sm.set_defaults(func=cmd_subscribers)
 
     u = sub.add_parser("unsubscribe", help="unsubscribe an email given its token")
     u.add_argument("email")
