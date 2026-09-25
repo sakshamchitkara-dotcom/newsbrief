@@ -28,6 +28,8 @@ def test_defaults_and_source_selection():
         ({"send_at": "25:00"}, "HH:MM"),
         ({"sources": ["nope"]}, "unknown sources"),
         ({"email": "not-an-email"}, "invalid subscriber"),
+        ({"topic_weights": {"tech": -1}}, "topic_weights"),
+        ({"topic_weights": {"tech": "lots"}}, "topic_weights"),
     ],
 )
 def test_invalid_subscribers(bad, msg):
