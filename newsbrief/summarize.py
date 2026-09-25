@@ -24,8 +24,9 @@ def extractive_summary(story: Story, n: int = 2) -> str:
             centroid[w] += 2
     # An outlet's own feed blurb is an editor-written lede: better than sentences
     # mined from the page. Fall back to the extracted page text when blurbs are thin.
-    blurb = max((a.summary for a in story.articles), key=len, default="")
-    body = blurb if len(blurb) >= 80 else (story.lead.body or next((a.body for a in story.articles if a.body), ""))
+    blurbs = [a.summary for a in story.articles if len(a.summary) >= 80]
+    blurb = blurbs[0] if blurbs else ""  # the lead outlet's own lede, not the longest one
+    body = blurb or (story.lead.body or next((a.body for a in story.articles if a.body), ""))
     sents = [s for s in sentences(body[:5000]) if 30 <= len(s) <= 400]
     if not sents:
         return truncate(body, 280)

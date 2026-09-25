@@ -90,3 +90,11 @@ def test_extractive_prefers_feed_blurb_over_page_text():
     s = Story([Article("Trump hosts Xi at state dinner", "u", "bbc", summary=blurb,
                        text="Defence Secretary Pete Hegseth was at another table, looking serious. " * 3)])
     assert extractive_summary(s) == blurb
+
+
+def test_extractive_uses_lead_blurb_not_longest():
+    lead = Article("Pope heads to France", "u1", "aljazeera",
+                   summary="Pope Leo XIV is heading to France for the first official papal visit in 18 years.")
+    other = Article("Pope in France – live", "u2", "guardian",
+                    summary="The pope will speak on AI Pope Leo gets off the plane , gets into a chat " * 4)
+    assert extractive_summary(Story([lead, other])) == lead.summary
