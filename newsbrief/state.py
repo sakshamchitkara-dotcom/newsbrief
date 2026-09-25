@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import sqlite3
+from dataclasses import replace
 from datetime import datetime, timezone
 
 from .dedupe import normalize_url
@@ -48,8 +49,16 @@ class State:
         self.db.close()
 
     def unseen(self, subscriber: str, stories: list[Story]) -> list[Story]:
+        """Drop articles the subscriber already got. A story keeps its new articles, so a
+        developing story comes back with today's reporting instead of vanishing because
+        yesterday's piece is still inside the lookback window."""
         seen = {r[0] for r in self.db.execute("SELECT url FROM sent_urls WHERE subscriber=?", (subscriber.lower(),))}
-        return [s for s in stories if not any(normalize_url(u) in seen for u in s.urls)]
+        out = []
+        for s in stories:
+            fresh = [a for a in s.articles if normalize_url(a.url) not in seen]
+            if fresh:
+                out.append(s if len(fresh) == len(s.articles) else replace(s, articles=fresh))
+        return out
 
     def record(self, subscriber: str, local_date: str, stories: list[Story]) -> None:
         sub, now = subscriber.lower(), _now()

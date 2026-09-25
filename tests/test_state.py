@@ -16,6 +16,14 @@ def test_sent_stories_are_not_repeated(tmp_path):
     assert st.unseen("other@x.com", [a]) == [a]
 
 
+def test_developing_story_returns_with_only_new_articles(tmp_path):
+    st = State(str(tmp_path / "s.db"))
+    st.record("me@x.com", "2026-09-24", [story("https://ex.com/day1")])
+    today = Story([Article("t", "https://ex.com/day1", "bbc"), Article("t", "https://ex.com/day2", "npr")])
+    (got,) = st.unseen("me@x.com", [today])
+    assert got.urls == ["https://ex.com/day2"] and got.lead.source == "npr"
+
+
 def test_deliveries_and_unsubscribe_persist(tmp_path):
     path = str(tmp_path / "s.db")
     st = State(path)
