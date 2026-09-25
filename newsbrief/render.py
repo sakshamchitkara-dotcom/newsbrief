@@ -74,7 +74,8 @@ def _story_html(s: Story, home_url: str = "") -> str:
 
 
 def render_html(
-    brief: Brief, *, date: datetime, name: str = "", unsubscribe_url: str = "", home_url: str = ""
+    brief: Brief, *, date: datetime, name: str = "", unsubscribe_url: str = "", home_url: str = "",
+    title: str = "The Daily Brief",
 ) -> str:
     """home_url: link back to an archive index (web archive pages only)."""
     sections = []
@@ -115,7 +116,7 @@ def render_html(
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="wrap"
  style="max-width:640px;background:#ffffff;border-radius:6px;padding:32px 36px;">
 <tr><td style="border-bottom:3px double {INK};padding-bottom:14px;">
-  {home}<div style="font:bold 34px/1.1 {SERIF};color:{INK};">The Daily Brief</div>
+  {home}<div style="font:bold 34px/1.1 {SERIF};color:{INK};">{escape(title)}</div>
   <div style="margin-top:6px;font:13px/1.4 {SANS};color:{MUTED};">{escape(datestr)} &middot; {len(brief.stories)} stories</div>
 </td></tr>
 <tr><td style="padding:18px 0 0;font:17px/1.55 {SERIF};color:{INK};">
@@ -129,9 +130,10 @@ def render_html(
 </body></html>"""
 
 
-def render_text(brief: Brief, *, date: datetime, name: str = "", unsubscribe_url: str = "") -> str:
+def render_text(brief: Brief, *, date: datetime, name: str = "", unsubscribe_url: str = "",
+                title: str = "The Daily Brief") -> str:
     wrap = lambda s, indent="": textwrap.fill(s, 76, initial_indent=indent, subsequent_indent=indent)  # noqa: E731
-    lines = [f"THE DAILY BRIEF - {date:%A, %B} {date.day}, {date.year}", "=" * 44, ""]
+    lines = [f"{title.upper()} - {date:%A, %B} {date.day}, {date.year}", "=" * 44, ""]
     lines += [wrap(f"Good morning{', ' + name if name else ''}. {brief.intro}"), ""]
     if not brief.stories:
         lines += ["Nothing new since your last brief.", ""]

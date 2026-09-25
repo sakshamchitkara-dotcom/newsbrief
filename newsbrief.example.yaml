@@ -33,3 +33,4 @@ subscribers:
     # topic_weights: {tech: 1.5, business: 0.5}   # optional: scale ranking per topic (0 hides it)
     # boost: [climate, "open source"]             # optional: lift stories mentioning these
     # mute: [celebrity, football]                 # optional: drop stories mentioning these
+    # weekly: true                                # optional: also send `newsbrief digest` each week

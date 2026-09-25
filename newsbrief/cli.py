@@ -1,4 +1,4 @@
-"""Command line entry point: `newsbrief run|schedule|subscribers|unsubscribe|serve|check|eval|archive`."""
+"""Command line entry point: `newsbrief run|schedule|digest|subscribers|unsubscribe|serve|check|eval|archive`."""
 from __future__ import annotations
 
 import argparse
@@ -138,6 +138,21 @@ def cmd_archive(args) -> int:
     return 0
 
 
+def cmd_digest(args) -> int:
+    from .digest import run_digest
+
+    try:
+        outs = run_digest(load_config(args.config), dry_run=args.dry_run, subscriber=args.subscriber, days=args.days)
+    except DeliveryError as e:
+        log.error("%s", e)
+        return 2
+    for email, n, transport, page in outs:
+        print(f"{email}: {n} stories via {transport}" + (f" -> {page}" if page else ""))
+    if not outs:
+        print("no subscribers with weekly: true (or pass --subscriber)")
+    return 0
+
+
 def cmd_eval(args) -> int:
     from .evaluate import DEFAULT_SET, evaluate, load_set
 
@@ -172,6 +187,12 @@ def main(argv: list[str] | None = None) -> int:
     delivery_flags(s)
     s.add_argument("--interval", type=int, default=300, help="seconds between checks")
     s.set_defaults(func=cmd_schedule)
+
+    d = sub.add_parser("digest", help="send the weekly digest to subscribers with weekly: true")
+    d.add_argument("--dry-run", action="store_true", help="write .eml/.html to the outbox instead of sending")
+    d.add_argument("--subscriber", help="only this subscriber email (even without weekly: true)")
+    d.add_argument("--days", type=int, default=7, help="how many days of briefs to cover (default 7)")
+    d.set_defaults(func=cmd_digest)
 
     sm = sub.add_parser("subscribers", help="list, add or remove subscribers in the config file")
     sma = sm.add_subparsers(dest="action", required=True)
