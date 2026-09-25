@@ -24,3 +24,47 @@ def test_outbox_roundtrip(tmp_path):
     assert eml.name == "me-x-com-2026-09-25.eml" and page.read_text() == "<p>Hi é</p>"
     parsed = email.message_from_bytes(eml.read_bytes(), policy=policy.default)
     assert parsed.get_body(("plain",)).get_content().strip() == "Hi é"
+
+
+class FakeSMTP:
+    instances = []
+
+    def __init__(self, host, port, **kw):
+        self.host, self.port, self.log = host, port, []
+        FakeSMTP.instances.append(self)
+
+    def starttls(self, context=None):
+        self.log.append("starttls")
+
+    def login(self, u, p):
+        self.log.append(("login", u, p))
+
+    def send_message(self, m):
+        self.log.append(("send", m["To"]))
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *a):
+        self.log.append("quit")
+
+
+def test_smtp_uses_starttls_then_login(monkeypatch):
+    import smtplib
+
+    from newsbrief.deliver import send_smtp
+
+    monkeypatch.setattr(smtplib, "SMTP", FakeSMTP)
+    send_smtp(msg(), {"SMTP_HOST": "smtp.example.com", "SMTP_USER": "u", "SMTP_PASS": "p"})
+    s = FakeSMTP.instances[-1]
+    assert (s.host, s.port) == ("smtp.example.com", 587)
+    assert s.log == ["starttls", ("login", "u", "p"), ("send", "me@x.com"), "quit"]
+
+
+def test_smtp_requires_host():
+    import pytest
+
+    from newsbrief.deliver import DeliveryError, send_smtp
+
+    with pytest.raises(DeliveryError):
+        send_smtp(msg(), {})

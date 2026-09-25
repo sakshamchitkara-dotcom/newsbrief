@@ -39,3 +39,31 @@ def write_outbox(msg: EmailMessage, html: str, outbox: str | Path, stem: str) ->
     eml.write_bytes(bytes(msg))
     page.write_text(html, encoding="utf-8")
     return eml, page
+
+
+class DeliveryError(Exception):
+    pass
+
+
+def send_smtp(msg: EmailMessage, env: dict[str, str]) -> None:
+    """SMTP with STARTTLS (587, default) or implicit TLS (465)."""
+    import smtplib
+    import ssl
+
+    host = env.get("SMTP_HOST")
+    if not host:
+        raise DeliveryError("SMTP_HOST is not set")
+    port = int(env.get("SMTP_PORT") or 587)
+    ctx = ssl.create_default_context()
+    try:
+        if port == 465:
+            server = smtplib.SMTP_SSL(host, port, context=ctx, timeout=30)
+        else:
+            server = smtplib.SMTP(host, port, timeout=30)
+            server.starttls(context=ctx)  # refuse to send credentials in the clear
+        with server:
+            if env.get("SMTP_USER"):
+                server.login(env["SMTP_USER"], env.get("SMTP_PASS", ""))
+            server.send_message(msg)
+    except (smtplib.SMTPException, OSError) as e:
+        raise DeliveryError(f"smtp: {e}") from e
