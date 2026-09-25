@@ -21,3 +21,19 @@ def test_pairwise_precision_recall_and_error_lists():
 def test_empty_set_scores_perfectly():
     r = evaluate([])
     assert r.precision == r.recall == 1.0
+
+
+def test_shipped_eval_set_is_well_formed():
+    from collections import Counter
+
+    from newsbrief.evaluate import load_set
+
+    items = load_set()
+    assert len(items) >= 150 and len({a.url for a, _ in items}) == len(items)
+    sizes = Counter(s for _, s in items if s)
+    assert all(n >= 2 for n in sizes.values())  # a label only matters if it pairs something
+    # the two known failures from the 2026-09-25 run are encoded
+    titles = {a.title: s for a, s in items}
+    assert titles["What About Rails?"] is None and titles["Rails World 2026 Opening Keynote [video]"] is None
+    medicare = [t for t, s in titles.items() if s == "openai-australia-medicare-hack" and "Medicare" in t]
+    assert len(medicare) == 2
