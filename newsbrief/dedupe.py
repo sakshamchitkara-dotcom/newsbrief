@@ -83,6 +83,7 @@ BODY_THRESHOLD = 0.4  # shingle Jaccard: syndicated / lightly edited copies
 KEYWORD_THRESHOLD = 0.11  # idf-weighted keyword Jaccard over title + lede
 TITLE_OVERLAP = 0.75  # near-identical titles with thin ledes ("F-Droid 2.0")
 ENTITY_MIN, ENTITY_WEIGHT = 3, 8.0  # shared names, and their summed idf
+TITLE_NAMES_WEIGHT = 5.0  # summed idf of two+ names both headlines carry ("Trump", "Xi")
 
 
 def _lede(a: Article) -> str:
@@ -100,6 +101,11 @@ class Terms:
     entities: set[str]  # the subset written as names: "OpenAI", "Medicare", "NYC"
     capitalized: set[str] = field(default_factory=set)  # capitalised anywhere, sentence starts included
     lowercase: set[str] = field(default_factory=set)  # seen lowercase mid-sentence
+    title: set[str] = field(default_factory=set)  # keywords of the headline alone
+
+    @property
+    def title_names(self) -> set[str]:
+        return self.entities & self.title
 
 
 def terms(a: Article, boiler: set[tuple[str, ...]] = frozenset()) -> Terms:
@@ -108,8 +114,8 @@ def terms(a: Article, boiler: set[tuple[str, ...]] = frozenset()) -> Terms:
     A name is a word capitalised mid-sentence, or an acronym. Title Case headlines (HN,
     The Verge) capitalise everything, so there only acronyms count.
     """
-    kws, ents, caps, lower = set(), set(), set(), set()
-    for seg in (a.title, a.body[:300]):
+    kws, ents, caps, lower, title = set(), set(), set(), set(), set()
+    for n_seg, seg in enumerate((a.title, a.body[:300])):
         words = list(_WORD.finditer(seg))
         low = [m.group().lower() for m in words]
         drop = set()
@@ -127,6 +133,8 @@ def terms(a: Article, boiler: set[tuple[str, ...]] = frozenset()) -> Terms:
                 continue
             stem = _stem(lw)
             kws.add(stem)
+            if n_seg == 0:
+                title.add(stem)
             acronym = sum(c.isupper() for c in w) >= 2
             mid_sentence = i > 0 and not _BREAK.search(gap)
             if acronym or (w[0].isupper() and mid_sentence and not title_case):
@@ -135,7 +143,7 @@ def terms(a: Article, boiler: set[tuple[str, ...]] = frozenset()) -> Terms:
                 caps.add(stem)
             elif mid_sentence:
                 lower.add(stem)
-    return Terms(kws, ents, caps, lower)
+    return Terms(kws, ents, caps, lower, title)
 
 
 def promote_names(ts: list[Terms]) -> None:
@@ -173,6 +181,11 @@ def similar(a: Article, b: Article, ta: Terms, tb: Terms, idf: dict[str, float],
     # three shared names that aren't everywhere today ("Susan Sarandon", "Netanyahu") ...
     names = ta.entities & tb.entities
     if len(names) >= ENTITY_MIN and sum(idf.get(w, 1.0) for w in names) >= ENTITY_WEIGHT:
+        return True
+    # ... or two names in both headlines that are rare enough between them: a headline names
+    # its story's actors ("Trump ... Xi", "OpenAI ... Australia") even when the rest is reworded.
+    both = ta.title_names & tb.title_names
+    if len(both) >= 2 and sum(idf.get(w, 1.0) for w in both) >= TITLE_NAMES_WEIGHT:
         return True
     # ... or two, one of which no other article mentions ("Medicare" + "Australia").
     only_here = math.log(1 + n_docs / 2) if n_docs else math.inf

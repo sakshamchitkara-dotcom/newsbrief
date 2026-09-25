@@ -104,6 +104,7 @@ def test_eval_set_known_pairs():
     medicare = [p for p in missed if all("Medicare" in t for t in p)]
     assert medicare == []  # the Guardian live blog + news piece on the OpenAI Medicare hack
     assert r.precision >= 0.9
+    assert r.recall >= 0.6  # the Trump/Xi visit: 11 articles, headlines share little but the two names
 
 
 def test_terms_find_names_but_not_sentence_starts_or_title_case():
@@ -133,3 +134,19 @@ def test_names_found_at_sentence_start_and_in_title_case():
     promote_names(ts)
     assert {"trump", "xi"} <= ts[0].entities  # ... but written as one elsewhere today
     assert "suncatcher" in ts[4].entities and "project" not in ts[4].entities
+
+
+def test_two_names_in_both_headlines_merge_a_reworded_story():
+    xi = [Article("Pomp and toasts: Day 2 of Trump and Xi in DC", "https://bbc/1", "bbc-world"),
+          Article("Trump swoons over strongman soulmate Xi", "https://gu/1", "guardian",
+                  summary="The US president praised Xi at length.")]
+    other = [Article("Trump signs order on federal hiring", "https://npr/1", "npr",
+                     summary="The order freezes hiring at agencies, said Trump."),
+             Article("Xi meets business leaders in Seattle", "https://aj/1", "aljazeera",
+                     summary="Chinese leader Xi met executives from Boeing and Microsoft.")]
+    # a day's worth of other headlines, so the two names are rare (idf) as on a real day
+    fillers = [Article(f"{t} ({i})", f"https://f.com/{i}", f"f{i}") for i, t in enumerate(FILLER_TITLES * 10)]
+    stories = cluster(xi + other + fillers)
+    assert any({a.url for a in s.articles} == {a.url for a in xi} for s in stories)
+    alone = {a.url for a in other}
+    assert all(len(s.articles) == 1 for s in stories if s.lead.url in alone)  # one shared name is not enough
