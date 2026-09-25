@@ -130,3 +130,52 @@ def test_subscribers_rejects_duplicates_and_unknown(cfg_path, capsys):
     assert main(["-c", cfg_path, "subscribers", "remove", "ghost@example.com"]) == 1
     err = capsys.readouterr().err
     assert "already subscribed" in err and "no subscriber ghost@example.com" in err
+
+
+@pytest.mark.parametrize("cmd", [["run"], ["digest"], ["serve"]])
+def test_real_sends_and_serve_need_the_secret(cfg_path, capsys, monkeypatch, cmd):
+    monkeypatch.delenv("NEWSBRIEF_SECRET", raising=False)
+    assert main(["-c", cfg_path, *cmd]) == 1
+    assert "NEWSBRIEF_SECRET must be set" in capsys.readouterr().err
+
+
+def test_serve_binds_to_the_configured_db(cfg_path, capsys, monkeypatch):
+    from newsbrief import server
+
+    monkeypatch.setenv("NEWSBRIEF_SECRET", "s")
+    calls = []
+    monkeypatch.setattr(server, "serve", lambda *a: calls.append(a))
+    assert main(["-c", cfg_path, "serve", "--port", "9999"]) == 0
+    assert calls[0][1:] == ("127.0.0.1", 9999) and calls[0][0].endswith("s.db")
+
+
+def test_delivery_errors_exit_2(cfg_path, caplog, monkeypatch):
+    for var in ("NEWSBRIEF_TRANSPORT", "SMTP_HOST", "RESEND_API_KEY", "SENDGRID_API_KEY"):
+        monkeypatch.delenv(var, raising=False)
+    monkeypatch.setenv("NEWSBRIEF_SECRET", "s")
+    assert main(["-c", cfg_path, "run"]) == 2
+    assert main(["-c", cfg_path, "digest"]) == 2
+    assert caplog.text.count("no transport configured") == 2
+
+
+def test_digest_and_audio_commands(cfg_path, tmp_path, capsys, monkeypatch):
+    from newsbrief.config import load_config
+    from newsbrief.models import Article, Brief, Story
+    from newsbrief.state import State
+
+    monkeypatch.chdir(tmp_path)
+    assert main(["-c", cfg_path, "digest", "--dry-run"]) == 0
+    assert "no subscribers with weekly: true" in capsys.readouterr().out
+    assert main(["-c", cfg_path, "audio", "--script-only"]) == 1
+    assert "no stored brief for any day" in capsys.readouterr().err
+
+    story = Story([Article("Rates rise", "https://a/1", "hn")], headline="Rates rise", summary="Up again.", topic="tech")
+    st = State(load_config(cfg_path).state_db)
+    st.save_brief("me@example.com", "2026-09-24", Brief("me@example.com", [story], intro="One story."))
+    st.close()
+    assert main(["-c", cfg_path, "audio", "--date", "2026-09-23"]) == 1
+    assert main(["-c", cfg_path, "audio", "--script-only"]) == 0
+    assert "-> outbox/brief-2026-09-24.txt" in capsys.readouterr().out
+    assert "Rates rise" in (tmp_path / "outbox/brief-2026-09-24.txt").read_text()
+    assert main(["-c", cfg_path, "digest", "--dry-run", "--subscriber", "me@example.com"]) == 0
+    assert "me@example.com: 1 stories via outbox -> outbox/" in capsys.readouterr().out
