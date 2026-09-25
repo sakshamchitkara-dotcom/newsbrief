@@ -78,3 +78,27 @@ def test_live_blogs_never_lead_a_story():
                    weight=1.0, summary="Pope Leo visits France, the first papal visit in 18 years.")
     (story,) = cluster([live, news])
     assert story.lead is news
+
+
+FILLER_TITLES = ["Floods hit northern Italy after record rain", "Central bank holds interest rates",
+                 "Chip maker unveils faster laptop processor", "Football club names new manager"]
+
+
+def test_one_shared_word_does_not_merge_hn_posts():
+    # real false merge from the 2026-09-25 run: two unrelated Rails posts, no blurbs
+    a = Article("What About Rails?", "https://hn.example/1", "hn")
+    b = Article("Rails World 2026 Opening Keynote [video]", "https://hn.example/2", "hn")
+    fillers = [Article(t, f"https://f.com/{i}", "f") for i, t in enumerate(FILLER_TITLES)]
+    assert not any(len(s.articles) > 1 for s in cluster([a, b, *fillers]))
+
+
+def test_eval_set_known_pairs():
+    """Regression guard on the labeled real-feed set (see `newsbrief eval`)."""
+    from newsbrief.evaluate import evaluate, load_set
+
+    r = evaluate(load_set())
+    merged = {frozenset(a.title for a in p) for p in r.false_merges}
+    assert frozenset({"What About Rails?", "Rails World 2026 Opening Keynote [video]"}) not in merged
+    missed = {frozenset(a.title for a in p) for p in r.misses}
+    assert not any("F-Droid 2.0" in p for p in missed)  # thin title still matched across outlets
+    assert r.precision >= 0.9

@@ -117,8 +117,14 @@ def similar(
         return True
     da, db = _doc(a, boiler.get(a.source, set())), _doc(b, boiler.get(b.source, set()))
     kw = weighted_jaccard(da, db, idf)
-    if kw >= KEYWORD_THRESHOLD:
+    # One shared rare word is not a story ("What About Rails?" vs "Rails World keynote"):
+    # a one-keyword title makes any match look like a big Jaccard score.
+    if kw >= KEYWORD_THRESHOLD and len(da & db) >= 2:
         return True
+    # Thin-lede title match is for the same launch/post seen by two outlets ("F-Droid 2.0");
+    # within one feed, two short titles sharing a word are two different items.
+    if a.source == b.source:
+        return False
     return kw >= 0.07 and overlap(keywords(a.title), keywords(b.title), idf) >= TITLE_OVERLAP
 
 
