@@ -183,3 +183,13 @@ def test_video_clips_do_not_lead_a_story():
                    weight=1.0, summary="Pope Leo visits France, the first papal visit in 18 years.")
     (story,) = cluster([clip, news])
     assert story.lead is news
+
+
+def test_first_and_last_name_count_as_one_name():
+    # real false merge from a live run on 2026-09-25: "Elon" + "Musk" are one person, not two names
+    a = Article("US backs Elon Musk's bid to overturn €120m EU fine against X", "https://bbc/1", "bbc-business",
+                summary='The EU had said X "deceives users" by selling blue ticks.')
+    b = Article('We have a trailer for Musk documentary Elon called a "hit piece"', "https://ars/1", "ars",
+                summary="Oscar-winning documentarian Alex Gibney focuses on the world's wealthiest man.")
+    fillers = [Article(f"{t} ({i})", f"https://f.com/{i}", f"f{i}") for i, t in enumerate(FILLER_TITLES * 10)]
+    assert not any({a.url, b.url} <= {x.url for x in s.articles} for s in cluster([a, b, *fillers]))
