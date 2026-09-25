@@ -88,3 +88,27 @@ def test_robots_txt_is_refetched_after_ttl(monkeypatch):
     assert not http.allowed("https://ttl.example/private/y") and len(fetched) == 1  # cached
     t[0] += http.ROBOTS_TTL
     assert http.allowed("https://ttl.example/private/x") and len(fetched) == 2  # site changed its rules
+
+
+def test_post_json_sends_json_and_reports_the_error_body(monkeypatch):
+    import json
+
+    seen = []
+
+    def fake(req, timeout):
+        seen.append((req.get_method(), req.headers, json.loads(req.data)))
+        if len(seen) == 1:
+            return io.BytesIO(b'{"id": "1"}')
+        if len(seen) == 2:
+            raise urllib.error.HTTPError(req.full_url, 422, "x", {}, io.BytesIO(b'{"message": "invalid from"}'))
+        raise urllib.error.URLError("name resolution failed")
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake)
+    assert http.post_json("https://api.example/send", {"to": ["a@b"]}, {"Authorization": "Bearer k"}) == b'{"id": "1"}'
+    method, headers, body = seen[0]
+    assert method == "POST" and body == {"to": ["a@b"]}
+    assert headers["Authorization"] == "Bearer k" and headers["Content-type"] == "application/json"
+    with pytest.raises(http.FetchError, match="HTTP 422: .*invalid from"):
+        http.post_json("https://api.example/send", {}, {})
+    with pytest.raises(http.FetchError, match="name resolution failed"):
+        http.post_json("https://api.example/send", {}, {})

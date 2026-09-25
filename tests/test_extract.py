@@ -39,3 +39,23 @@ def test_no_space_before_punctuation_after_links():
     body = "<p>Your edge lies in your ability to <a href='/x'>go deep</a>, have stances<br>and defend them.</p>"
     assert extract_text("<article>" + body * 2 + "</article>").split("\n\n")[0] == (
         "Your edge lies in your ability to go deep, have stances and defend them.")
+
+
+def test_enrich_fills_text_only_when_it_beats_the_blurb(monkeypatch, fixture_bytes):
+    from newsbrief import extract
+    from newsbrief.http import FetchError
+    from newsbrief.models import Article
+
+    pages = {"https://ex.com/full": fixture_bytes("article.html"), "https://ex.com/thin": b"<p>tiny</p>"}
+
+    def polite_get(url):
+        if url not in pages:
+            raise FetchError(f"{url}: disallowed by robots.txt")
+        return pages[url]
+
+    monkeypatch.setattr(extract, "polite_get", polite_get)
+    full, thin, blocked = (Article("t", f"https://ex.com/{p}", "s", summary="A feed blurb.") for p in ("full", "thin", "no"))
+    hn = Article("Ask HN", "https://news.ycombinator.com/item?id=1", "hn")
+    extract.enrich([full, thin, blocked, hn], workers=2)
+    assert full.text.startswith("The central bank raised")
+    assert thin.text == blocked.text == hn.text == ""  # keep the blurb; HN threads are never fetched
