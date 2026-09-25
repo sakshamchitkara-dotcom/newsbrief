@@ -131,7 +131,7 @@ def cmd_archive(args) -> int:
     cfg = load_config(args.config)
     st = State(cfg.state_db)
     try:
-        paths = build_site(st, args.out, subscriber=args.subscriber, title=args.title)
+        paths = build_site(st, args.out, subscriber=args.subscriber, title=args.title, site_url=args.site_url)
     finally:
         st.close()
     print(f"wrote {len(paths) - 1} day pages + index to {paths[0]}")
@@ -208,6 +208,7 @@ def main(argv: list[str] | None = None) -> int:
     a.add_argument("--out", default="site", help="output directory (default: site)")
     a.add_argument("--subscriber", help="only this subscriber's briefs (default: the fullest brief each day)")
     a.add_argument("--title", default="The Daily Brief archive")
+    a.add_argument("--site-url", default="", help="public URL of the site; also writes an Atom feed.xml")
     a.set_defaults(func=cmd_archive)
 
     e = sub.add_parser("eval", help="score story clustering against a labeled set")

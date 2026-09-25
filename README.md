@@ -172,6 +172,7 @@ later run with fetching switched on got `ok 5/5`, so `off` stays the safe defaul
 
 ```sh
 newsbrief archive --out site      # index.html + 2026-09-25.html ... + .nojekyll
+newsbrief archive --out site --site-url https://you.github.io/newsbrief   # also feed.xml (Atom)
 ```
 
 Every run stores the day's brief in the state db; `archive` renders them as a static site,

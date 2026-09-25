@@ -41,3 +41,22 @@ def test_build_site_for_one_subscriber(tmp_path):
 def test_empty_archive(tmp_path):
     build_site(State(str(tmp_path / "s.db")), tmp_path / "site")
     assert "No briefs yet." in (tmp_path / "site" / "index.html").read_text()
+
+
+def test_atom_feed_when_site_url_is_known(tmp_path):
+    import xml.etree.ElementTree as ET
+
+    st = State(str(tmp_path / "s.db"))
+    st.save_brief("ann@example.com", "2026-09-24", brief("ann@example.com", "Rates <rise>"))
+    st.save_brief("ann@example.com", "2026-09-25", brief("ann@example.com", "Pope visits France"))
+    build_site(st, tmp_path / "plain")
+    assert not (tmp_path / "plain" / "feed.xml").exists()
+    build_site(st, tmp_path / "site", site_url="https://me.github.io/newsbrief")
+    ns = {"a": "http://www.w3.org/2005/Atom"}
+    feed = ET.parse(tmp_path / "site" / "feed.xml").getroot()
+    entries = feed.findall("a:entry", ns)
+    assert [e.find("a:link", ns).get("href") for e in entries] == [
+        "https://me.github.io/newsbrief/2026-09-25.html", "https://me.github.io/newsbrief/2026-09-24.html"]
+    assert entries[1].find("a:title", ns).text == "2026-09-24: Rates <rise>"
+    assert "@example.com" not in (tmp_path / "site" / "feed.xml").read_text()
+    assert 'href="feed.xml"' in (tmp_path / "site" / "index.html").read_text()
