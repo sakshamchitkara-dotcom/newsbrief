@@ -68,3 +68,34 @@ def test_smtp_requires_host():
 
     with pytest.raises(DeliveryError):
         send_smtp(msg(), {})
+
+
+def test_api_payloads_carry_unsubscribe_header():
+    from newsbrief.deliver import resend_payload, sendgrid_payload
+
+    r = resend_payload(msg(), "<p>h</p>", "t")
+    assert r["to"] == ["me@x.com"] and r["headers"] == {"List-Unsubscribe": "<mailto:b@example.com>"}
+    s = sendgrid_payload(msg(), "<p>h</p>", "t")
+    assert s["from"] == {"email": "b@example.com", "name": "Brief"}
+    assert [c["type"] for c in s["content"]] == ["text/plain", "text/html"]
+
+
+def test_send_api_posts_with_bearer(monkeypatch):
+    from newsbrief import http
+    from newsbrief.deliver import send
+
+    calls = []
+    monkeypatch.setattr(http, "post_json", lambda url, payload, headers: calls.append((url, headers)) or b"{}")
+    assert send(msg(), "<p>h</p>", "t", {"RESEND_API_KEY": "re_123", "SMTP_HOST": "x"}) == "resend"
+    assert calls == [("https://api.resend.com/emails", {"Authorization": "Bearer re_123"})]
+
+
+def test_pick_transport():
+    import pytest
+
+    from newsbrief.deliver import DeliveryError, pick_transport
+
+    assert pick_transport({"SMTP_HOST": "h", "NEWSBRIEF_TRANSPORT": "sendgrid"}) == "sendgrid"
+    assert pick_transport({"SMTP_HOST": "h"}) == "smtp"
+    with pytest.raises(DeliveryError):
+        pick_transport({})

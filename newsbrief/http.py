@@ -50,3 +50,21 @@ def polite_get(url: str) -> bytes:
     if not allowed(url):
         raise FetchError(f"{url}: disallowed by robots.txt")
     return get(url)
+
+
+def post_json(url: str, payload: dict, headers: dict[str, str], *, timeout: float = 30) -> bytes:
+    import json
+
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode(),
+        method="POST",
+        headers={"User-Agent": USER_AGENT, "Content-Type": "application/json", **headers},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return resp.read()
+    except urllib.error.HTTPError as e:
+        raise FetchError(f"{url}: HTTP {e.code}: {e.read()[:300]!r}") from e
+    except (urllib.error.URLError, TimeoutError, OSError) as e:
+        raise FetchError(f"{url}: {e}") from e

@@ -67,3 +67,66 @@ def send_smtp(msg: EmailMessage, env: dict[str, str]) -> None:
             server.send_message(msg)
     except (smtplib.SMTPException, OSError) as e:
         raise DeliveryError(f"smtp: {e}") from e
+
+
+def _extra_headers(msg: EmailMessage) -> dict[str, str]:
+    return {k: str(v) for k, v in msg.items() if k.lower().startswith("list-")}
+
+
+def resend_payload(msg: EmailMessage, html: str, text: str) -> dict:
+    return {
+        "from": msg["From"],
+        "to": [msg["To"]],
+        "subject": msg["Subject"],
+        "html": html,
+        "text": text,
+        "headers": _extra_headers(msg),
+    }
+
+
+def sendgrid_payload(msg: EmailMessage, html: str, text: str) -> dict:
+    name, addr = parseaddr(msg["From"])
+    return {
+        "personalizations": [{"to": [{"email": msg["To"]}]}],
+        "from": {"email": addr, **({"name": name} if name else {})},
+        "subject": msg["Subject"],
+        "content": [{"type": "text/plain", "value": text}, {"type": "text/html", "value": html}],
+        "headers": _extra_headers(msg),
+    }
+
+
+def send_api(provider: str, msg: EmailMessage, html: str, text: str, env: dict[str, str]) -> None:
+    from .http import FetchError, post_json
+
+    if provider == "resend":
+        key, url, payload = env.get("RESEND_API_KEY"), "https://api.resend.com/emails", resend_payload(msg, html, text)
+    elif provider == "sendgrid":
+        key, url = env.get("SENDGRID_API_KEY"), "https://api.sendgrid.com/v3/mail/send"
+        payload = sendgrid_payload(msg, html, text)
+    else:
+        raise DeliveryError(f"unknown provider {provider!r}")
+    if not key:
+        raise DeliveryError(f"{provider.upper()}_API_KEY is not set")
+    try:
+        post_json(url, payload, {"Authorization": f"Bearer {key}"})
+    except FetchError as e:
+        raise DeliveryError(f"{provider}: {e}") from e
+
+
+def pick_transport(env: dict[str, str]) -> str:
+    """Explicit NEWSBRIEF_TRANSPORT wins; otherwise the first configured provider."""
+    if t := env.get("NEWSBRIEF_TRANSPORT"):
+        return t
+    for t, var in (("resend", "RESEND_API_KEY"), ("sendgrid", "SENDGRID_API_KEY"), ("smtp", "SMTP_HOST")):
+        if env.get(var):
+            return t
+    raise DeliveryError("no transport configured: set SMTP_HOST, RESEND_API_KEY or SENDGRID_API_KEY, or use --dry-run")
+
+
+def send(msg: EmailMessage, html: str, text: str, env: dict[str, str]) -> str:
+    transport = pick_transport(env)
+    if transport == "smtp":
+        send_smtp(msg, env)
+    else:
+        send_api(transport, msg, html, text, env)
+    return transport
