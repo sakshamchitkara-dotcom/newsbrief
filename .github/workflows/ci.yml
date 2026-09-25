@@ -21,3 +21,4 @@ jobs:
       - run: pip install -e '.[dev,claude]'
       - run: pytest -q
       - run: newsbrief -c newsbrief.example.yaml check
+      - run: newsbrief eval --show 3   # clustering precision/recall on the labeled real-feed set
