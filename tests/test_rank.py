@@ -62,3 +62,16 @@ def test_personalize_weights_boosts_and_mutes():
     # a zero weight hides a topic entirely
     assert personalize(stories[:2], Subscriber("a@b.c", topic_weights={"tech": 0}))[0].lead.title == "Election results"
     assert len(personalize(stories[:2], Subscriber("a@b.c", topic_weights={"tech": 0}))) == 1
+
+
+def test_blank_and_symbol_terms():
+    from newsbrief.config import Subscriber
+    from newsbrief.rank import personalize
+
+    def story(title, topic, rank):
+        return Story([Article(title, f"https://x/{title}", "s")], rank=rank, topic=topic)
+
+    s = [story("New C++ standard approved", "tech", 1.0), story("Rates rise", "world", 1.0)]
+    assert len(personalize(s, Subscriber("a@b.c", mute=["", "  "]))) == 2  # blank mutes nothing
+    assert [x.lead.title for x in personalize(s, Subscriber("a@b.c", mute=["c++"]))] == ["Rates rise"]
+    assert personalize(s, Subscriber("a@b.c", boost=["C++"]))[0].rank == 1.5

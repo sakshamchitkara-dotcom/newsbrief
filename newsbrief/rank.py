@@ -63,9 +63,11 @@ def diversify(stories: list[Story], n: int, per_topic: int) -> list[Story]:
 
 
 def _mentions(story: Story, terms: list[str]) -> bool:
+    terms = [t.strip() for t in terms if t.strip()]  # a blank term would match every story
     if not terms:
         return False
-    pat = re.compile(r"\b(?:" + "|".join(re.escape(t.strip()) for t in terms if t.strip()) + r")\b", re.I)
+    # whole words, but also terms that end in a symbol ("C++", "F#"), where \b never matches
+    pat = re.compile(r"(?<!\w)(?:" + "|".join(map(re.escape, terms)) + r")(?!\w)", re.I)
     return any(pat.search(a.title) or pat.search(a.summary) for a in story.articles)
 
 
