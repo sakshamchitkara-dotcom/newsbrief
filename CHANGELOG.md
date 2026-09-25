@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.1 - 2026-09-25
+
+### Fixed
+- Weekly digest: a reworded developing story no longer splits into two threads. Threads are linked
+  day by day using the daily tracker's own link, shared article URLs, or the clustering test over
+  the stored articles; stories from the same day are never merged.
+- HTML `<title>` uses the brief's title ("The Weekly Brief") instead of always "Your news brief".
+
+### Changed
+- README screenshots regenerated from a live dry run.
+
 ## 0.3.0 - 2026-09-25
 
 ### Added
