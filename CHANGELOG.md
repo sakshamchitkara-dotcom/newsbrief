@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.3.0 - 2026-09-25
+
+### Added
+- Developing stories: each brief is matched against the subscriber's briefs from the past 7 days;
+  a continuing story gets a "Day N" badge and "Following since ... Previously: ...", linked to
+  the earlier day on archive pages.
+- `newsbrief digest`: weekly roundup rebuilt from stored briefs, for subscribers with `weekly: true`.
+- `newsbrief audio`: podcast-style audio of a stored brief via macOS `say` (`--voice`, `--rate`,
+  `--script-only`).
+- `newsbrief archive --site-url`: Atom `feed.xml`; `brief.yml` deploys the archive to GitHub Pages
+  when `NEWSBRIEF_PAGES=true`.
+- `newsbrief eval --snapshot FILE`: capture today's feeds as a pre-labeled set for hand-labeling.
+- `check --feeds --probe N`: probes 3 article pages per feed by default instead of 1.
+
+### Fixed
+- Clustering recall on big stories: names are recognised at sentence starts, in Title Case and as
+  two-letter names ("Xi"), and two rare names shared by both headlines merge a story. A first and
+  last name ("Elon Musk") count as one name.
+- A developing story vanished from the next day's brief once any of its articles had been sent;
+  now only the sent articles are dropped.
+- Video clips no longer lead a story, and a story's links, Claude prompt and extra text fetch
+  cover other outlets before repeating the lead's.
+- Feed blurbs with a standfirst paragraph ran into the next sentence; inline links added a space
+  before punctuation in blurbs and article text.
+- Config: unknown top-level and source keys, or a source that isn't a mapping, are config errors
+  instead of tracebacks; `mute: celebrity` is a one-item list instead of its letters.
+- Blank `mute`/`boost` terms muted or boosted every story; terms like "C++" never matched.
+- robots.txt is re-read every 6 hours instead of cached for the life of `newsbrief schedule`.
+
+### Changed
+- Eval on the 2026-09-25 set: precision 0.955 -> 0.955, recall 0.226 -> 0.677 (f1 0.365 -> 0.792).
+
 ## 0.2.0 - 2026-09-25
 
 ### Added

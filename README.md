@@ -29,6 +29,7 @@ sources ──► collect ──► cluster ──► rank ──► filter ─�
 | Dedupe | `dedupe.py` | Exact URL dedupe, then leader clustering: cross-outlet 3-word shingle Jaccard (syndicated copy), idf-weighted keyword Jaccard over title + lede with at least two shared keywords (rewrites of the same event), or shared names: words capitalised mid-sentence and acronyms ("OpenAI", "Medicare", "NYC"). Phrases an outlet repeats across items ("Get our breaking news email...") are stripped first, and live blogs never lead a story. Scored by `newsbrief eval`. |
 | Ranking | `rank.py` | `recency (12h half-life) × source weight × (1 + log2 outlets) × HN popularity`, then each subscriber's topic weights, boosts and mutes, then a per-topic cap so one busy beat can't fill the brief. |
 | State | `state.py` | SQLite: URLs already sent to each subscriber (so tomorrow's brief doesn't repeat them, while a developing story returns with its new articles), deliveries per local day, unsubscribes, and each day's brief for the web archive. |
+| Tracking, digest, audio | `dedupe.track`, `digest.py`, `audio.py` | Links each story to the subscriber's briefs from the past 7 days ("Day 3"); weekly roundup from stored briefs; spoken script voiced by macOS `say`. |
 | Summaries | `summarize.py` | `claude-opus-5-5` via `messages.parse` with a Pydantic schema (headline, summary, intro, and a "why it matters" line for the top story only), `effort: medium`. Falls back to extractive summaries with no API key, a refusal, truncation or any API error. The extractive "why it matters" picks an on-topic sentence about consequences, records or risks, and is left out when none qualifies. |
 | Email | `render.py`, `deliver.py`, `unsubscribe.py` | Table layout with inline CSS and a text/plain alternative, with reading time for stories whose article text was fetched. HMAC unsubscribe link, `List-Unsubscribe` and one-click `List-Unsubscribe-Post` headers. |
 | Archive | `archive.py` | Static `index.html` plus one page per day, no subscriber data, GitHub Pages ready. |
@@ -261,26 +262,26 @@ labels by hand, then score with `newsbrief eval --set day.json`. Live, 2026-09-2
 
 ## Real output
 
-A dry run against the example config's live feeds (BBC World and Business, NPR, Guardian,
-Al Jazeera, The Verge, Ars Technica, HN) on 2026-09-25, with `topic_weights: {tech: 1.3,
-business: 0.8}`, `boost: [OpenAI, "open source"]` and `mute: [celebrity]`. No API key was set,
-so it used the extractive summaries:
+A dry run of 0.3.0 against the example config's live feeds (BBC World and Business, NPR,
+Guardian, Al Jazeera, The Verge, Ars Technica, HN) on 2026-09-25 at 10:11 UTC, with
+`topic_weights: {tech: 1.3, business: 0.8}`, `boost: [OpenAI, "open source"]` and
+`mute: [celebrity]`. No API key was set, so it used the extractive summaries:
 
 ```
 $ newsbrief run --dry-run
-INFO newsbrief.pipeline: verge           10 items
 INFO newsbrief.pipeline: ars             20 items
 INFO newsbrief.pipeline: aljazeera       25 items
+INFO newsbrief.pipeline: verge           10 items
 INFO newsbrief.pipeline: npr             10 items
+INFO newsbrief.pipeline: bbc-world       30 items
 INFO newsbrief.pipeline: guardian        30 items
 INFO newsbrief.pipeline: bbc-business    30 items
-INFO newsbrief.pipeline: bbc-world       30 items
 INFO newsbrief.pipeline: hn              30 items
-WARNING newsbrief.http: circuit open for openai.com (blocked)
 you@...: 12 stories via outbox -> outbox/you-...-2026-09-25.html
 ```
 
-An excerpt of the text/plain part:
+An excerpt of the text/plain part. The Trump/Xi visit is one story from four outlets (it was
+two clusters plus singletons in 0.2.0, led by a BBC video clip with five BBC links):
 
 ```
 THE DAILY BRIEF - Friday, September 25, 2026
@@ -290,32 +291,48 @@ Good morning, Saksham. 12 stories today across world, tech, business.
 
 ## WORLD
 
-* Trump and Xi exchange warm words at state dinner but little progress on
-key issues (1 min read)
-  Despite diplomatic niceties and gifts, little was shared on substantial
-  issues separating the leaders.
-  Why it matters: Xi and Trump discussed tensions over Taiwan, trade and
-  artificial intelligence during business hours, all while a First Amendment
-  fight over press access at the White House was unfolding.
+* Xi got Trump's red carpet welcome - but not everything he wanted (1 min
+read)
+  China wanted progress on trade, technology and Taiwan - but hasn't got as
+  much as it would have hoped for.
+  Why it matters: Though the Xi-Trump meeting delivered little significant
+  shift in relations beyond extending a fragile trade war truce for another
+  two months, Washington laid on hours of pageantry, more pomp and lavish
+  tours for Xi’s entourage, and praise…
+  - bbc-world: https://www.bbc.co.uk/news/articles/cr93e4x7kdjjo
+  - guardian: https://www.theguardian.com/us-news/2026/sep/23/trump-xi-jinping-china-us-state-visit
+  - npr: https://www.npr.org/2026/09/25/g-s1-144973/trump-state-dinner-xi
+  - aljazeera: https://www.aljazeera.com/news/2026/9/25/from-cheats-to-great-friendship-how-trumps-rhetoric-on-china-changed
   - bbc-world: https://www.bbc.co.uk/news/articles/cxq63dqp93n1o
-  - aljazeera: https://www.aljazeera.com/news/2026/9/25/trump-praises-us-china-friendship-at-state-dinner-with-xi-jinping
 
 * Saudi Arabia intercepts wave of Houthi missiles as oil climbs to one-week
 high (3 min read)
+  The Saudi-led coalition in Yemen said the missiles were aimed at Taif and
+  the Yanbu area on the Red Sea, the main alternative route for Saudi oil.
+  Saudi Arabia says it intercepted six ballistic missiles fired by Yemen’s
+  Iran-backed Houthis, with the latest attacks pushing oil prices to a one-
+  week high over fears of spiralling supply disruptions.
   ...
-  - guardian: https://www.theguardian.com/world/2026/sep/25/saudi-arabia-intercepts-houthi-missiles-oil-prices-climbs
-  - aljazeera: https://www.aljazeera.com/news/2026/9/25/saudi-arabia-allies-line-up-support-as-houthi-attacks-mount
-  - aljazeera: https://www.aljazeera.com/news/2026/9/25/saudi-turkish-pakistani-chiefs-plan-urgent-talks-amid-yemen-fighting
-  - aljazeera: https://www.aljazeera.com/economy/2026/9/25/oil-prices-jump-after-yemens-houthis-claim-attacks-on-saudi-facilities
+```
 
-## TECH
+Story tracking was checked by relabeling the brief stored at 09:33 UTC as the previous day and
+running the same dry run: the 7 stories that appeared in both briefs were marked, the 5 new ones
+were not.
 
-* F-Droid gets its biggest update in a decade with new UI and smoother app
-installs (2 min read)
-  ...
-  - ars: https://arstechnica.com/gadgets/2026/09/f-droid-gets-its-biggest-update-in-a-decade-with-new-ui-and-smoother-app-installs/
-  - hn: https://f-droid.org/2026/09/24/f-droid-2.0-a-new-chapter-for-android-freedom.html
-    discussion (1237 pts): https://news.ycombinator.com/item?id=49831968
+```
+* Xi got Trump's red carpet welcome - but not everything he wanted (1 min read)
+  Day 2, following since Sep 24. Previously: Trump and Xi exchange warm words at state dinner ...
+* Saudi Arabia intercepts wave of Houthi missiles as oil climbs to one-week high (3 min read)
+  Day 2, following since Sep 24. Previously: Saudi Arabia intercepts wave of Houthi missiles ...
+* Susan Sarandon and Hannah Einbinder arrested at anti-Netanyahu protest in New York (2 min read)
+```
+
+The weekly digest on those two stored days:
+
+```
+$ newsbrief digest --dry-run --subscriber you@...
+you@...: 10 stories via outbox -> outbox/you-...-weekly-2026-09-25.html
+Subject: Weekly Brief, Sep 19-Sep 25
 ```
 
 ### Known limits
@@ -328,6 +345,11 @@ installs (2 min read)
   so it was left out.
 - The extractive "why it matters" line keys on cue words ("could", "first", "record", ...), so it
   can pick a sentence that is on topic but not really context. Claude writes a proper one.
+- The weekly digest re-clusters stored headlines and summaries, a much smaller corpus than a
+  day's feeds, so name weights are lower and a story can show up as two threads (the stored
+  0.2.0 brief's two Trump/Xi stories did).
+- Story tracking and the digest have been checked on two briefs from one day, relabeled; not yet
+  on a real week of briefs.
 - Pairwise clustering is O(n × clusters), which is fine for a few hundred items a day.
   Beyond that, switch to MinHash LSH.
 
