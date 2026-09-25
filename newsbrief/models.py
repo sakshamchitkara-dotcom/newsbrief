@@ -15,6 +15,7 @@ class Article:
     text: str = ""  # extracted main text, filled by extract step
     weight: float = 1.0  # source weight from config
     score: int = 0  # e.g. HN points
+    comments_url: str = ""  # discussion thread, e.g. on Hacker News
 
     @property
     def body(self) -> str:

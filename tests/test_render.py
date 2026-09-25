@@ -41,3 +41,12 @@ def test_text_alternative():
 def test_empty_brief():
     b = Brief("me@x.com", [], intro="0 stories today.")
     assert "Nothing new" in render_html(b, date=DATE) and "Nothing new" in render_text(b, date=DATE)
+
+
+def test_discussion_links_for_hn():
+    s = Story([Article("Show HN", "https://x.dev", "hn", score=321, comments_url="https://news.ycombinator.com/item?id=7")],
+              topic="tech", headline="Show HN", summary="A thing.")
+    b = Brief("me@x.com", [s], intro="i")
+    assert 'href="https://news.ycombinator.com/item?id=7"' in render_html(b, date=DATE)
+    assert "321 pts, discuss" in render_html(b, date=DATE)
+    assert "discussion (321 pts): https://news.ycombinator.com/item?id=7" in render_text(b, date=DATE)
