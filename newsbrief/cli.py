@@ -182,9 +182,29 @@ def cmd_audio(args) -> int:
     return 0
 
 
+def _snapshot(args) -> int:
+    import json
+    from datetime import datetime, timezone
+    from pathlib import Path
+
+    from .evaluate import snapshot
+    from .pipeline import collect
+
+    cfg = load_config(args.config)
+    articles = [a for arts in collect(list(cfg.sources.values())).values() for a in arts]
+    data = snapshot(articles, datetime.now(timezone.utc).date().isoformat())
+    Path(args.snapshot).write_text(json.dumps(data, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    labeled = sum(1 for it in data["items"] if it["story"])
+    print(f"{len(data['items'])} items, {labeled} pre-labeled in clusters -> {args.snapshot}; fix the labels, "
+          f"then: newsbrief eval --set {args.snapshot}")
+    return 0
+
+
 def cmd_eval(args) -> int:
     from .evaluate import DEFAULT_SET, evaluate, load_set
 
+    if args.snapshot:
+        return _snapshot(args)
     r = evaluate(load_set(args.set or DEFAULT_SET))
     print(f"{r.items} items, {r.gold_pairs} labeled same-story pairs, {r.predicted_pairs} predicted")
     print(f"precision {r.precision:.3f}  recall {r.recall:.3f}  f1 {r.f1:.3f}")
@@ -273,6 +293,8 @@ def main(argv: list[str] | None = None) -> int:
     e = sub.add_parser("eval", help="score story clustering against a labeled set")
     e.add_argument("--set", help="labeled JSON set (default: the bundled 2026-09-25 feed snapshot)")
     e.add_argument("--show", type=int, default=10, help="list up to N false merges and misses each")
+    e.add_argument("--snapshot", metavar="FILE",
+                   help="instead: fetch the config's feeds now and write a pre-labeled set to FILE for hand-labeling")
     e.set_defaults(func=cmd_eval)
 
     args = p.parse_args(argv)

@@ -252,6 +252,11 @@ as a single cluster without giving up precision:
 Linking new articles to any cluster member instead of only the leader was tried again: recall
 barely moves now and precision drops to 0.69-0.83, so clustering stays leader-based. The rules were
 tuned on this one day, so treat the numbers as an upper bound on other days.
+
+To label another day, `newsbrief eval --snapshot day.json` fetches the config's feeds and writes
+them in the same format, with every multi-article cluster pre-labeled `c1`, `c2`, ... Fix the
+labels by hand, then score with `newsbrief eval --set day.json`. Live, 2026-09-25:
+`180 items, 47 pre-labeled in clusters -> day.json`.
 `tests/test_dedupe.py` fails if precision drops below 0.9, recall below 0.6, or a known case regresses.
 
 ## Real output
