@@ -17,8 +17,9 @@ from .unsubscribe import list_unsubscribe_headers, require_secret, unsubscribe_u
 
 
 def _threads(rows: list[tuple[str, Story]]) -> list[list[tuple[str, Story]]]:
-    """Link each day's stories to earlier days' threads. Stories from one day never share a
-    thread: that day's clustering, on the full feeds, already decided they differ. A story
+    """Link each day's stories to earlier days' threads. Stories from one day never link to
+    each other directly: that day's clustering, on the full feeds, already kept them apart.
+    But a later story that continues both joins them into one thread. A story
     joins the newest thread it continues, by (1) the daily tracker's own link ("previously"
     names the thread's last headline), (2) a shared article URL, or (3) the clustering test
     over the stored articles, whose idf comes from every article of the week rather than
@@ -38,12 +39,14 @@ def _threads(rows: list[tuple[str, Story]]) -> list[list[tuple[str, Story]]]:
 
     threads: list[list[tuple[str, Story]]] = []
     for d, s in sorted(rows, key=lambda r: r[0]):
-        for th in sorted(threads, key=lambda th: th[-1][0], reverse=True):  # newest thread first
-            if th[-1][0] < d and continues(s, th[-1][1]):
-                th.append((d, s))
-                break
-        else:
+        hits = [th for th in threads if th[-1][0] < d and continues(s, th[-1][1])]
+        if not hits:
             threads.append([(d, s)])
+            continue
+        # A story that continues two threads joins them: an earlier brief carried one event
+        # as two stories (clustering is leader-based), and today's clustering saw one.
+        merged = sorted((m for th in hits for m in th), key=lambda m: m[0]) + [(d, s)]
+        threads = [th for th in threads if not any(th is h for h in hits)] + [merged]
     return threads
 
 
