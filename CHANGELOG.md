@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.4.0 - 2026-09-25
+
+### Added
+- Dark mode: the email declares `color-scheme: light dark` and recolours itself under
+  `prefers-color-scheme: dark` (Apple Mail, iOS Mail, Outlook for Mac, Thunderbird). Clients that
+  strip `<style>` still get the light email. Archive pages follow the viewer's theme.
+
+### Fixed
+- Weekly digest: a story one brief carried as two stories is one thread once a later brief
+  continues both (stored 2026-09-25 brief, Trump/Xi split in two the day before: 13 -> 12 threads).
+- A real `run`/`digest` with no email transport fetched every feed and paid for summaries before
+  failing; the transport is now checked first. `NEWSBRIEF_TRANSPORT` is case-insensitive and a
+  typo lists the valid values.
+- A Hacker News story list that wasn't JSON (an HTML error page) or was `null` crashed the whole
+  run instead of skipping that source.
+
+### Changed
+- Tests for SMTP implicit TLS and failures, SendGrid and API errors, `fetch_hn`, article
+  enrichment, `post_json`, and the `serve`/`digest`/`audio` commands (141 -> 157 tests).
+
 ## 0.3.1 - 2026-09-25
 
 ### Fixed
